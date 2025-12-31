@@ -64,6 +64,8 @@ function Rig() {
     camera.position.lerp(vec.set(mouse.x * 4, mouse.y * 4, 12), 0.04);
     camera.lookAt(0, 0, 0);
   });
+
+  return null;
 }
 
 export default function ThreeDBackground() {
