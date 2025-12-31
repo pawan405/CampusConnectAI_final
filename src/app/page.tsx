@@ -11,16 +11,18 @@ function Character({ phase }: { phase: number }) {
     <motion.div
       className="absolute z-20"
       initial={{ x: -300, opacity: 0 }}
-      animate={
-        phase === 0
-          ? { x: -300, opacity: 0 }
-          : phase === 1
-          ? { x: -80, opacity: 1 }
-          : phase === 2
-          ? { x: -80, opacity: 1 }
-          : { x: -180, opacity: 1 }
-      }
-      transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
+    animate={
+      phase === 0
+        ? { x: -300, opacity: 0 }
+        : phase === 1
+        ? { x: -80, opacity: 1 }
+        : { x: -280, opacity: 1 }
+    }
+    transition={{ 
+      duration: phase >= 2 ? 1 : 1.2, 
+      ease: [0.22, 1, 0.36, 1],
+      delay: phase === 2 ? 0.2 : 0 
+    }}
       style={{ bottom: "10%", left: "50%" }}
     >
       <div className="relative" style={{ transform: "scale(0.9)" }}>
