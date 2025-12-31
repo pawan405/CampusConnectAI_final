@@ -290,7 +290,7 @@ export default function LoginPage() {
     const timers = [
       setTimeout(() => setPhase(1), 500),
       setTimeout(() => setPhase(2), 2000),
-      setTimeout(() => setPhase(3), 3000),
+      setTimeout(() => setPhase(3), 4000),
     ];
     return () => timers.forEach(clearTimeout);
   }, []);
