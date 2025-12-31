@@ -1,199 +1,360 @@
 "use client";
 
-import React, { useState, useRef, useEffect, Suspense } from "react";
-import { motion, useMotionValue, useSpring, useTransform, AnimatePresence } from "motion/react";
-import { Mail, Lock, LogIn, Github, Chrome, ArrowRight, User, ShieldCheck, Zap, Sparkles } from "lucide-react";
+import React, { useState, useRef, useEffect } from "react";
+import { motion, AnimatePresence } from "motion/react";
+import { Github, Chrome, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import ThreeDBackground from "@/components/ThreeDBackground";
+
+function Character({ phase }: { phase: number }) {
+  return (
+    <motion.div
+      className="absolute z-20"
+      initial={{ x: -300, opacity: 0 }}
+      animate={
+        phase === 0
+          ? { x: -300, opacity: 0 }
+          : phase === 1
+          ? { x: -80, opacity: 1 }
+          : phase === 2
+          ? { x: -80, opacity: 1 }
+          : { x: -180, opacity: 1 }
+      }
+      transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
+      style={{ bottom: "10%", left: "50%" }}
+    >
+      <div className="relative" style={{ transform: "scale(0.9)" }}>
+        <motion.div
+          animate={phase >= 2 ? { rotate: [0, -5, 0, 5, 0] } : {}}
+          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+        >
+          <svg width="180" height="320" viewBox="0 0 180 320" fill="none">
+            <motion.g
+              animate={phase === 2 ? { y: [0, -3, 0] } : {}}
+              transition={{ duration: 0.8, repeat: Infinity }}
+            >
+              <circle cx="90" cy="45" r="35" fill="#F5D0C5" />
+              <ellipse cx="90" cy="30" rx="38" ry="25" fill="#D4A574" />
+              <circle cx="78" cy="45" r="4" fill="#2D2D2D" />
+              <circle cx="102" cy="45" r="4" fill="#2D2D2D" />
+              <ellipse cx="90" cy="58" rx="4" ry="2" fill="#C4A08A" />
+              <path d="M82 65 Q90 70 98 65" stroke="#8B6F5C" strokeWidth="2" fill="none" />
+            </motion.g>
+
+            <motion.g
+              animate={phase === 2 ? { scaleY: [1, 0.98, 1] } : {}}
+              transition={{ duration: 0.8, repeat: Infinity }}
+              style={{ originY: 0 }}
+            >
+              <path d="M60 85 L120 85 L125 180 L55 180 Z" fill="#6B5B95" />
+              <path d="M60 85 L90 85 L90 180 L55 180 Z" fill="#5D4E85" />
+            </motion.g>
+
+            <motion.g
+              animate={
+                phase === 2
+                  ? { rotate: -45, x: -20, y: -30 }
+                  : phase >= 3
+                  ? { rotate: -20, x: -40, y: 0 }
+                  : {}
+              }
+              transition={{ duration: 0.6, ease: "easeOut" }}
+              style={{ originX: "60px", originY: "90px" }}
+            >
+              <path d="M60 90 L30 140 L35 145 L65 100 Z" fill="#6B5B95" />
+              <circle cx="28" cy="145" r="12" fill="#F5D0C5" />
+            </motion.g>
+
+            <motion.g
+              animate={
+                phase === 2
+                  ? { rotate: 45, x: 20, y: -30 }
+                  : phase >= 3
+                  ? { rotate: 20, x: 40, y: 0 }
+                  : {}
+              }
+              transition={{ duration: 0.6, ease: "easeOut" }}
+              style={{ originX: "120px", originY: "90px" }}
+            >
+              <path d="M120 90 L150 140 L145 145 L115 100 Z" fill="#6B5B95" />
+              <circle cx="152" cy="145" r="12" fill="#F5D0C5" />
+            </motion.g>
+
+            <path d="M65 180 L60 280 L80 280 L85 180 Z" fill="#3D3D3D" />
+            <path d="M95 180 L100 280 L120 280 L115 180 Z" fill="#3D3D3D" />
+
+            <ellipse cx="70" cy="290" rx="18" ry="8" fill="#8B7355" />
+            <ellipse cx="110" cy="290" rx="18" ry="8" fill="#8B7355" />
+          </svg>
+        </motion.div>
+      </div>
+    </motion.div>
+  );
+}
+
+function Suitcase({ phase, onOpenComplete }: { phase: number; onOpenComplete: () => void }) {
+  useEffect(() => {
+    if (phase === 2) {
+      const timer = setTimeout(onOpenComplete, 800);
+      return () => clearTimeout(timer);
+    }
+  }, [phase, onOpenComplete]);
+
+  return (
+    <motion.div
+      className="absolute z-10"
+      initial={{ scale: 0, opacity: 0, y: 100 }}
+      animate={
+        phase >= 1
+          ? { scale: 1, opacity: 1, y: 0 }
+          : { scale: 0, opacity: 0, y: 100 }
+      }
+      transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1], delay: phase === 1 ? 0.5 : 0 }}
+      style={{ bottom: "15%", left: "50%", x: "-50%" }}
+    >
+      <div className="relative" style={{ perspective: "1000px" }}>
+        <svg width="300" height="200" viewBox="0 0 300 200" fill="none">
+          <rect x="20" y="80" width="260" height="110" rx="8" fill="#2D2D2D" />
+          <rect x="25" y="85" width="250" height="100" rx="6" fill="#1A1A1A" />
+          
+          <rect x="130" y="130" width="40" height="25" rx="3" fill="#FFD700" />
+          <rect x="135" y="135" width="30" height="15" rx="2" fill="#B8860B" />
+          
+          <rect x="60" y="185" width="30" height="8" rx="2" fill="#1A1A1A" />
+          <rect x="210" y="185" width="30" height="8" rx="2" fill="#1A1A1A" />
+        </svg>
+
+        <motion.div
+          className="absolute top-0 left-0"
+          initial={{ rotateX: 0 }}
+          animate={phase >= 2 ? { rotateX: -120 } : { rotateX: 0 }}
+          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+          style={{ originY: "100%", transformStyle: "preserve-3d" }}
+        >
+          <svg width="300" height="90" viewBox="0 0 300 90" fill="none">
+            <rect x="20" y="0" width="260" height="80" rx="8" fill="#3D3D3D" />
+            <rect x="25" y="5" width="250" height="70" rx="6" fill="#2D2D2D" />
+            
+            <rect x="120" y="-15" width="60" height="20" rx="4" fill="#4A4A4A" />
+            <rect x="140" y="-20" width="20" height="10" rx="3" fill="#3D3D3D" />
+          </svg>
+        </motion.div>
+
+        <motion.div
+          className="absolute"
+          initial={{ opacity: 0, y: 50, scale: 0.5 }}
+          animate={phase >= 2 ? { opacity: 1, y: -20, scale: 1 } : { opacity: 0, y: 50, scale: 0.5 }}
+          transition={{ duration: 0.6, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
+          style={{ top: "-30px", left: "50%", x: "-50%" }}
+        >
+          <div className="flex gap-2">
+            {[0, 1, 2].map((i) => (
+              <motion.div
+                key={i}
+                className="w-3 h-3 rounded-full bg-purple-500"
+                initial={{ scale: 0 }}
+                animate={phase >= 2 ? { scale: [0, 1.5, 1] } : { scale: 0 }}
+                transition={{ delay: 0.4 + i * 0.1, duration: 0.4 }}
+              />
+            ))}
+          </div>
+        </motion.div>
+      </div>
+    </motion.div>
+  );
+}
+
+function LoginForm({ show }: { show: boolean }) {
+  return (
+    <AnimatePresence>
+      {show && (
+        <motion.div
+          initial={{ opacity: 0, scale: 0.3, y: 100, rotateX: 45 }}
+          animate={{ opacity: 1, scale: 1, y: 0, rotateX: 0 }}
+          exit={{ opacity: 0, scale: 0.8 }}
+          transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
+          className="relative z-30 w-full max-w-md"
+          style={{ perspective: "1000px" }}
+        >
+          <motion.div
+            initial={{ boxShadow: "0 0 0 rgba(147, 51, 234, 0)" }}
+            animate={{ boxShadow: "0 0 80px rgba(147, 51, 234, 0.3)" }}
+            transition={{ delay: 0.5, duration: 1 }}
+            className="relative bg-[#7B2D8E] rounded-2xl overflow-hidden"
+          >
+            <button className="absolute top-3 right-3 text-white/50 hover:text-white text-xl leading-none">
+              ×
+            </button>
+
+            <div className="p-8 pt-10">
+              <motion.h2
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 }}
+                className="text-3xl font-bold text-white text-center mb-2"
+                style={{ fontFamily: "Georgia, serif" }}
+              >
+                Connect with Us
+              </motion.h2>
+              
+              <motion.p
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4 }}
+                className="text-white/70 text-center text-sm mb-8"
+              >
+                Subscribe and stay up to date on the latest news,<br />
+                get exclusive offers and special gifts.
+              </motion.p>
+
+              <div className="space-y-4">
+                <motion.div
+                  initial={{ opacity: 0, x: -30 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.5 }}
+                >
+                  <label className="text-white text-sm mb-1 block">
+                    Your Name <span className="text-yellow-400">*</span>
+                  </label>
+                  <div className="flex gap-2">
+                    <div className="relative flex-1">
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">👤</span>
+                      <Input
+                        placeholder="First Name"
+                        className="bg-white border-none h-12 pl-10 rounded-lg text-gray-800 placeholder:text-gray-400"
+                      />
+                    </div>
+                    <div className="relative flex-1">
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">👤</span>
+                      <Input
+                        placeholder="Last Name"
+                        className="bg-white border-none h-12 pl-10 rounded-lg text-gray-800 placeholder:text-gray-400"
+                      />
+                    </div>
+                  </div>
+                </motion.div>
+
+                <motion.div
+                  initial={{ opacity: 0, x: -30 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.6 }}
+                >
+                  <label className="text-white text-sm mb-1 block">
+                    Your Email <span className="text-yellow-400">*</span>
+                  </label>
+                  <div className="relative">
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">✉️</span>
+                    <Input
+                      type="email"
+                      placeholder="Ex. yourname@mycompany.com"
+                      className="bg-white border-none h-12 pl-10 rounded-lg text-gray-800 placeholder:text-gray-400"
+                    />
+                  </div>
+                </motion.div>
+
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.7 }}
+                  className="pt-4"
+                >
+                  <Button className="w-full h-12 bg-[#1A1A2E] hover:bg-[#2A2A3E] text-white font-semibold rounded-lg transition-all">
+                    Sign Me Up
+                  </Button>
+                </motion.div>
+
+                <motion.p
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.8 }}
+                  className="text-white/50 text-xs text-right pt-2"
+                >
+                  Step 1 of 1
+                </motion.p>
+              </div>
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+}
 
 export default function LoginPage() {
-  const containerRef = useRef<HTMLDivElement>(null);
-  
-  // Mouse position for global background spotlight and interactive effects
-  const mouseX = useMotionValue(0);
-  const mouseY = useMotionValue(0);
-
-  // Smooth springs for buttery movement
-  const springX = useSpring(mouseX, { stiffness: 60, damping: 20 });
-  const springY = useSpring(mouseY, { stiffness: 60, damping: 20 });
-
-  // 3D Tilt values - mapped to window dimensions
-  const rotateX = useTransform(springY, [0, 1000], [10, -10]);
-  const rotateY = useTransform(springX, [0, 1800], [-10, 10]);
+  const [phase, setPhase] = useState(0);
+  const [showForm, setShowForm] = useState(false);
 
   useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      mouseX.set(e.clientX);
-      mouseY.set(e.clientY);
-    };
+    const timers = [
+      setTimeout(() => setPhase(1), 500),
+      setTimeout(() => setPhase(2), 2000),
+      setTimeout(() => setPhase(3), 3000),
+    ];
+    return () => timers.forEach(clearTimeout);
+  }, []);
 
-    if (typeof window !== 'undefined') {
-      mouseX.set(window.innerWidth / 2);
-      mouseY.set(window.innerHeight / 2);
-      window.addEventListener("mousemove", handleMouseMove);
-    }
-    
-    return () => window.removeEventListener("mousemove", handleMouseMove);
-  }, [mouseX, mouseY]);
-
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
-        delayChildren: 0.3
-      }
-    }
-  };
-
-  const itemVariants = {
-    hidden: { y: 20, opacity: 0, filter: "blur(8px)" },
-    visible: { 
-      y: 0, 
-      opacity: 1, 
-      filter: "blur(0px)",
-      transition: { type: "spring", stiffness: 200, damping: 20 } 
-    }
+  const handleSuitcaseOpen = () => {
+    setTimeout(() => setShowForm(true), 200);
   };
 
   return (
-    <div 
-      ref={containerRef}
-      className="relative min-h-screen w-full overflow-hidden bg-[#050505] flex items-center justify-center p-4 selection:bg-purple-500/30 font-sans"
-    >
-      {/* 3D World Layer */}
-      <Suspense fallback={<div className="absolute inset-0 bg-black animate-pulse" />}>
-        <ThreeDBackground />
-      </Suspense>
-
-      {/* Overlay vignette */}
-      <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_center,transparent_0%,rgba(0,0,0,0.4)_100%)] z-[1]" />
+    <div className="relative min-h-screen w-full overflow-hidden bg-[#7B2D8E] flex items-center justify-center">
+      <div
+        className="absolute inset-0"
+        style={{
+          background: "radial-gradient(circle at 30% 50%, #9B4DB8 0%, #7B2D8E 50%, #5A1D6E 100%)",
+        }}
+      />
 
       <motion.div
-        initial="hidden"
-        animate="visible"
-        variants={containerVariants}
-        style={{ perspective: 1200 }}
-        className="w-full max-w-md z-10"
+        className="absolute inset-0 opacity-20"
+        animate={{
+          background: [
+            "radial-gradient(circle at 20% 30%, rgba(255,255,255,0.1) 0%, transparent 50%)",
+            "radial-gradient(circle at 80% 70%, rgba(255,255,255,0.1) 0%, transparent 50%)",
+            "radial-gradient(circle at 20% 30%, rgba(255,255,255,0.1) 0%, transparent 50%)",
+          ],
+        }}
+        transition={{ duration: 8, repeat: Infinity }}
+      />
+
+      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-black/20 to-transparent" />
+
+      <AnimatePresence>
+        {phase === 0 && (
+          <motion.div
+            initial={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="absolute inset-0 flex items-center justify-center z-50"
+          >
+            <motion.div
+              animate={{ scale: [1, 1.1, 1], opacity: [0.5, 1, 0.5] }}
+              transition={{ duration: 1.5, repeat: Infinity }}
+              className="text-white/50 text-lg font-light tracking-widest"
+            >
+              Loading...
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <Character phase={phase} />
+      <Suitcase phase={phase} onOpenComplete={handleSuitcaseOpen} />
+
+      <div className="relative z-30 flex items-center justify-center w-full px-4">
+        <LoginForm show={showForm} />
+      </div>
+
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: phase >= 3 ? 1 : 0 }}
+        transition={{ delay: 0.5 }}
+        className="absolute bottom-6 right-6 z-40"
       >
-        <motion.div
-          style={{
-            rotateX,
-            rotateY,
-            transformStyle: "preserve-3d",
-          }}
-          className="group relative"
-        >
-          {/* Neon Glow Frame */}
-          <div className="absolute -inset-[2px] bg-gradient-to-br from-purple-500 via-blue-400 to-emerald-400 rounded-[2.5rem] opacity-30 blur-2xl group-hover:opacity-60 transition-opacity duration-1000" />
-          
-          <Card className="relative bg-black/60 border-white/5 backdrop-blur-[40px] shadow-2xl overflow-hidden rounded-[2.25rem] border-[1px]">
-            <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent pointer-events-none" />
-            
-            <CardHeader className="space-y-1 relative pt-12 pb-4">
-              <motion.div 
-                variants={itemVariants}
-                className="flex justify-center mb-6"
-              >
-                <div className="relative">
-                  <motion.div
-                    animate={{ 
-                      boxShadow: ["0 0 20px rgba(168,85,247,0.2)", "0 0 40px rgba(168,85,247,0.4)", "0 0 20px rgba(168,85,247,0.2)"],
-                    }}
-                    transition={{ duration: 4, repeat: Infinity }}
-                    className="relative w-20 h-20 bg-gradient-to-br from-purple-600/20 to-blue-600/20 rounded-full flex items-center justify-center border border-white/10"
-                  >
-                    <div className="absolute inset-2 bg-gradient-to-br from-purple-500 to-blue-600 rounded-full flex items-center justify-center shadow-lg shadow-purple-500/20">
-                      <Sparkles className="text-white w-8 h-8" />
-                    </div>
-                  </motion.div>
-                </div>
-              </motion.div>
-              
-              <motion.div variants={itemVariants} className="text-center">
-                <CardTitle className="text-5xl font-black text-white tracking-tight leading-none">
-                  Nexus
-                </CardTitle>
-                <div className="flex items-center justify-center gap-2 mt-2">
-                  <div className="h-[1px] w-8 bg-gradient-to-r from-transparent to-slate-700" />
-                  <span className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.4em]">Initialize Session</span>
-                  <div className="h-[1px] w-8 bg-gradient-to-l from-transparent to-slate-700" />
-                </div>
-              </motion.div>
-            </CardHeader>
-            
-            <CardContent className="space-y-5 pt-6 px-10">
-              <motion.div variants={itemVariants} className="space-y-2">
-                <div className="relative group/field">
-                  <Input 
-                    placeholder="E-mail address" 
-                    className="bg-white/5 border-white/5 text-white h-14 rounded-2xl focus:ring-0 focus:border-purple-500/50 transition-all placeholder:text-slate-600 font-medium text-base px-6 border-b-2 border-b-white/5 group-focus-within/field:border-b-purple-500/50 shadow-inner"
-                  />
-                </div>
-              </motion.div>
-              
-              <motion.div variants={itemVariants} className="space-y-2">
-                <div className="relative group/field">
-                  <Input 
-                    type="password" 
-                    placeholder="Access Code"
-                    className="bg-white/5 border-white/5 text-white h-14 rounded-2xl focus:ring-0 focus:border-blue-500/50 transition-all placeholder:text-slate-600 text-base px-6 border-b-2 border-b-white/5 group-focus-within/field:border-b-blue-500/50 shadow-inner"
-                  />
-                </div>
-              </motion.div>
-
-              <motion.div variants={itemVariants} className="pt-2">
-                <Button className="w-full h-14 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white border-none font-bold text-base rounded-2xl shadow-xl shadow-purple-500/20 transition-all active:scale-[0.98] group/btn">
-                  Enter The Nexus
-                  <ArrowRight className="ml-2 h-5 w-5 group-hover/btn:translate-x-1 transition-transform" />
-                </Button>
-              </motion.div>
-
-              <motion.div variants={itemVariants} className="grid grid-cols-2 gap-3 pt-2">
-                <Button variant="outline" className="bg-white/5 border-white/5 text-slate-300 hover:bg-white/10 hover:text-white h-12 rounded-xl transition-all border-b border-b-white/5">
-                  <Github className="mr-2 h-4 w-4" />
-                  Github
-                </Button>
-                <Button variant="outline" className="bg-white/5 border-white/5 text-slate-300 hover:bg-white/10 hover:text-white h-12 rounded-xl transition-all border-b border-b-white/5">
-                  <Chrome className="mr-2 h-4 w-4" />
-                  Google
-                </Button>
-              </motion.div>
-            </CardContent>
-            
-            <CardFooter className="pb-10 pt-4 px-10 flex flex-col items-center gap-4">
-              <motion.p variants={itemVariants} className="text-xs text-slate-500 font-medium">
-                No access? <a href="#" className="text-purple-400 hover:text-purple-300 transition-colors font-bold underline decoration-purple-500/20 underline-offset-4">Join waitlist</a>
-              </motion.p>
-            </CardFooter>
-
-            {/* Shine effect that follows mouse inside the card */}
-            <motion.div 
-              style={{
-                background: "radial-gradient(600px circle at center, rgba(255,255,255,0.05), transparent 40%)",
-                x: useTransform(springX, (v) => v - 800),
-                y: useTransform(springY, (v) => v - 400),
-              }}
-              className="absolute inset-0 pointer-events-none"
-            />
-          </Card>
-        </motion.div>
-      </motion.div>
-
-      {/* Bruno Simon inspired floating text or badge */}
-      <motion.div 
-        initial={{ opacity: 0, x: 20 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ delay: 1 }}
-        className="absolute bottom-8 right-8 flex items-center gap-4 z-20"
-      >
-        <div className="px-4 py-2 bg-white/5 backdrop-blur-md border border-white/10 rounded-full flex items-center gap-3">
-          <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-          <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">System Ready</span>
+        <div className="px-4 py-2 bg-white/10 backdrop-blur-md rounded-full">
+          <span className="text-white/60 text-xs font-medium">
+            Interactive Form Experience
+          </span>
         </div>
       </motion.div>
     </div>
