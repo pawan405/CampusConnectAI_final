@@ -60,7 +60,7 @@ function Rig() {
   const { camera, mouse } = useThree();
   const vec = new THREE.Vector3();
   
-  return useFrame(() => {
+  useFrame(() => {
     camera.position.lerp(vec.set(mouse.x * 4, mouse.y * 4, 12), 0.04);
     camera.lookAt(0, 0, 0);
   });
