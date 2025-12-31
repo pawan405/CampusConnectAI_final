@@ -24,6 +24,7 @@ const nextConfig: NextConfig = {
     ignoreDuringBuilds: true,
   },
   turbopack: {
+    // Force reload by adding this comment: reload_1
     rules: {
       "*.{jsx,tsx}": {
         loaders: [LOADER]
