@@ -165,62 +165,7 @@ const CyberCharacter = ({ phase }: { phase: number }) => (
   </motion.div>
 );
 
-const HolographicCase = ({ phase }: { phase: number }) => (
-  <motion.div
-    className="absolute z-10"
-    initial={{ opacity: 0, rotateY: 90, scale: 0.5 }}
-    animate={phase >= 1 ? { opacity: 1, rotateY: 0, scale: 1 } : {}}
-    transition={{ duration: 1, delay: 0.5 }}
-    style={{ left: "50%", bottom: "8%", x: "-50%", perspective: "1000px" }}
-  >
-    <svg width="300" height="200" viewBox="0 0 300 200">
-      <defs>
-        <linearGradient id="hcase" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="#10b981" stopOpacity="0.3" />
-          <stop offset="100%" stopColor="#8b5cf6" stopOpacity="0.3" />
-        </linearGradient>
-      </defs>
-      <motion.rect 
-        x="10" y="60" width="280" height="130" rx="10" 
-        fill="url(#hcase)" stroke="#10b981" strokeWidth="2"
-        animate={{ strokeDasharray: ["0 1000", "1000 0"] }}
-        transition={{ duration: 3, repeat: Infinity }}
-      />
-      <motion.rect 
-        x="10" y="10" width="280" height="60" rx="10" 
-        fill="url(#hcase)" stroke="#8b5cf6" strokeWidth="2"
-        animate={phase >= 2 ? { rotateX: -120, opacity: 0.3, y: -50 } : {}}
-        style={{ originY: "70px" }}
-        transition={{ duration: 1 }}
-      />
-    </svg>
-  </motion.div>
-);
 
-const EnergyBurst = ({ active }: { active: boolean }) => (
-  <AnimatePresence>
-    {active && (
-      <motion.div
-        className="absolute left-1/2 bottom-[20%] -translate-x-1/2 pointer-events-none z-5"
-        initial={{ opacity: 0, scale: 0 }}
-        animate={{ opacity: 1, scale: [0, 3, 4], rotate: [0, 180] }}
-        exit={{ opacity: 0 }}
-        transition={{ duration: 2 }}
-      >
-        {[...Array(8)].map((_, i) => (
-          <motion.div
-            key={i}
-            className="absolute w-40 h-1 bg-gradient-to-r from-emerald-500 via-cyan-500 to-transparent"
-            style={{ rotate: `${i * 45}deg`, originX: 0 }}
-            initial={{ scaleX: 0, opacity: 0 }}
-            animate={{ scaleX: [0, 1, 0], opacity: [0, 1, 0] }}
-            transition={{ duration: 1.5, delay: i * 0.05 }}
-          />
-        ))}
-      </motion.div>
-    )}
-  </AnimatePresence>
-);
 
 export default function LoginPage() {
   const [phase, setPhase] = useState(0);
