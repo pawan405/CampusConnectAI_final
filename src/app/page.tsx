@@ -101,7 +101,7 @@ const FloatingOrb = ({ delay, size, color }: { delay: number; size: number; colo
   />
 );
 
-const SentinelDroid = ({ phase, mouseX, mouseY }: { phase: number; mouseX: any; mouseY: any }) => {
+const SentinelDroid = ({ phase, mouseX, mouseY }: { phase: number; mouseX: MotionValue<number>; mouseY: MotionValue<number> }) => {
   const headX = useTransform(mouseX, [-500, 500], [-5, 5]);
   const headY = useTransform(mouseY, [-500, 500], [-5, 5]);
 
