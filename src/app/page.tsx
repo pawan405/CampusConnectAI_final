@@ -101,69 +101,158 @@ const FloatingOrb = ({ delay, size, color }: { delay: number; size: number; colo
   />
 );
 
-const CyberCharacter = ({ phase }: { phase: number }) => (
-  <motion.div
-    className="absolute z-20 hidden lg:block"
-    initial={{ opacity: 0, x: 50 }}
-    animate={phase >= 1 ? { opacity: 1, x: 0 } : {}}
-    transition={{ duration: 1, type: "spring", damping: 15 }}
-    style={{ right: "8%", bottom: "15%" }}
-  >
-    <motion.svg 
-      width="200" height="340" viewBox="0 0 200 340"
-      animate={phase === 2 ? { filter: ["hue-rotate(0deg)", "hue-rotate(360deg)"] } : {}}
-      transition={{ duration: 2, repeat: phase === 2 ? Infinity : 0 }}
+const SentinelDroid = ({ phase, mouseX, mouseY }: { phase: number; mouseX: any; mouseY: any }) => {
+  const headX = useTransform(mouseX, [-500, 500], [-5, 5]);
+  const headY = useTransform(mouseY, [-500, 500], [-5, 5]);
+
+  return (
+    <motion.div
+      className="absolute z-20 hidden xl:block"
+      initial={{ opacity: 0, scale: 0.8, x: 100 }}
+      animate={phase >= 1 ? { opacity: 1, scale: 1, x: 0 } : {}}
+      transition={{ duration: 1.2, ease: "easeOut" }}
+      style={{ right: "12%", top: "25%" }}
     >
-      <defs>
-        <linearGradient id="cyber" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="#10b981" />
-          <stop offset="50%" stopColor="#06b6d4" />
-          <stop offset="100%" stopColor="#8b5cf6" />
-        </linearGradient>
-        <filter id="glow">
-          <feGaussianBlur stdDeviation="4" result="blur" />
-          <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
-        </filter>
-      </defs>
-      
-      <motion.g filter="url(#glow)" animate={{ y: [0, -5, 0] }} transition={{ repeat: Infinity, duration: 2 }}>
-        <polygon points="100,10 130,50 100,70 70,50" fill="url(#cyber)" opacity="0.9" />
-        <rect x="85" y="35" width="6" height="2" fill="#000" rx="1" />
-        <rect x="109" y="35" width="6" height="2" fill="#000" rx="1" />
-        <path d="M92 55 Q100 60 108 55" stroke="#000" strokeWidth="2" fill="none" />
-      </motion.g>
+      <div className="relative w-[300px] h-[500px]">
+        {/* Outer HUD Rings */}
+        <motion.div 
+          className="absolute inset-0 flex items-center justify-center opacity-20"
+          animate={{ rotate: 360 }}
+          transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+        >
+          <div className="w-64 h-64 border border-dashed border-emerald-500 rounded-full" />
+        </motion.div>
+        <motion.div 
+          className="absolute inset-0 flex items-center justify-center opacity-10"
+          animate={{ rotate: -360 }}
+          transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
+        >
+          <div className="w-80 h-80 border-2 border-dotted border-cyan-500 rounded-full" />
+        </motion.div>
 
-      <path d="M60 70 L140 70 L150 180 L50 180 Z" fill="url(#cyber)" opacity="0.8" />
-      
-      <motion.g
-        animate={phase === 1 ? { rotate: [30, -30, 30] } : phase === 2 ? { rotate: -80 } : { rotate: 10 }}
-        style={{ originX: "70px", originY: "80px" }}
-        transition={{ duration: 0.6, repeat: phase === 1 ? Infinity : 0 }}
-      >
-        <path d="M60 75 L20 160 L40 170 L70 85 Z" fill="url(#cyber)" opacity="0.7" />
-      </motion.g>
-      
-      <motion.g
-        animate={phase === 1 ? { rotate: [-30, 30, -30] } : phase === 2 ? { rotate: 80 } : { rotate: -10 }}
-        style={{ originX: "130px", originY: "80px" }}
-        transition={{ duration: 0.6, repeat: phase === 1 ? Infinity : 0 }}
-      >
-        <path d="M140 75 L180 160 L160 170 L130 85 Z" fill="url(#cyber)" opacity="0.7" />
-      </motion.g>
+        {/* The Droid */}
+        <svg width="300" height="500" viewBox="0 0 300 500" className="drop-shadow-[0_0_15px_rgba(16,185,129,0.3)]">
+          <defs>
+            <linearGradient id="droidGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#064e3b" />
+              <stop offset="100%" stopColor="#022c22" />
+            </linearGradient>
+            <filter id="droidGlow">
+              <feGaussianBlur stdDeviation="3" result="blur" />
+              <feComposite in="SourceGraphic" in2="blur" operator="over" />
+            </filter>
+          </defs>
 
-      <motion.path 
-        d="M70 180 L55 300 L85 300 L90 180 Z" fill="url(#cyber)" opacity="0.6"
-        animate={phase === 1 ? { skewX: [10, -10, 10] } : {}}
-        transition={{ repeat: Infinity, duration: 0.6 }}
-      />
-      <motion.path 
-        d="M110 180 L115 300 L145 300 L130 180 Z" fill="url(#cyber)" opacity="0.6"
-        animate={phase === 1 ? { skewX: [-10, 10, -10] } : {}}
-        transition={{ repeat: Infinity, duration: 0.6 }}
-      />
-    </motion.svg>
-  </motion.div>
-);
+          {/* Floating Plates - Back */}
+          <motion.path
+            d="M80 150 L120 120 L180 120 L220 150 L150 180 Z"
+            fill="url(#droidGrad)"
+            stroke="#10b981"
+            strokeWidth="0.5"
+            animate={{ y: [0, -10, 0], opacity: [0.4, 0.7, 0.4] }}
+            transition={{ duration: 4, repeat: Infinity }}
+          />
+
+          {/* Torso/Core */}
+          <motion.g animate={{ y: [0, -5, 0] }} transition={{ duration: 3, repeat: Infinity }}>
+            <path
+              d="M100 180 L200 180 L220 300 L150 350 L80 300 Z"
+              fill="url(#droidGrad)"
+              stroke="#10b981"
+              strokeWidth="1"
+            />
+            {/* Core Reactor */}
+            <motion.circle
+              cx="150" cy="250" r="15"
+              fill="#10b981"
+              filter="url(#droidGlow)"
+              animate={{ 
+                scale: [1, 1.3, 1],
+                opacity: [0.5, 1, 0.5],
+                fill: phase === 2 ? ["#10b981", "#06b6d4", "#10b981"] : "#10b981"
+              }}
+              transition={{ duration: 2, repeat: Infinity }}
+            />
+          </motion.g>
+
+          {/* Arms - Multi-segmented */}
+          <motion.g
+            animate={{ rotate: [5, -5, 5] }}
+            transition={{ duration: 5, repeat: Infinity }}
+            style={{ originX: "100px", originY: "200px" }}
+          >
+            <path d="M100 200 L60 250 L40 320" fill="none" stroke="#10b981" strokeWidth="2" strokeDasharray="4 2" />
+            <rect x="35" y="320" width="10" height="20" fill="#10b981" opacity="0.8" />
+          </motion.g>
+          <motion.g
+            animate={{ rotate: [-5, 5, -5] }}
+            transition={{ duration: 5, repeat: Infinity }}
+            style={{ originX: "200px", originY: "200px" }}
+          >
+            <path d="M200 200 L240 250 L260 320" fill="none" stroke="#10b981" strokeWidth="2" strokeDasharray="4 2" />
+            <rect x="255" y="320" width="10" height="20" fill="#10b981" opacity="0.8" />
+          </motion.g>
+
+          {/* Floating Head */}
+          <motion.g style={{ x: headX, y: headY }}>
+            <motion.path
+              d="M110 80 L190 80 L210 130 L150 160 L90 130 Z"
+              fill="url(#droidGrad)"
+              stroke="#10b981"
+              strokeWidth="2"
+              animate={{ y: [0, -8, 0] }}
+              transition={{ duration: 2.5, repeat: Infinity }}
+            />
+            {/* Visor/Eye */}
+            <motion.rect
+              x="125" y="105" width="50" height="8" rx="4"
+              fill="#10b981"
+              filter="url(#droidGlow)"
+              animate={{ 
+                opacity: [0.7, 1, 0.7],
+                width: phase === 1 ? [50, 20, 50] : 50
+              }}
+              transition={{ duration: 1.5, repeat: Infinity }}
+            />
+            {/* Scanner Line */}
+            <motion.rect
+              x="125" y="105" width="2" height="8"
+              fill="#fff"
+              animate={{ x: [0, 48, 0] }}
+              transition={{ duration: 1.2, repeat: Infinity, ease: "linear" }}
+            />
+          </motion.g>
+
+          {/* Data Particles */}
+          {[...Array(6)].map((_, i) => (
+            <motion.circle
+              key={i}
+              r="1"
+              fill="#10b981"
+              initial={{ opacity: 0 }}
+              animate={{ 
+                y: [400, 100],
+                x: [100 + i * 20, 110 + i * 20],
+                opacity: [0, 1, 0]
+              }}
+              transition={{ duration: 2, repeat: Infinity, delay: i * 0.4 }}
+            />
+          ))}
+        </svg>
+
+        {/* Scanning Beam */}
+        {phase === 1 && (
+          <motion.div
+            className="absolute top-0 left-0 w-full h-full bg-emerald-500/5 blur-3xl"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: [0, 0.2, 0] }}
+            transition={{ duration: 0.5, repeat: 3 }}
+          />
+        )}
+      </div>
+    </motion.div>
+  );
+};
 
 
 
