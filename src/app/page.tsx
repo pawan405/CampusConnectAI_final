@@ -103,15 +103,11 @@ const FloatingOrb = ({ delay, size, color }: { delay: number; size: number; colo
 
 const CyberCharacter = ({ phase }: { phase: number }) => (
   <motion.div
-    className="absolute z-20"
-    initial={{ opacity: 0, scale: 0, rotate: -180 }}
-    animate={
-      phase >= 1
-        ? { opacity: 1, scale: 1, rotate: 0, x: phase >= 3 ? "-180%" : "-50%" }
-        : {}
-    }
-    transition={{ duration: 1.5, type: "spring", damping: 12 }}
-    style={{ left: "50%", bottom: "12%" }}
+    className="absolute z-20 hidden lg:block"
+    initial={{ opacity: 0, x: 50 }}
+    animate={phase >= 1 ? { opacity: 1, x: 0 } : {}}
+    transition={{ duration: 1, type: "spring", damping: 15 }}
+    style={{ right: "8%", bottom: "15%" }}
   >
     <motion.svg 
       width="200" height="340" viewBox="0 0 200 340"
