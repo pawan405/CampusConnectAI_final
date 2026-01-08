@@ -204,20 +204,7 @@ export default function DashboardPage() {
           ))}
         </nav>
 
-        <div className="absolute bottom-8 left-4 right-4 p-6 rounded-[32px] bg-gradient-to-br from-cyan-500/10 to-purple-500/10 border border-white/5 backdrop-blur-md">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-2 h-2 rounded-full bg-cyan-500 animate-ping" />
-            <span className="text-[10px] font-black uppercase tracking-widest text-cyan-400/80">System Health: 100%</span>
-          </div>
-          <div className="w-full bg-white/5 h-1.5 rounded-full overflow-hidden">
-            <motion.div 
-              initial={{ width: 0 }}
-              animate={{ width: "100%" }}
-              transition={{ duration: 2 }}
-              className="h-full bg-gradient-to-r from-cyan-500 to-purple-500"
-            />
-          </div>
-        </div>
+
       </aside>
 
       {/* Main Content */}
