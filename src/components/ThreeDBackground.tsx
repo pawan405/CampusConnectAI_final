@@ -44,44 +44,45 @@ function Line({ curve, speed, color, offset }: any) {
   });
 
   return (
-    <mesh ref={ref}>
-      <tubeGeometry args={[curve, 64, 0.02, 8, false]} />
-      <meshBasicMaterial color={color} transparent opacity={0.3} />
-    </mesh>
-  );
-}
-
-function DataParticles({ count = 100 }) {
-  const meshRef = useRef<THREE.InstancedMesh>(null);
-  const dummy = useMemo(() => new THREE.Object3D(), []);
-  const particles = useMemo(() => {
-    const temp = [];
-    for (let i = 0; i < count; i++) {
-      const x = (Math.random() - 0.5) * 30;
-      const y = (Math.random() - 0.5) * 30;
-      const z = (Math.random() - 0.5) * 20;
-      const speed = 0.01 + Math.random() * 0.02;
-      temp.push({ x, y, z, speed, offset: Math.random() * 100 });
-    }
-    return temp;
-  }, [count]);
-
-  useFrame((state) => {
-    particles.forEach((p, i) => {
-      p.y += p.speed;
-      if (p.y > 15) p.y = -15;
-      dummy.position.set(p.x, p.y, p.z);
-      dummy.scale.setScalar(Math.sin(state.clock.getElapsedTime() + p.offset) * 0.1 + 0.1);
-      dummy.updateMatrix();
-      meshRef.current?.setMatrixAt(i, dummy.matrix);
+      <mesh ref={ref}>
+        <tubeGeometry args={[curve, 64, 0.02, 8, false]} />
+        <meshBasicMaterial color={color} transparent opacity={0.6} />
+      </mesh>
+    );
+  }
+  
+  function DataParticles({ count = 100 }) {
+    const meshRef = useRef<THREE.InstancedMesh>(null);
+    const dummy = useMemo(() => new THREE.Object3D(), []);
+    const particles = useMemo(() => {
+      const temp = [];
+      for (let i = 0; i < count; i++) {
+        const x = (Math.random() - 0.5) * 30;
+        const y = (Math.random() - 0.5) * 30;
+        const z = (Math.random() - 0.5) * 20;
+        const speed = 0.01 + Math.random() * 0.02;
+        temp.push({ x, y, z, speed, offset: Math.random() * 100 });
+      }
+      return temp;
+    }, [count]);
+  
+    useFrame((state) => {
+      particles.forEach((p, i) => {
+        p.y += p.speed;
+        if (p.y > 15) p.y = -15;
+        dummy.position.set(p.x, p.y, p.z);
+        dummy.scale.setScalar(Math.sin(state.clock.getElapsedTime() + p.offset) * 0.1 + 0.1);
+        dummy.updateMatrix();
+        meshRef.current?.setMatrixAt(i, dummy.matrix);
+      });
+      if (meshRef.current) meshRef.current.instanceMatrix.needsUpdate = true;
     });
-    if (meshRef.current) meshRef.current.instanceMatrix.needsUpdate = true;
-  });
+  
+    return (
+      <instancedMesh ref={meshRef} args={[new THREE.SphereGeometry(0.1, 8, 8), undefined, count]}>
+        <meshBasicMaterial color="#06b6d4" transparent opacity={0.8} />
+      </instancedMesh>
 
-  return (
-    <instancedMesh ref={meshRef} args={[new THREE.SphereGeometry(0.1, 8, 8), undefined, count]}>
-      <meshBasicMaterial color="#06b6d4" transparent opacity={0.5} />
-    </instancedMesh>
   );
 }
 
@@ -132,8 +133,8 @@ export default function ThreeDBackground() {
       >
         <Scene />
       </Canvas>
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(6,182,212,0.1),transparent_70%)]" />
-      <div className="absolute inset-0 backdrop-blur-[40px] opacity-60" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(6,182,212,0.15),transparent_75%)]" />
+      <div className="absolute inset-0 backdrop-blur-[12px] opacity-40" />
     </div>
   );
 }

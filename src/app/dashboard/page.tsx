@@ -181,8 +181,8 @@ export default function DashboardPage() {
           {navItems.map((item, i) => (
             <Link key={i} href={item.href}>
               <motion.div
-                whileHover={{ x: 10, backgroundColor: "rgba(255,255,255,0.08)" }}
-                className={`flex items-center justify-between px-4 py-3.5 rounded-2xl transition-all relative group ${item.active ? "bg-white/10 text-white shadow-[0_0_25px_rgba(6,182,212,0.15)] border border-white/10" : "text-white/40 hover:text-white"}`}
+                whileHover={{ x: 10, backgroundColor: "rgba(255,255,255,0.12)" }}
+                className={`flex items-center justify-between px-4 py-3.5 rounded-2xl transition-all relative group ${item.active ? "bg-white/15 text-white shadow-[0_0_25px_rgba(6,182,212,0.2)] border border-white/20" : "text-white/60 hover:text-white"}`}
               >
                 <div className="flex items-center gap-4">
                   <item.icon className={`w-5 h-5 transition-all duration-300 ${item.active ? "text-cyan-400 scale-110" : "group-hover:text-white"}`} />
@@ -298,7 +298,7 @@ export default function DashboardPage() {
                   />
                 </span>
               </h1>
-              <p className="text-white/50 text-xl lg:text-2xl max-w-2xl font-medium leading-relaxed">
+              <p className="text-white/80 text-xl lg:text-2xl max-w-2xl font-medium leading-relaxed">
                 A high-performance AI ecosystem built to guide the next generation of innovators. 
                 Your future, calculated in real-time.
               </p>
@@ -311,7 +311,7 @@ export default function DashboardPage() {
                     className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300"
                   />
                 </Button>
-                <Button variant="outline" className="h-16 px-10 rounded-2xl border-white/10 hover:bg-white/5 text-white font-black uppercase tracking-[0.2em] text-xs transition-all backdrop-blur-md">
+                <Button className="h-16 px-10 rounded-2xl bg-white/10 border border-white/20 hover:bg-white/20 text-white font-black uppercase tracking-[0.2em] text-xs transition-all backdrop-blur-md hover:border-white/40">
                   View Network
                 </Button>
               </div>
@@ -332,25 +332,25 @@ export default function DashboardPage() {
                     initial: { duration: 0.5, delay: i * 0.2 },
                     y: { duration: 4, repeat: Infinity, ease: "easeInOut", delay: i * 0.3 }
                   }}
-                  className="w-full h-full bg-black/40 backdrop-blur-3xl border border-white/10 rounded-[40px] p-8 flex flex-col justify-between relative overflow-hidden transition-all duration-500 group-hover:border-cyan-500/30 group-hover:bg-black/60 group-hover:shadow-[0_20px_80px_rgba(6,182,212,0.2)]"
+                  className="w-full h-full bg-black/60 backdrop-blur-3xl border border-white/20 rounded-[40px] p-8 flex flex-col justify-between relative overflow-hidden transition-all duration-500 group-hover:border-cyan-500/50 group-hover:bg-black/80 group-hover:shadow-[0_20px_80px_rgba(6,182,212,0.3)]"
                 >
-                  <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-cyan-500/10 to-transparent blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-cyan-500/20 to-transparent blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
                   
                   <div className="flex justify-between items-start">
-                    <div className="w-14 h-14 rounded-2xl flex items-center justify-center border border-white/10 bg-white/5 shadow-[inset_0_0_15px_rgba(255,255,255,0.05)] group-hover:scale-110 group-hover:rotate-6 transition-all duration-500">
-                      <stat.icon className="w-7 h-7" style={{ color: stat.rgb && `rgb(${stat.rgb})`, filter: `drop-shadow(0 0 8px rgb(${stat.rgb}))` }} />
+                    <div className="w-14 h-14 rounded-2xl flex items-center justify-center border border-white/20 bg-white/10 shadow-[inset_0_0_15px_rgba(255,255,255,0.05)] group-hover:scale-110 group-hover:rotate-6 transition-all duration-500">
+                      <stat.icon className="w-7 h-7" style={{ color: stat.rgb && `rgb(${stat.rgb})`, filter: `drop-shadow(0 0 12px rgb(${stat.rgb}))` }} />
                     </div>
                     {stat.isCircular && (
                       <div className="relative w-14 h-14 group-hover:rotate-12 transition-all duration-500">
                         <svg className="w-full h-full -rotate-90">
-                          <circle cx="28" cy="28" r="24" stroke="rgba(255,255,255,0.05)" strokeWidth="4" fill="transparent" />
+                          <circle cx="28" cy="28" r="24" stroke="rgba(255,255,255,0.1)" strokeWidth="4" fill="transparent" />
                           <motion.circle
                             initial={{ strokeDashoffset: 150.8 }}
                             animate={{ strokeDashoffset: 150.8 * (1 - 0.84) }}
                             transition={{ duration: 2, delay: 1 }}
                             cx="28" cy="28" r="24" stroke="currentColor" strokeWidth="4" fill="transparent"
                             strokeDasharray={150.8}
-                            className="text-purple-500 drop-shadow-[0_0_10px_#a855f7]"
+                            className="text-purple-400 drop-shadow-[0_0_15px_#a855f7]"
                           />
                         </svg>
                         <span className="absolute inset-0 flex items-center justify-center text-xs font-black">84</span>
@@ -358,10 +358,10 @@ export default function DashboardPage() {
                     )}
                   </div>
                   <div>
-                    <h3 className="text-5xl font-black tracking-tighter text-white">
+                    <h3 className="text-5xl font-black tracking-tighter text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.3)]">
                       <CountUp value={stat.value} suffix={stat.suffix} />
                     </h3>
-                    <p className="text-[10px] font-black text-white/30 uppercase tracking-[0.3em] mt-2 group-hover:text-white/60 transition-colors">
+                    <p className="text-[10px] font-black text-white/50 uppercase tracking-[0.3em] mt-2 group-hover:text-white/80 transition-colors">
                       {stat.label}
                     </p>
                   </div>
@@ -374,10 +374,10 @@ export default function DashboardPage() {
           <section className="space-y-12">
             <div className="flex items-center gap-6">
               <h2 className="text-4xl font-black tracking-tighter uppercase">AI Modules</h2>
-              <div className="flex-1 h-[2px] bg-gradient-to-r from-white/20 via-white/5 to-transparent" />
+              <div className="flex-1 h-[2px] bg-gradient-to-r from-white/30 via-white/10 to-transparent" />
               <div className="hidden sm:flex items-center gap-2">
-                <Globe className="w-4 h-4 text-white/20" />
-                <span className="text-[10px] font-black text-white/20 uppercase tracking-widest">Global Status: Online</span>
+                <Globe className="w-4 h-4 text-white/40" />
+                <span className="text-[10px] font-black text-white/40 uppercase tracking-widest">Global Status: Online</span>
               </div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -396,7 +396,7 @@ export default function DashboardPage() {
                         initial: { delay: i * 0.1 },
                         y: { duration: 5, repeat: Infinity, ease: "easeInOut", delay: i * 0.4 }
                       }}
-                      className="h-full bg-black/40 backdrop-blur-3xl border border-white/5 rounded-[48px] p-10 flex flex-col relative overflow-hidden transition-all duration-700 hover:bg-black/60 hover:border-white/20 hover:shadow-[0_30px_100px_rgba(0,0,0,0.4)]"
+                      className="h-full bg-black/60 backdrop-blur-3xl border border-white/20 rounded-[48px] p-10 flex flex-col relative overflow-hidden transition-all duration-700 hover:bg-black/80 hover:border-white/40 hover:shadow-[0_30px_100px_rgba(0,0,0,0.6)]"
                     >
                       {/* Neon Highlight Top */}
                       <div 
@@ -405,21 +405,21 @@ export default function DashboardPage() {
                       />
                       
                       <div
-                        className="w-20 h-20 rounded-[32px] flex items-center justify-center mb-10 border border-white/5 bg-white/5 group-hover:scale-110 group-hover:-rotate-6 transition-all duration-700 relative"
+                        className="w-20 h-20 rounded-[32px] flex items-center justify-center mb-10 border border-white/20 bg-white/10 group-hover:scale-110 group-hover:-rotate-6 transition-all duration-700 relative"
                       >
                         <div 
-                          className="absolute inset-0 rounded-[32px] opacity-20 blur-xl transition-all duration-500 group-hover:opacity-40"
+                          className="absolute inset-0 rounded-[32px] opacity-30 blur-xl transition-all duration-500 group-hover:opacity-50"
                           style={{ backgroundColor: feature.accent }}
                         />
-                        <feature.icon className="w-10 h-10 relative z-10 transition-all duration-500 group-hover:scale-110" style={{ color: feature.accent, filter: `drop-shadow(0 0 10px ${feature.accent})` }} />
+                        <feature.icon className="w-10 h-10 relative z-10 transition-all duration-500 group-hover:scale-110" style={{ color: feature.accent, filter: `drop-shadow(0 0 15px ${feature.accent})` }} />
                       </div>
 
-                      <h3 className="text-3xl font-black tracking-tight mb-4 group-hover:translate-x-2 transition-transform duration-500">{feature.title}</h3>
-                      <p className="text-white/40 text-sm leading-relaxed mb-10 font-medium group-hover:text-white/60 transition-colors">
+                      <h3 className="text-3xl font-black tracking-tight mb-4 group-hover:translate-x-2 transition-transform duration-500 text-white">{feature.title}</h3>
+                      <p className="text-white/60 text-sm leading-relaxed mb-10 font-medium group-hover:text-white/90 transition-colors">
                         {feature.desc}
                       </p>
                       
-                      <div className="mt-auto flex items-center text-[10px] font-black text-white/30 uppercase tracking-[0.3em] group-hover:text-cyan-400 transition-all duration-500">
+                      <div className="mt-auto flex items-center text-[10px] font-black text-white/50 uppercase tracking-[0.3em] group-hover:text-cyan-400 transition-all duration-500">
                         Access System <ArrowRight className="w-3 h-3 ml-3 group-hover:translate-x-3 transition-transform duration-500" />
                       </div>
                     </motion.div>
@@ -436,16 +436,16 @@ export default function DashboardPage() {
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                className="h-full bg-black/40 backdrop-blur-3xl border border-white/10 rounded-[56px] p-12 relative overflow-hidden group"
+                className="h-full bg-black/60 backdrop-blur-3xl border border-white/20 rounded-[56px] p-12 relative overflow-hidden group"
               >
                 <div className="flex items-center justify-between mb-12">
                   <div className="space-y-1">
                     <h3 className="text-3xl font-black tracking-tight uppercase">System Log</h3>
-                    <p className="text-[10px] font-black text-white/20 uppercase tracking-[0.4em]">Real-time Event Stream</p>
+                    <p className="text-[10px] font-black text-white/40 uppercase tracking-[0.4em]">Real-time Event Stream</p>
                   </div>
-                  <div className="flex items-center gap-3 px-4 py-2 rounded-2xl bg-white/5 border border-white/10">
+                  <div className="flex items-center gap-3 px-4 py-2 rounded-2xl bg-white/10 border border-white/20">
                     <div className="w-2 h-2 rounded-full bg-cyan-500 animate-pulse" />
-                    <span className="text-[10px] font-black text-white/60">LIVE FEED</span>
+                    <span className="text-[10px] font-black text-white/80">LIVE FEED</span>
                   </div>
                 </div>
                 
@@ -453,23 +453,23 @@ export default function DashboardPage() {
                   {activities.map((item, i) => (
                     <motion.div 
                       key={i} 
-                      whileHover={{ x: 10, backgroundColor: "rgba(255,255,255,0.06)" }}
-                      className="flex items-center gap-6 p-6 rounded-[32px] bg-white/[0.03] border border-white/5 group/item transition-all duration-300"
+                      whileHover={{ x: 10, backgroundColor: "rgba(255,255,255,0.1)" }}
+                      className="flex items-center gap-6 p-6 rounded-[32px] bg-white/5 border border-white/10 group/item transition-all duration-300 hover:border-white/30"
                     >
-                      <div className="w-14 h-14 rounded-2xl bg-black flex items-center justify-center border border-white/10 group-hover/item:border-cyan-500/50 transition-colors">
-                        <item.icon className="w-6 h-6 text-white/40 group-hover/item:text-cyan-400 transition-colors" />
+                      <div className="w-14 h-14 rounded-2xl bg-black flex items-center justify-center border border-white/20 group-hover/item:border-cyan-500/50 transition-colors">
+                        <item.icon className="w-6 h-6 text-white/60 group-hover/item:text-cyan-400 transition-colors" />
                       </div>
                       <div className="flex-1">
                         <div className="flex items-center gap-3">
                           <p className="font-black text-lg text-white/80 group-hover/item:text-white transition-colors">{item.title}</p>
                           {item.status === "new" && (
-                            <span className="px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-400 text-[8px] font-black">NEW</span>
+                            <span className="px-2 py-0.5 rounded-md bg-emerald-500/30 text-emerald-400 text-[8px] font-black border border-emerald-500/30">NEW</span>
                           )}
                         </div>
-                        <p className="text-[10px] text-white/20 uppercase tracking-widest mt-1 font-black group-hover/item:text-white/40">{item.time} // {item.status}</p>
+                        <p className="text-[10px] text-white/40 uppercase tracking-widest mt-1 font-black group-hover/item:text-white/60">{item.time} // {item.status}</p>
                       </div>
-                      <div className="w-10 h-10 rounded-full flex items-center justify-center border border-white/5 group-hover/item:bg-white/10 transition-all">
-                        <ArrowRight className="w-4 h-4 text-white/10 group-hover/item:text-white" />
+                      <div className="w-10 h-10 rounded-full flex items-center justify-center border border-white/10 group-hover/item:bg-white/20 transition-all">
+                        <ArrowRight className="w-4 h-4 text-white/30 group-hover/item:text-white" />
                       </div>
                     </motion.div>
                   ))}
@@ -482,23 +482,23 @@ export default function DashboardPage() {
                 initial={{ opacity: 0, x: 30 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
-                className="h-full bg-gradient-to-br from-cyan-900/40 via-purple-900/40 to-blue-900/40 backdrop-blur-3xl border border-white/20 rounded-[56px] p-12 flex flex-col justify-between group hover:border-white/40 transition-all duration-700 shadow-[0_40px_100px_rgba(6,182,212,0.15)]"
+                className="h-full bg-gradient-to-br from-cyan-900/60 via-purple-900/60 to-blue-900/60 backdrop-blur-3xl border border-white/30 rounded-[56px] p-12 flex flex-col justify-between group hover:border-white/60 transition-all duration-700 shadow-[0_40px_100px_rgba(6,182,212,0.3)]"
               >
                 <div>
-                  <div className="w-20 h-20 rounded-3xl bg-black/40 border border-white/10 flex items-center justify-center mb-12 group-hover:rotate-12 group-hover:scale-110 transition-all duration-700 relative">
+                  <div className="w-20 h-20 rounded-3xl bg-black/60 border border-white/20 flex items-center justify-center mb-12 group-hover:rotate-12 group-hover:scale-110 transition-all duration-700 relative">
                     <Brain className="w-10 h-10 text-cyan-400" />
-                    <div className="absolute inset-0 bg-cyan-400/20 blur-2xl rounded-full" />
+                    <div className="absolute inset-0 bg-cyan-400/40 blur-2xl rounded-full" />
                   </div>
-                  <h3 className="text-5xl font-black mb-6 tracking-tighter leading-[1] uppercase">
+                  <h3 className="text-5xl font-black mb-6 tracking-tighter leading-[1] uppercase text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]">
                     Neural <br />
                     Analysis <br />
                     Complete.
                   </h3>
-                  <p className="text-white/70 text-lg font-medium leading-relaxed max-w-[280px]">
+                  <p className="text-white/90 text-lg font-medium leading-relaxed max-w-[280px]">
                     Your career vector has been updated with 14 new high-affinity opportunities.
                   </p>
                 </div>
-                <Button className="mt-12 h-20 w-full rounded-[32px] bg-gradient-to-r from-cyan-500 to-purple-600 text-white font-black uppercase tracking-[0.3em] text-xs hover:scale-[1.02] transition-all duration-500 shadow-[0_20px_50px_rgba(6,182,212,0.3)] group border-none">
+                <Button className="mt-12 h-20 w-full rounded-[32px] bg-gradient-to-r from-cyan-500 to-purple-600 text-white font-black uppercase tracking-[0.3em] text-xs hover:scale-[1.02] transition-all duration-500 shadow-[0_20px_60px_rgba(6,182,212,0.4)] group border-none">
                   Access Intelligence <ArrowRight className="ml-3 w-4 h-4 group-hover:translate-x-2 transition-transform" />
                 </Button>
               </motion.div>
