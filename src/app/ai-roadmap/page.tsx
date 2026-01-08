@@ -1,30 +1,37 @@
 "use client";
 
-import { useState } from "react";
-import { motion, AnimatePresence } from "motion/react";
+import { useState, useEffect, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import {
   Brain,
-  MapPin,
   ArrowLeft,
   Sparkles,
   Target,
   BookOpen,
   Code,
   Briefcase,
-  Trophy,
-  ChevronRight,
   Clock,
   CheckCircle,
   Lightbulb,
   Rocket,
-  GraduationCap,
-  Loader2,
+  ShieldCheck,
+  AlertTriangle,
+  LayoutGrid,
+  Star,
+  MapPin,
+  Wand2,
+  ChevronDown,
+  ChevronRight,
+  TrendingUp,
+  Zap,
+  Activity,
+  AlertCircle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -33,387 +40,261 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-interface RoadmapStep {
-  phase: string;
-  title: string;
-  duration: string;
-  description: string;
-  tasks: string[];
-  resources: string[];
-}
-
-const generateRoadmap = (
-  year: string,
-  branch: string,
-  interest: string
-): RoadmapStep[] => {
-  const roadmaps: Record<string, RoadmapStep[]> = {
-    "software-engineering": [
-      {
-        phase: "Foundation",
-        title: "Build Your Base",
-        duration: "Month 1-2",
-        description:
-          "Master the fundamentals of programming and problem-solving",
-        tasks: [
-          "Complete a programming language course (Python/Java/C++)",
-          "Solve 50 easy problems on LeetCode/HackerRank",
-          "Learn Git and GitHub basics",
-          "Build 2-3 small projects",
-        ],
-        resources: ["Codecademy", "freeCodeCamp", "CS50 Harvard", "LeetCode"],
-      },
-      {
-        phase: "Core Skills",
-        title: "DSA & System Design",
-        duration: "Month 3-4",
-        description:
-          "Deep dive into Data Structures, Algorithms, and basic system design",
-        tasks: [
-          "Master arrays, linked lists, trees, and graphs",
-          "Solve 100+ medium-level problems",
-          "Learn basic system design concepts",
-          "Participate in coding contests",
-        ],
-        resources: [
-          "Striver's DSA Sheet",
-          "NeetCode 150",
-          "System Design Primer",
-        ],
-      },
-      {
-        phase: "Specialization",
-        title: "Choose Your Path",
-        duration: "Month 5-6",
-        description: "Pick a specialization: Frontend, Backend, or Full Stack",
-        tasks: [
-          "Learn a framework (React/Node.js/Django)",
-          "Build a full-stack project",
-          "Contribute to open source",
-          "Create a portfolio website",
-        ],
-        resources: ["React Docs", "Node.js Docs", "GitHub", "Vercel"],
-      },
-      {
-        phase: "Interview Prep",
-        title: "Land Your Dream Role",
-        duration: "Month 7-8",
-        description: "Prepare for technical interviews and apply strategically",
-        tasks: [
-          "Mock interviews on Pramp/Interviewing.io",
-          "Review top 100 interview questions",
-          "Prepare behavioral stories (STAR method)",
-          "Apply to 50+ companies",
-        ],
-        resources: ["Pramp", "Blind 75", "Glassdoor", "LinkedIn"],
-      },
-    ],
-    "data-science": [
-      {
-        phase: "Foundation",
-        title: "Math & Statistics",
-        duration: "Month 1-2",
-        description: "Build strong mathematical foundations for data science",
-        tasks: [
-          "Linear Algebra fundamentals",
-          "Statistics and Probability",
-          "Python for Data Science",
-          "NumPy and Pandas basics",
-        ],
-        resources: ["Khan Academy", "3Blue1Brown", "Kaggle Learn"],
-      },
-      {
-        phase: "Core Skills",
-        title: "Machine Learning",
-        duration: "Month 3-4",
-        description: "Master classical ML algorithms and techniques",
-        tasks: [
-          "Supervised Learning (Regression, Classification)",
-          "Unsupervised Learning (Clustering, PCA)",
-          "Complete 5 Kaggle competitions",
-          "Scikit-learn mastery",
-        ],
-        resources: ["Andrew Ng's ML Course", "Kaggle", "Scikit-learn Docs"],
-      },
-      {
-        phase: "Advanced",
-        title: "Deep Learning & AI",
-        duration: "Month 5-6",
-        description: "Explore neural networks and advanced AI techniques",
-        tasks: [
-          "Neural Networks fundamentals",
-          "TensorFlow/PyTorch proficiency",
-          "Computer Vision or NLP project",
-          "Deploy ML models",
-        ],
-        resources: ["Fast.ai", "Deep Learning Specialization", "HuggingFace"],
-      },
-      {
-        phase: "Industry Ready",
-        title: "Portfolio & Applications",
-        duration: "Month 7-8",
-        description: "Build impressive projects and prepare for DS interviews",
-        tasks: [
-          "Build 3 end-to-end projects",
-          "Create data science blog",
-          "Practice case studies",
-          "Prepare for interviews",
-        ],
-        resources: ["Medium", "Towards Data Science", "Interview Query"],
-      },
-    ],
-    "product-management": [
-      {
-        phase: "Foundation",
-        title: "PM Fundamentals",
-        duration: "Month 1-2",
-        description: "Understand the role and core competencies of a PM",
-        tasks: [
-          "Read Cracking the PM Interview",
-          "Understand product lifecycle",
-          "Learn user research methods",
-          "Study metrics and KPIs",
-        ],
-        resources: ["Cracking the PM Interview", "Product School", "Reforge"],
-      },
-      {
-        phase: "Skills Building",
-        title: "Technical & Analytical",
-        duration: "Month 3-4",
-        description: "Build technical literacy and analytical capabilities",
-        tasks: [
-          "Learn SQL for data analysis",
-          "Understand basic engineering concepts",
-          "A/B testing and experimentation",
-          "Create PRDs and wireframes",
-        ],
-        resources: ["SQL Course", "Figma", "Mixpanel Academy"],
-      },
-      {
-        phase: "Practice",
-        title: "Case Studies & Projects",
-        duration: "Month 5-6",
-        description: "Apply knowledge through real-world scenarios",
-        tasks: [
-          "Practice 50+ PM case studies",
-          "Create a side project (app/feature)",
-          "Conduct user interviews",
-          "Build product sense",
-        ],
-        resources: ["PM Exercises", "Product Buds", "Exponent"],
-      },
-      {
-        phase: "Interview Prep",
-        title: "Land PM Role",
-        duration: "Month 7-8",
-        description: "Master PM interviews and secure your role",
-        tasks: [
-          "Mock PM interviews",
-          "Prepare execution questions",
-          "Practice estimation problems",
-          "Network with PMs",
-        ],
-        resources: ["Exponent", "Stellar Peers", "LinkedIn"],
-      },
-    ],
-  };
-
-  const key = interest.toLowerCase().replace(/\s+/g, "-");
-  return roadmaps[key] || roadmaps["software-engineering"];
+// Particles Component for the cinematic vibe
+const Particles = () => {
+  return (
+    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+      {[...Array(20)].map((_, i) => (
+        <motion.div
+          key={i}
+          className="absolute w-1 h-1 bg-cyan-500/30 rounded-full"
+          initial={{
+            x: Math.random() * 100 + "%",
+            y: Math.random() * 100 + "%",
+            opacity: Math.random() * 0.5,
+          }}
+          animate={{
+            y: [null, "-100%"],
+            opacity: [0, 0.5, 0],
+          }}
+          transition={{
+            duration: Math.random() * 10 + 10,
+            repeat: Infinity,
+            ease: "linear",
+          }}
+        />
+      ))}
+    </div>
+  );
 };
 
-export default function AIRoadmapPage() {
-  const [year, setYear] = useState("");
-  const [branch, setBranch] = useState("");
-  const [interest, setInterest] = useState("");
-  const [isGenerating, setIsGenerating] = useState(false);
-  const [roadmap, setRoadmap] = useState<RoadmapStep[] | null>(null);
-  const [expandedPhase, setExpandedPhase] = useState<number | null>(null);
+export default function AICareerRoadmap() {
+  const [mounted, setMounted] = useState(false);
+  const [isGenerated, setIsGenerated] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const handleGenerate = async () => {
-    if (!year || !branch || !interest) return;
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
-    setIsGenerating(true);
-    await new Promise((r) => setTimeout(r, 2500));
-
-    const generatedRoadmap = generateRoadmap(year, branch, interest);
-    setRoadmap(generatedRoadmap);
-    setExpandedPhase(0);
-    setIsGenerating(false);
+  const handleGenerate = () => {
+    setLoading(true);
+    setTimeout(() => {
+      setIsGenerated(true);
+      setLoading(false);
+    }, 1500);
   };
 
-  const resetForm = () => {
-    setYear("");
-    setBranch("");
-    setInterest("");
-    setRoadmap(null);
-    setExpandedPhase(null);
-  };
+  if (!mounted) return null;
 
-  const phaseIcons = [Target, BookOpen, Code, Trophy];
-  const phaseColors = [
-    "from-cyan-500 to-blue-500",
-    "from-violet-500 to-purple-500",
-    "from-emerald-500 to-teal-500",
-    "from-amber-500 to-orange-500",
+  const roadmapSteps = [
+    {
+      month: "Month 1",
+      title: "Foundations & Logic",
+      description:
+        "Mastering core algorithms and data structures. Building the logic bridge.",
+      skills: ["Data Structures", "Algorithms", "Clean Code"],
+      projects: ["Logic Engine", "Base Module"],
+      color: "cyan",
+    },
+    {
+      month: "Month 2",
+      title: "Core Architecture",
+      description: "Deep dive into system design and framework integration.",
+      skills: ["System Design", "Advanced React", "Next.js"],
+      projects: ["Neural Dashboard", "Flow System"],
+      color: "purple",
+    },
+    {
+      month: "Month 3",
+      title: "Deployment & Scale",
+      description:
+        "Learning cloud infrastructure and high-performance scaling.",
+      skills: ["AWS/Vercel", "Docker", "Edge Functions"],
+      projects: ["Global Core", "Scale Shield"],
+      color: "emerald",
+    },
   ];
 
   return (
-    <div className="min-h-screen bg-[#08080c] text-white">
-      {/* Animated background */}
-      <div className="fixed inset-0 pointer-events-none">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,_var(--tw-gradient-stops))] from-emerald-900/20 via-transparent to-transparent" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,_var(--tw-gradient-stops))] from-teal-900/15 via-transparent to-transparent" />
-        <div className="absolute top-20 left-20 w-[500px] h-[500px] bg-emerald-500/8 rounded-full blur-[120px]" />
-        <div className="absolute bottom-20 right-20 w-[400px] h-[400px] bg-teal-500/8 rounded-full blur-[100px]" />
+    <div className="min-h-screen bg-[#050508] text-white selection:bg-cyan-500/30 relative overflow-hidden font-sans">
+      {/* Cinematic Background Elements */}
+      <div className="fixed inset-0 z-0">
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:40px_40px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]" />
+        <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-cyan-500/5 via-transparent to-transparent pointer-events-none" />
+        <div className="absolute -top-24 -left-24 w-96 h-96 bg-cyan-500/10 blur-[120px] rounded-full" />
+        <div className="absolute top-1/2 -right-24 w-96 h-96 bg-purple-500/10 blur-[120px] rounded-full" />
+        <Particles />
       </div>
 
-      <nav className="sticky top-0 z-50 border-b border-white/[0.06] bg-[#08080c]/70 backdrop-blur-xl">
-        <div className="max-w-7xl mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <Link href="/dashboard">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="gap-2 text-white/60 hover:text-white hover:bg-white/[0.06]"
-                >
-                  <ArrowLeft className="w-4 h-4" /> Back
-                </Button>
-              </Link>
-              <Link href="/" className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center">
-                  <Brain className="w-6 h-6 text-white" />
-                </div>
-                <span className="text-xl font-bold bg-gradient-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent hidden sm:block">
-                  CampusConnect AI
-                </span>
-              </Link>
+      {/* Navigation */}
+      <nav className="relative z-50 border-b border-white/5 bg-black/20 backdrop-blur-2xl">
+        <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+          <Link href="/dashboard" className="flex items-center gap-3 group">
+            <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center group-hover:bg-cyan-500/10 group-hover:border-cyan-500/20 transition-all duration-500">
+              <ArrowLeft className="w-5 h-5 text-white/40 group-hover:text-cyan-400" />
             </div>
-            <Badge className="bg-emerald-500/15 text-emerald-400 border border-emerald-500/20 gap-1">
-              <Sparkles className="w-3 h-3" /> AI Powered
-            </Badge>
+            <span className="text-sm font-bold tracking-widest uppercase text-white/40 group-hover:text-white transition-colors">
+              Terminal
+            </span>
+          </Link>
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/20">
+              <div className="w-1.5 h-1.5 rounded-full bg-cyan-500 animate-pulse" />
+              <span className="text-[10px] font-black text-cyan-400 tracking-[0.2em] uppercase">
+                Neural Core v4.0
+              </span>
+            </div>
           </div>
         </div>
       </nav>
 
-      <main className="max-w-6xl mx-auto px-6 py-12 relative">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-12"
-        >
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-sm font-medium mb-6">
-            <MapPin className="w-4 h-4" />
-            Personalized Career Guidance
-          </div>
-          <h1 className="text-4xl md:text-5xl font-black text-white mb-4">
-            AI Career{" "}
-            <span className="bg-gradient-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent">
-              Roadmap
+      <main className="relative z-10 max-w-7xl mx-auto px-6 py-12 lg:py-20">
+        {/* Header Section */}
+        <div className="mb-20 space-y-4">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 mb-4"
+          >
+            <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
+            <span className="text-[10px] font-bold text-white/40 uppercase tracking-widest">
+              Autonomous Pathfinding
             </span>
-          </h1>
-          <p className="text-white/50 max-w-2xl mx-auto">
-            Get a personalized career roadmap powered by AI. Enter your details
-            and receive a structured path tailored to your goals and timeline.
-          </p>
-        </motion.div>
+          </motion.div>
+          <motion.h1
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="text-5xl lg:text-7xl font-black tracking-tighter"
+          >
+            AI Career <br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-teal-400 to-purple-500">
+              Roadmap.
+            </span>
+          </motion.h1>
+        </div>
 
-        <AnimatePresence mode="wait">
-          {!roadmap ? (
-            <motion.div
-              key="form"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              className="max-w-2xl mx-auto"
-            >
-              <Card className="bg-white/[0.02] border border-white/[0.06] shadow-xl">
-                <CardHeader className="text-center pb-2">
-                  <CardTitle className="text-2xl flex items-center justify-center gap-2 text-white">
-                    <Rocket className="w-6 h-6 text-emerald-400" />
-                    Generate Your Roadmap
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="p-8 space-y-6">
-                  <div>
-                    <label className="text-sm font-medium text-white/60 mb-2 block">
-                      Year of Study *
-                    </label>
-                    <Select value={year} onValueChange={setYear}>
-                      <SelectTrigger className="h-12 bg-white/[0.02] border-white/[0.06] text-white">
-                        <GraduationCap className="w-5 h-5 mr-2 text-white/40" />
-                        <SelectValue placeholder="Select your year" />
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+          {/* LEFT: Form Card */}
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.2 }}
+            className="lg:col-span-4"
+          >
+            <div className="bg-white/[0.03] backdrop-blur-xl border border-white/10 rounded-[32px] p-8 relative overflow-hidden group shadow-2xl">
+              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-cyan-500/50 to-transparent" />
+
+              <div className="space-y-8">
+                <div className="space-y-4">
+                  <h3 className="text-xl font-bold tracking-tight flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-cyan-500/10 flex items-center justify-center border border-cyan-500/20">
+                      <Target className="w-4 h-4 text-cyan-400" />
+                    </div>
+                    Parameters
+                  </h3>
+                  <p className="text-sm text-white/40 leading-relaxed font-medium">
+                    Configure your neural profile to generate a precision
+                    roadmap.
+                  </p>
+                </div>
+
+                <div className="space-y-6">
+                  <div className="space-y-2">
+                    <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest pl-1">
+                      Target Year
+                    </Label>
+                    <Select>
+                      <SelectTrigger className="h-14 bg-white/[0.02] border-white/5 rounded-2xl focus:ring-cyan-500/20 hover:bg-white/[0.04] transition-all">
+                        <SelectValue placeholder="Current Stage" />
                       </SelectTrigger>
-                      <SelectContent className="bg-[#0c0c12] border-white/[0.06]">
-                        <SelectItem value="1st-year">1st Year</SelectItem>
-                        <SelectItem value="2nd-year">2nd Year</SelectItem>
-                        <SelectItem value="3rd-year">3rd Year</SelectItem>
-                        <SelectItem value="final-year">Final Year</SelectItem>
-                        <SelectItem value="graduate">Graduate/PG</SelectItem>
+                      <SelectContent className="bg-white border-white/10 text-black">
+                        <SelectItem
+                          className="text-black focus:bg-gray-100 focus:text-black"
+                          value="1"
+                        >
+                          1st Year
+                        </SelectItem>
+                        <SelectItem
+                          className="text-black focus:bg-gray-100 focus:text-black"
+                          value="2"
+                        >
+                          2nd Year
+                        </SelectItem>
+                        <SelectItem
+                          className="text-black focus:bg-gray-100 focus:text-black"
+                          value="3"
+                        >
+                          3rd Year
+                        </SelectItem>
+                        <SelectItem
+                          className="text-black focus:bg-gray-100 focus:text-black"
+                          value="4"
+                        >
+                          4th Year
+                        </SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
 
-                  <div>
-                    <label className="text-sm font-medium text-white/60 mb-2 block">
-                      Branch/Major *
-                    </label>
-                    <Select value={branch} onValueChange={setBranch}>
-                      <SelectTrigger className="h-12 bg-white/[0.02] border-white/[0.06] text-white">
-                        <BookOpen className="w-5 h-5 mr-2 text-white/40" />
-                        <SelectValue placeholder="Select your branch" />
+                  <div className="space-y-2">
+                    <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest pl-1">
+                      Discipline
+                    </Label>
+                    <Select>
+                      <SelectTrigger className="h-14 bg-white/[0.02] border-white/5 rounded-2xl focus:ring-cyan-500/20 hover:bg-white/[0.04] transition-all">
+                        <SelectValue placeholder="Branch" />
                       </SelectTrigger>
-                      <SelectContent className="bg-[#0c0c12] border-white/[0.06]">
-                        <SelectItem value="cse">
-                          Computer Science & Engineering
+                      <SelectContent className="bg-white border-white/10 text-black">
+                        <SelectItem
+                          className="text-black focus:bg-gray-100 focus:text-black"
+                          value="cse"
+                        >
+                          CS Engineering
                         </SelectItem>
-                        <SelectItem value="it">
-                          Information Technology
+                        <SelectItem
+                          className="text-black focus:bg-gray-100 focus:text-black"
+                          value="ece"
+                        >
+                          Electronics
                         </SelectItem>
-                        <SelectItem value="ece">
-                          Electronics & Communication
+                        <SelectItem
+                          className="text-black focus:bg-gray-100 focus:text-black"
+                          value="me"
+                        >
+                          Mechanical
                         </SelectItem>
-                        <SelectItem value="ee">
-                          Electrical Engineering
-                        </SelectItem>
-                        <SelectItem value="me">
-                          Mechanical Engineering
-                        </SelectItem>
-                        <SelectItem value="mba">MBA/Management</SelectItem>
-                        <SelectItem value="other">Other</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
 
-                  <div>
-                    <label className="text-sm font-medium text-white/60 mb-2 block">
-                      Career Interest *
-                    </label>
-                    <Select value={interest} onValueChange={setInterest}>
-                      <SelectTrigger className="h-12 bg-white/[0.02] border-white/[0.06] text-white">
-                        <Target className="w-5 h-5 mr-2 text-white/40" />
-                        <SelectValue placeholder="Select your career interest" />
+                  <div className="space-y-2">
+                    <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest pl-1">
+                      Neural Intent
+                    </Label>
+                    <Select>
+                      <SelectTrigger className="h-14 bg-white/[0.02] border-white/5 rounded-2xl focus:ring-cyan-500/20 hover:bg-white/[0.04] transition-all">
+                        <SelectValue placeholder="Interests" />
                       </SelectTrigger>
-                      <SelectContent className="bg-[#0c0c12] border-white/[0.06]">
-                        <SelectItem value="software-engineering">
-                          Software Engineering
+                      <SelectContent className="bg-white border-white/10 text-black">
+                        <SelectItem
+                          className="text-black focus:bg-gray-100 focus:text-black"
+                          value="web"
+                        >
+                          Fullstack Web
                         </SelectItem>
-                        <SelectItem value="data-science">
-                          Data Science & ML
+                        <SelectItem
+                          className="text-black focus:bg-gray-100 focus:text-black"
+                          value="ai"
+                        >
+                          AI / ML Engineer
                         </SelectItem>
-                        <SelectItem value="product-management">
-                          Product Management
-                        </SelectItem>
-                        <SelectItem value="frontend">
-                          Frontend Development
-                        </SelectItem>
-                        <SelectItem value="backend">
-                          Backend Development
-                        </SelectItem>
-                        <SelectItem value="devops">DevOps & Cloud</SelectItem>
-                        <SelectItem value="cybersecurity">
-                          Cybersecurity
+                        <SelectItem
+                          className="text-black focus:bg-gray-100 focus:text-black"
+                          value="data"
+                        >
+                          Data Scientist
                         </SelectItem>
                       </SelectContent>
                     </Select>
@@ -421,218 +302,311 @@ export default function AIRoadmapPage() {
 
                   <Button
                     onClick={handleGenerate}
-                    disabled={!year || !branch || !interest || isGenerating}
-                    className="w-full h-14 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-white text-lg font-semibold shadow-lg shadow-emerald-500/25 gap-2"
+                    disabled={loading}
+                    className="w-full h-16 rounded-2xl bg-cyan-500 hover:bg-cyan-400 text-black font-black text-xs tracking-[0.3em] uppercase transition-all shadow-[0_20px_40px_rgba(6,182,212,0.3)] hover:shadow-cyan-400/50 group relative overflow-hidden"
                   >
-                    {isGenerating ? (
-                      <>
-                        <Loader2 className="w-5 h-5 animate-spin" />
-                        Generating Your Roadmap...
-                      </>
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
+                    {loading ? (
+                      <div className="flex items-center gap-3">
+                        <div className="w-4 h-4 border-2 border-black/30 border-t-black rounded-full animate-spin" />
+                        Analyzing...
+                      </div>
                     ) : (
-                      <>
-                        <Sparkles className="w-5 h-5" />
-                        Generate AI Roadmap
-                      </>
+                      <div className="flex items-center gap-3">
+                        <Zap className="w-4 h-4 fill-current" />
+                        Initiate Sequence
+                      </div>
                     )}
                   </Button>
+                </div>
+              </div>
+            </div>
+          </motion.div>
 
-                  <div className="pt-4 border-t border-white/[0.06]">
-                    <div className="flex items-start gap-3 text-white/40 text-sm">
-                      <Lightbulb className="w-5 h-5 shrink-0 text-amber-400" />
-                      <p>
-                        Our AI analyzes your profile and creates a customized
-                        roadmap with actionable steps, timeline, and resources
-                        to help you achieve your career goals.
-                      </p>
+          {/* RIGHT: Roadmap Output */}
+          <div className="lg:col-span-8 relative">
+            <AnimatePresence mode="wait">
+              {!isGenerated && !loading ? (
+                <motion.div
+                  key="placeholder"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="h-full min-h-[500px] flex flex-col items-center justify-center text-center space-y-6 border-2 border-dashed border-white/5 rounded-[40px] bg-white/[0.01]"
+                >
+                  <div className="w-20 h-20 rounded-full bg-white/5 flex items-center justify-center animate-pulse">
+                    <Brain className="w-10 h-10 text-white/20" />
+                  </div>
+                  <div className="space-y-2">
+                    <p className="text-xl font-bold text-white/40 tracking-tight">
+                      System Idle
+                    </p>
+                    <p className="text-sm text-white/20">
+                      Waiting for parameter sync...
+                    </p>
+                  </div>
+                </motion.div>
+              ) : isGenerated ? (
+                <motion.div
+                  key="roadmap"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="space-y-12"
+                >
+                  {/* Timeline Header */}
+                  <div className="flex items-center justify-between px-4">
+                    <h3 className="text-2xl font-black tracking-tight flex items-center gap-4">
+                      <MapPin className="w-6 h-6 text-cyan-400" />
+                      Active Trajectory
+                    </h3>
+                    <div className="flex items-center gap-4">
+                      <Badge className="bg-cyan-500/10 text-cyan-400 border-cyan-500/20 px-4 py-1.5 text-[9px] font-black tracking-widest uppercase">
+                        3 Stages Locked
+                      </Badge>
                     </div>
                   </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-          ) : (
-            <motion.div
-              key="roadmap"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              className="space-y-8"
-            >
-              <div className="flex items-center justify-between">
-                <div>
-                  <Badge className="mb-2 bg-emerald-500/15 text-emerald-400 border border-emerald-500/20">
-                    {interest
-                      .replace(/-/g, " ")
-                      .replace(/\b\w/g, (l) => l.toUpperCase())}{" "}
-                    Roadmap
-                  </Badge>
-                  <h2 className="text-2xl font-bold text-white">
-                    Your Personalized 8-Month Journey
-                  </h2>
-                </div>
-                <Button
-                  variant="outline"
-                  onClick={resetForm}
-                  className="bg-white/[0.04] border-white/[0.06] text-white/70 hover:bg-white/[0.08]"
-                >
-                  Generate New
-                </Button>
-              </div>
 
-              <div className="relative">
-                <div className="absolute left-8 top-0 bottom-0 w-0.5 bg-gradient-to-b from-cyan-500 via-purple-500 to-amber-500 hidden md:block" />
+                  {/* Vertical Roadmap */}
+                  <div className="relative pl-12 space-y-12">
+                    {/* Glowing Timeline Line */}
+                    <div className="absolute left-[23px] top-0 bottom-0 w-[2px] bg-gradient-to-b from-cyan-500 via-purple-500 to-transparent shadow-[0_0_15px_rgba(6,182,212,0.5)]" />
 
-                <div className="space-y-6">
-                  {roadmap.map((step, i) => {
-                    const Icon = phaseIcons[i];
-                    const isExpanded = expandedPhase === i;
-
-                    return (
+                    {roadmapSteps.map((step, i) => (
                       <motion.div
                         key={i}
-                        initial={{ opacity: 0, x: -20 }}
+                        initial={{ opacity: 0, x: 20 }}
                         animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: i * 0.1 }}
+                        transition={{ delay: i * 0.2 }}
+                        className="relative"
                       >
-                        <Card
-                          className={`bg-white/[0.02] border border-white/[0.06] shadow-lg cursor-pointer transition-all duration-300 hover:border-white/[0.1] ${
-                            isExpanded ? "ring-2 ring-emerald-500/30" : ""
-                          }`}
-                          onClick={() =>
-                            setExpandedPhase(isExpanded ? null : i)
-                          }
-                        >
-                          <CardContent className="p-6">
-                            <div className="flex items-start gap-6">
-                              <div
-                                className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${phaseColors[i]} flex items-center justify-center shrink-0 shadow-lg`}
-                              >
-                                <Icon className="w-8 h-8 text-white" />
-                              </div>
+                        {/* Dot */}
+                        <div className="absolute -left-[54px] top-0 w-11 h-11 flex items-center justify-center">
+                          <div
+                            className={`w-4 h-4 rounded-full bg-[#050508] border-2 border-${step.color === "cyan" ? "cyan" : step.color === "purple" ? "purple" : "emerald"}-400 shadow-[0_0_15px_rgba(6,182,212,0.5)] z-10 relative`}
+                          >
+                            <motion.div
+                              animate={{
+                                scale: [1, 1.5, 1],
+                                opacity: [0.5, 1, 0.5],
+                              }}
+                              transition={{ repeat: Infinity, duration: 2 }}
+                              className={`absolute inset-0 rounded-full bg-${step.color === "cyan" ? "cyan" : step.color === "purple" ? "purple" : "emerald"}-400/50`}
+                            />
+                          </div>
+                        </div>
 
-                              <div className="flex-1 min-w-0">
-                                <div className="flex items-center justify-between mb-2">
-                                  <div className="flex items-center gap-3">
-                                    <Badge
-                                      variant="secondary"
-                                      className="bg-white/[0.04] text-white/60 border border-white/[0.06]"
-                                    >
-                                      {step.phase}
-                                    </Badge>
-                                    <span className="text-white/40 text-sm flex items-center gap-1">
-                                      <Clock className="w-4 h-4" />{" "}
-                                      {step.duration}
-                                    </span>
-                                  </div>
-                                  <ChevronRight
-                                    className={`w-5 h-5 text-white/30 transition-transform ${
-                                      isExpanded ? "rotate-90" : ""
-                                    }`}
-                                  />
-                                </div>
-
-                                <h3 className="text-xl font-bold text-white mb-2">
+                        {/* Card */}
+                        <div className="bg-white/[0.03] backdrop-blur-xl border border-white/10 rounded-[32px] p-8 hover:bg-white/[0.05] transition-all duration-500 group relative overflow-hidden">
+                          <div className="flex flex-col md:flex-row md:items-start justify-between gap-6 relative z-10">
+                            <div className="space-y-4 flex-1">
+                              <div className="flex items-center gap-4">
+                                <span
+                                  className={`text-[10px] font-black uppercase tracking-widest text-${step.color === "cyan" ? "cyan" : step.color === "purple" ? "purple" : "emerald"}-400`}
+                                >
+                                  {step.month}
+                                </span>
+                                <h4 className="text-xl font-black tracking-tight">
                                   {step.title}
-                                </h3>
-                                <p className="text-white/50">
-                                  {step.description}
-                                </p>
+                                </h4>
+                              </div>
+                              <p className="text-sm text-white/40 leading-relaxed font-medium">
+                                {step.description}
+                              </p>
 
-                                <AnimatePresence>
-                                  {isExpanded && (
-                                    <motion.div
-                                      initial={{ height: 0, opacity: 0 }}
-                                      animate={{ height: "auto", opacity: 1 }}
-                                      exit={{ height: 0, opacity: 0 }}
-                                      transition={{ duration: 0.3 }}
-                                      className="overflow-hidden"
-                                    >
-                                      <div className="pt-6 mt-6 border-t border-white/[0.06] space-y-6">
-                                        <div>
-                                          <h4 className="font-semibold text-white mb-3 flex items-center gap-2">
-                                            <CheckCircle className="w-5 h-5 text-emerald-400" />
-                                            Key Tasks
-                                          </h4>
-                                          <ul className="space-y-2">
-                                            {step.tasks.map((task, j) => (
-                                              <li
-                                                key={j}
-                                                className="flex items-start gap-3 text-white/60"
-                                              >
-                                                <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 mt-2 shrink-0" />
-                                                {task}
-                                              </li>
-                                            ))}
-                                          </ul>
-                                        </div>
-
-                                        <div>
-                                          <h4 className="font-semibold text-white mb-3 flex items-center gap-2">
-                                            <Briefcase className="w-5 h-5 text-cyan-400" />
-                                            Recommended Resources
-                                          </h4>
-                                          <div className="flex flex-wrap gap-2">
-                                            {step.resources.map(
-                                              (resource, j) => (
-                                                <Badge
-                                                  key={j}
-                                                  variant="outline"
-                                                  className="cursor-pointer border-white/[0.06] text-white/60 hover:bg-white/[0.04]"
-                                                >
-                                                  {resource}
-                                                </Badge>
-                                              )
-                                            )}
-                                          </div>
-                                        </div>
-                                      </div>
-                                    </motion.div>
-                                  )}
-                                </AnimatePresence>
+                              <div className="flex flex-wrap gap-2 mt-4">
+                                {step.skills.map((skill, si) => (
+                                  <span
+                                    key={si}
+                                    className="text-[10px] font-bold px-3 py-1 rounded-full bg-white/5 border border-white/10 text-white/40"
+                                  >
+                                    {skill}
+                                  </span>
+                                ))}
                               </div>
                             </div>
-                          </CardContent>
-                        </Card>
+
+                            <div className="md:w-48 space-y-4">
+                              <p className="text-[9px] font-black text-white/20 uppercase tracking-[0.3em]">
+                                Project Milestones
+                              </p>
+                              <div className="space-y-2">
+                                {step.projects.map((proj, pi) => (
+                                  <div
+                                    key={pi}
+                                    className="flex items-center gap-3 p-3 rounded-xl bg-white/[0.02] border border-white/5 group-hover:border-white/10 transition-all"
+                                  >
+                                    <div
+                                      className={`w-1.5 h-1.5 rounded-full bg-${step.color === "cyan" ? "cyan" : step.color === "purple" ? "purple" : "emerald"}-500`}
+                                    />
+                                    <span className="text-[11px] font-bold text-white/60">
+                                      {proj}
+                                    </span>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
                       </motion.div>
-                    );
-                  })}
+                    ))}
+                  </div>
+                </motion.div>
+              ) : null}
+            </AnimatePresence>
+          </div>
+        </div>
+
+        {/* SECTION: Career Risk & Gap Analyzer */}
+        <AnimatePresence>
+          {isGenerated && (
+            <motion.div
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.8 }}
+              className="mt-32 space-y-12"
+            >
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-2xl bg-orange-500/10 flex items-center justify-center border border-orange-500/20">
+                  <AlertCircle className="w-6 h-6 text-orange-400" />
+                </div>
+                <div>
+                  <h3 className="text-3xl font-black tracking-tighter">
+                    Gap Analysis
+                  </h3>
+                  <p className="text-sm text-white/40 font-medium">
+                    Identifying vulnerabilities in your neural career path.
+                  </p>
                 </div>
               </div>
 
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.5 }}
-              >
-                <Card className="bg-gradient-to-r from-emerald-500/20 to-teal-500/20 border border-emerald-500/30 shadow-xl">
-                  <CardContent className="p-8 text-center">
-                    <Trophy className="w-12 h-12 mx-auto mb-4 text-amber-400" />
-                    <h3 className="text-2xl font-bold mb-2 text-white">
-                      Ready to Start Your Journey?
-                    </h3>
-                    <p className="text-white/60 mb-6 max-w-xl mx-auto">
-                      Follow this roadmap consistently and you&apos;ll be
-                      well-prepared to land your dream role. Remember,
-                      consistency beats intensity!
-                    </p>
-                    <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                      <Button className="bg-gradient-to-r from-emerald-500 to-teal-500 text-white hover:from-emerald-400 hover:to-teal-400">
-                        Save Roadmap
-                      </Button>
-                      <Button
-                        variant="outline"
-                        className="border-white/10 text-white/70 hover:bg-white/[0.04]"
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                {[
+                  {
+                    title: "Strengths",
+                    items: ["Analytical Thinking", "Base Tech Stack", "Logic"],
+                    icon: ShieldCheck,
+                    color: "emerald",
+                    accent: "glow-emerald",
+                  },
+                  {
+                    title: "Neural Risks",
+                    items: [
+                      "Market Saturation",
+                      "Legacy Tech Bind",
+                      "Soft Skills",
+                    ],
+                    icon: AlertTriangle,
+                    color: "rose",
+                    accent: "glow-rose",
+                  },
+                  {
+                    title: "Skill Gaps",
+                    items: [
+                      "System Architecture",
+                      "Edge Deployment",
+                      "Security",
+                    ],
+                    icon: Target,
+                    color: "orange",
+                    accent: "glow-orange",
+                  },
+                  {
+                    title: "Direct Actions",
+                    items: [
+                      "Forge 2 Projects",
+                      "Link with Mentors",
+                      "Cert Sync",
+                    ],
+                    icon: Zap,
+                    color: "cyan",
+                    accent: "glow-cyan",
+                  },
+                ].map((card, i) => (
+                  <div
+                    key={i}
+                    className="group relative bg-white/[0.02] backdrop-blur-2xl border border-white/10 rounded-[32px] p-8 hover:bg-white/[0.04] transition-all duration-700 overflow-hidden"
+                  >
+                    <motion.div
+                      animate={{ opacity: [0.1, 0.3, 0.1] }}
+                      transition={{ repeat: Infinity, duration: 4 }}
+                      className={`absolute -top-10 -right-10 w-32 h-32 bg-${card.color}-500/20 blur-[60px] rounded-full`}
+                    />
+
+                    <div className="relative z-10 space-y-6">
+                      <div
+                        className={`w-12 h-12 rounded-2xl bg-${card.color}-500/10 flex items-center justify-center border border-${card.color}-500/20 group-hover:rotate-[12deg] transition-all`}
                       >
-                        Share with Friends
-                      </Button>
+                        <card.icon
+                          className={`w-6 h-6 text-${card.color}-400`}
+                        />
+                      </div>
+                      <h4
+                        className={`text-xl font-black tracking-tight text-${card.color}-400`}
+                      >
+                        {card.title}
+                      </h4>
+                      <div className="space-y-3">
+                        {card.items.map((item, idx) => (
+                          <div key={idx} className="flex items-center gap-3">
+                            {card.title === "Direct Actions" ? (
+                              <CheckCircle className="w-3.5 h-3.5 text-cyan-400" />
+                            ) : (
+                              <div
+                                className={`w-1.5 h-1.5 rounded-full bg-${card.color}-500/40`}
+                              />
+                            )}
+                            <span className="text-[11px] font-bold text-white/50">
+                              {item}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
                     </div>
-                  </CardContent>
-                </Card>
+                  </div>
+                ))}
+              </div>
+
+              {/* Warnings / Pulsing Alert Card */}
+              <motion.div
+                animate={{
+                  boxShadow: [
+                    "0 0 0px rgba(244,63,94,0)",
+                    "0 0 40px rgba(244,63,94,0.1)",
+                    "0 0 0px rgba(244,63,94,0)",
+                  ],
+                }}
+                transition={{ repeat: Infinity, duration: 4 }}
+                className="bg-rose-500/5 backdrop-blur-xl border border-rose-500/20 rounded-[40px] p-12 flex flex-col md:flex-row items-center justify-between gap-8 relative overflow-hidden"
+              >
+                <div className="absolute top-0 left-0 w-1 h-full bg-rose-500/50" />
+                <div className="flex items-center gap-8 relative z-10 text-center md:text-left">
+                  <div className="w-20 h-20 rounded-[28px] bg-rose-500/10 border border-rose-500/20 flex items-center justify-center shrink-0">
+                    <TrendingUp className="w-10 h-10 text-rose-400 rotate-180" />
+                  </div>
+                  <div className="space-y-2">
+                    <h3 className="text-2xl font-black tracking-tight text-white">
+                      Critical Performance Warning
+                    </h3>
+                    <p className="text-sm text-white/40 font-medium max-w-lg">
+                      Neural analysis detects a high probability of skill
+                      stagnation in the next 12 cycles. Action recommended.
+                    </p>
+                  </div>
+                </div>
+                <Button className="h-16 px-10 rounded-2xl bg-rose-500 hover:bg-rose-400 text-white font-black text-xs tracking-widest uppercase transition-all shadow-[0_20px_40px_rgba(244,63,94,0.3)]">
+                  Resolve Conflict
+                </Button>
               </motion.div>
             </motion.div>
           )}
         </AnimatePresence>
       </main>
+
+      <footer className="relative z-10 max-w-7xl mx-auto px-6 py-12 border-t border-white/5 text-center">
+        <p className="text-[10px] font-black text-white/10 uppercase tracking-[0.5em]">
+          Neural Pathfinding Engine • v4.0.2 Stable Build
+        </p>
+      </footer>
     </div>
   );
 }

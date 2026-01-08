@@ -1,541 +1,337 @@
 "use client";
 
-import { useState, useRef } from "react";
-import { motion, AnimatePresence } from "motion/react";
+import { useState, useRef, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import {
-  Brain,
   Mic,
-  MicOff,
   Upload,
-  FileAudio,
-  Play,
-  Pause,
-  Send,
-  Shield,
-  Clock,
-  CheckCircle,
-  AlertCircle,
-  Loader2,
   ArrowLeft,
-  Volume2,
+  Shield,
   Sparkles,
-  X,
+  Volume2,
+  Lock,
+  Zap,
+  ChevronRight,
+  Activity,
+  History,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Textarea } from "@/components/ui/textarea";
-
-const previousReports = [
-  {
-    id: "RPT-001",
-    status: "Resolved",
-    date: "Dec 15, 2024",
-    summary: "Bullying incident in library",
-    category: "Harassment",
-  },
-  {
-    id: "RPT-002",
-    status: "In Review",
-    date: "Dec 18, 2024",
-    summary: "Unsafe conditions in lab building",
-    category: "Safety",
-  },
-  {
-    id: "RPT-003",
-    status: "Pending",
-    date: "Dec 20, 2024",
-    summary: "Discrimination complaint",
-    category: "Discrimination",
-  },
-];
+import ThreeDBackground from "@/components/ThreeDBackground";
 
 export default function SilentScreamPage() {
   const [isRecording, setIsRecording] = useState(false);
-  const [recordingTime, setRecordingTime] = useState(0);
-  const [audioFile, setAudioFile] = useState<File | null>(null);
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [transcription, setTranscription] = useState("");
-  const [aiSummary, setAiSummary] = useState("");
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const [showSummary, setShowSummary] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
-  const startRecording = () => {
-    setIsRecording(true);
-    setRecordingTime(0);
-    timerRef.current = setInterval(() => {
-      setRecordingTime((prev) => prev + 1);
-    }, 1000);
-  };
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
-  const stopRecording = async () => {
-    setIsRecording(false);
-    if (timerRef.current) clearInterval(timerRef.current);
-
-    setIsProcessing(true);
-    await new Promise((r) => setTimeout(r, 2000));
-
-    setTranscription(
-      "I want to report an incident that happened yesterday near the main auditorium. There was a group of students who were harassing a junior student. The victim seemed very distressed and I think the administration should know about this. This has been happening repeatedly and needs to stop."
-    );
-
-    await new Promise((r) => setTimeout(r, 1500));
-
-    setAiSummary(
-      "Reported harassment incident near main auditorium involving a group targeting a junior student. Described as repeated behavior. Witness observed victim in distress. Recommends administrative attention."
-    );
-    setIsProcessing(false);
-  };
-
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setAudioFile(file);
-      setIsProcessing(true);
-      await new Promise((r) => setTimeout(r, 2500));
-
-      setTranscription(
-        "There is an ongoing issue with the lighting in the parking lot near building B. Multiple students have complained about feeling unsafe walking there at night. Last week, someone almost had an accident because they couldn't see properly. This needs urgent attention."
-      );
-
-      await new Promise((r) => setTimeout(r, 1500));
-
-      setAiSummary(
-        "Infrastructure safety concern: Inadequate lighting in Building B parking lot. Multiple complaints received. Near-accident reported due to visibility issues. Urgent maintenance required."
-      );
-      setIsProcessing(false);
+  const toggleRecording = () => {
+    setIsRecording(!isRecording);
+    if (!isRecording) {
+      setTimeout(() => {
+        setIsRecording(false);
+        setShowSummary(true);
+      }, 5000);
     }
   };
 
-  const handleSubmit = async () => {
-    setIsProcessing(true);
-    await new Promise((r) => setTimeout(r, 1500));
-    setSubmitted(true);
-    setIsProcessing(false);
-  };
-
-  const resetForm = () => {
-    setAudioFile(null);
-    setTranscription("");
-    setAiSummary("");
-    setSubmitted(false);
-    setRecordingTime(0);
-  };
-
-  const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins.toString().padStart(2, "0")}:${secs
-      .toString()
-      .padStart(2, "0")}`;
-  };
+  if (!mounted) return null;
 
   return (
-    <div className="min-h-screen bg-[#08080c] text-white">
-      {/* Animated background */}
+    <div className="min-h-screen bg-[#050508] text-white overflow-x-hidden selection:bg-rose-500/30">
+      <ThreeDBackground />
+
+      {/* Background Gradients */}
       <div className="fixed inset-0 pointer-events-none">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,_var(--tw-gradient-stops))] from-rose-900/20 via-transparent to-transparent" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,_var(--tw-gradient-stops))] from-pink-900/15 via-transparent to-transparent" />
-        <div className="absolute top-20 left-20 w-[500px] h-[500px] bg-rose-500/8 rounded-full blur-[120px]" />
-        <div className="absolute bottom-20 right-20 w-[400px] h-[400px] bg-pink-500/8 rounded-full blur-[100px]" />
+        <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-rose-500/10 rounded-full blur-[120px] animate-pulse" />
+        <div
+          className="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-cyan-500/10 rounded-full blur-[120px] animate-pulse"
+          style={{ animationDelay: "2s" }}
+        />
       </div>
-      <nav className="sticky top-0 z-50 border-b border-white/[0.06] bg-[#08080c]/70 backdrop-blur-xl">
-        <div className="max-w-7xl mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <Link href="/dashboard">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="gap-2 text-white/60 hover:text-white hover:bg-white/[0.06]"
-                >
-                  <ArrowLeft className="w-4 h-4" /> Back
-                </Button>
-              </Link>
-              <Link href="/" className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-rose-500 to-pink-600 flex items-center justify-center">
-                  <Brain className="w-6 h-6 text-white" />
-                </div>
-                <span className="text-xl font-bold bg-gradient-to-r from-rose-400 to-pink-400 bg-clip-text text-transparent hidden sm:block">
-                  CampusConnect AI
-                </span>
-              </Link>
+
+      <nav className="fixed top-0 left-0 right-0 z-50 px-8 py-6 bg-black/20 backdrop-blur-xl border-b border-white/[0.05]">
+        <div className="max-w-7xl mx-auto flex items-center justify-between">
+          <Link href="/dashboard" className="group flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center group-hover:bg-rose-500/20 group-hover:border-rose-500/30 transition-all">
+              <ArrowLeft className="w-5 h-5 text-white/60 group-hover:text-rose-400" />
             </div>
-            <Badge className="bg-rose-500/15 text-rose-400 border border-rose-500/20 gap-1">
-              <Shield className="w-3 h-3" /> 100% Anonymous
+            <span className="text-sm font-black tracking-widest uppercase text-white/40 group-hover:text-white transition-colors">
+              Return to Hub
+            </span>
+          </Link>
+
+          <div className="flex items-center gap-4">
+            <Badge className="bg-rose-500/10 text-rose-400 border border-rose-500/20 px-4 py-1.5 rounded-full text-[10px] font-black tracking-[0.2em] uppercase">
+              <Lock className="w-3 h-3 mr-2" /> Encrypted Link
             </Badge>
           </div>
         </div>
       </nav>
 
-      <main className="max-w-6xl mx-auto px-6 py-12 relative">
+      <main className="relative pt-32 pb-20 px-8 max-w-5xl mx-auto flex flex-col items-center">
+        {/* Header Section */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-12"
+          className="text-center mb-20"
         >
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-rose-500/10 border border-rose-500/20 text-rose-400 text-sm font-medium mb-6">
-            <Mic className="w-4 h-4" />
-            Anonymous Voice Reporting
-          </div>
-          <h1 className="text-4xl md:text-5xl font-black text-white mb-4">
-            Silent{" "}
-            <span className="bg-gradient-to-r from-rose-400 to-pink-400 bg-clip-text text-transparent">
-              Scream
+          <div className="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-rose-500/10 border border-rose-500/20 mb-8 backdrop-blur-md">
+            <div className="w-2 h-2 rounded-full bg-rose-500 animate-pulse shadow-[0_0_10px_rgba(244,63,94,0.8)]" />
+            <span className="text-[11px] font-black text-rose-400 tracking-[0.2em] uppercase">
+              Security Protocol Alpha
             </span>
+          </div>
+          <h1 className="text-7xl lg:text-9xl font-black tracking-tighter mb-6 bg-clip-text text-transparent bg-gradient-to-b from-white to-white/20">
+            SILENT SCREAM
           </h1>
-          <p className="text-white/50 max-w-2xl mx-auto">
-            Your voice matters. Report concerns anonymously through voice
-            recording. Our AI transcribes and summarizes your report while
-            protecting your identity.
+          <p className="text-white/40 text-xl font-medium italic max-w-2xl mx-auto leading-relaxed">
+            "Your identity is shielded. Your voice is heard."
           </p>
         </motion.div>
 
-        <div className="grid lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2 space-y-6">
-            <AnimatePresence mode="wait">
-              {submitted ? (
-                <motion.div
-                  key="success"
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.9 }}
-                >
-                  <Card className="bg-white/[0.02] border border-white/[0.06] shadow-xl">
-                    <CardContent className="p-12 text-center">
-                      <motion.div
-                        initial={{ scale: 0 }}
-                        animate={{ scale: 1 }}
-                        transition={{ type: "spring", delay: 0.2 }}
-                        className="w-20 h-20 rounded-full bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center mx-auto mb-6"
-                      >
-                        <CheckCircle className="w-10 h-10 text-white" />
-                      </motion.div>
-                      <h2 className="text-2xl font-bold text-white mb-4">
-                        Report Submitted Successfully
-                      </h2>
-                      <p className="text-white/60 mb-2">
-                        Your report ID:{" "}
-                        <span className="font-mono font-bold text-emerald-400">
-                          RPT-
-                          {Math.random()
-                            .toString(36)
-                            .substring(2, 8)
-                            .toUpperCase()}
-                        </span>
-                      </p>
-                      <p className="text-white/40 text-sm mb-8">
-                        Your identity remains completely anonymous. You can
-                        track the status using the report ID.
-                      </p>
-                      <Button
-                        onClick={resetForm}
-                        className="bg-gradient-to-r from-rose-500 to-pink-500 text-white"
-                      >
-                        Submit Another Report
-                      </Button>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-              ) : (
-                <motion.div
-                  key="form"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  className="space-y-6"
-                >
-                  <Card className="bg-white/[0.02] border border-white/[0.06] shadow-xl overflow-hidden">
-                    <CardHeader className="border-b border-white/[0.06]">
-                      <CardTitle className="flex items-center gap-2 text-lg text-white">
-                        <Volume2 className="w-5 h-5 text-rose-400" />
-                        Voice Input
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent className="p-8">
-                      <div className="flex flex-col items-center">
-                        <motion.button
-                          whileTap={{ scale: 0.95 }}
-                          onClick={isRecording ? stopRecording : startRecording}
-                          disabled={isProcessing}
-                          className={`relative w-32 h-32 rounded-full flex items-center justify-center transition-all duration-300 ${
-                            isRecording
-                              ? "bg-gradient-to-br from-rose-500 to-pink-600 shadow-lg shadow-rose-500/30"
-                              : "bg-white/[0.04] hover:bg-rose-500/20 border border-white/[0.06]"
-                          }`}
-                        >
-                          {isRecording && (
-                            <motion.div
-                              className="absolute inset-0 rounded-full bg-rose-500/30"
-                              animate={{ scale: [1, 1.2, 1] }}
-                              transition={{ duration: 1, repeat: Infinity }}
-                            />
-                          )}
-                          {isRecording ? (
-                            <MicOff className="w-12 h-12 text-white relative z-10" />
-                          ) : (
-                            <Mic
-                              className={`w-12 h-12 ${
-                                isProcessing ? "text-white/30" : "text-rose-400"
-                              } relative z-10`}
-                            />
-                          )}
-                        </motion.button>
-
-                        <p className="mt-6 text-white/60 font-medium">
-                          {isRecording ? (
-                            <span className="text-rose-400 flex items-center gap-2">
-                              <span className="w-2 h-2 bg-rose-500 rounded-full animate-pulse" />
-                              Recording... {formatTime(recordingTime)}
-                            </span>
-                          ) : (
-                            "Click to start recording"
-                          )}
-                        </p>
-
-                        <div className="flex items-center gap-4 mt-8 w-full max-w-md">
-                          <div className="flex-1 h-px bg-white/[0.06]" />
-                          <span className="text-white/30 text-sm">or</span>
-                          <div className="flex-1 h-px bg-white/[0.06]" />
-                        </div>
-
-                        <input
-                          ref={fileInputRef}
-                          type="file"
-                          accept="audio/*"
-                          onChange={handleFileUpload}
-                          className="hidden"
-                        />
-                        <Button
-                          variant="outline"
-                          onClick={() => fileInputRef.current?.click()}
-                          disabled={isProcessing || isRecording}
-                          className="mt-6 gap-2 bg-white/[0.04] border-white/[0.06] text-white/70 hover:bg-white/[0.08] hover:text-white"
-                        >
-                          <Upload className="w-4 h-4" />
-                          Upload Audio File
-                        </Button>
-
-                        {audioFile && (
-                          <div className="mt-4 flex items-center gap-3 px-4 py-2 rounded-lg bg-white/[0.04] border border-white/[0.06]">
-                            <FileAudio className="w-5 h-5 text-rose-400" />
-                            <span className="text-sm text-white/60">
-                              {audioFile.name}
-                            </span>
-                            <button
-                              onClick={() => setAudioFile(null)}
-                              className="text-white/30 hover:text-white/60"
-                            >
-                              <X className="w-4 h-4" />
-                            </button>
-                          </div>
-                        )}
-                      </div>
-                    </CardContent>
-                  </Card>
-
-                  {isProcessing && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                    >
-                      <Card className="bg-white/[0.02] border border-white/[0.06] shadow-xl">
-                        <CardContent className="p-8 text-center">
-                          <Loader2 className="w-12 h-12 text-rose-400 animate-spin mx-auto mb-4" />
-                          <p className="text-white/70 font-medium">
-                            Processing your voice input...
-                          </p>
-                          <p className="text-white/40 text-sm mt-2">
-                            AI is transcribing and generating summary
-                          </p>
-                        </CardContent>
-                      </Card>
-                    </motion.div>
-                  )}
-
-                  {transcription && !isProcessing && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                    >
-                      <Card className="bg-white/[0.02] border border-white/[0.06] shadow-xl">
-                        <CardHeader className="border-b border-white/[0.06]">
-                          <CardTitle className="flex items-center gap-2 text-lg text-white">
-                            <FileAudio className="w-5 h-5 text-cyan-400" />
-                            Transcription
-                          </CardTitle>
-                        </CardHeader>
-                        <CardContent className="p-6">
-                          <div className="flex items-center gap-3 mb-4">
-                            <button
-                              onClick={() => setIsPlaying(!isPlaying)}
-                              className="w-10 h-10 rounded-full bg-cyan-500/15 flex items-center justify-center text-cyan-400"
-                            >
-                              {isPlaying ? (
-                                <Pause className="w-5 h-5" />
-                              ) : (
-                                <Play className="w-5 h-5 ml-0.5" />
-                              )}
-                            </button>
-                            <div className="flex-1 h-2 bg-white/[0.04] rounded-full overflow-hidden">
-                              <motion.div
-                                className="h-full bg-gradient-to-r from-cyan-500 to-blue-500"
-                                initial={{ width: "0%" }}
-                                animate={{ width: isPlaying ? "100%" : "35%" }}
-                                transition={{ duration: isPlaying ? 10 : 0 }}
-                              />
-                            </div>
-                            <span className="text-sm text-white/40">0:45</span>
-                          </div>
-                          <Textarea
-                            value={transcription}
-                            onChange={(e) => setTranscription(e.target.value)}
-                            className="min-h-[120px] bg-white/[0.02] border-white/[0.06] text-white/80"
-                            placeholder="Transcription will appear here..."
-                          />
-                        </CardContent>
-                      </Card>
-                    </motion.div>
-                  )}
-
-                  {aiSummary && !isProcessing && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.2 }}
-                    >
-                      <Card className="bg-gradient-to-br from-violet-500/20 to-purple-600/20 border border-violet-500/30 shadow-xl">
-                        <CardHeader className="border-b border-white/10">
-                          <CardTitle className="flex items-center gap-2 text-lg text-white">
-                            <Sparkles className="w-5 h-5 text-violet-400" />
-                            AI Summary
-                          </CardTitle>
-                        </CardHeader>
-                        <CardContent className="p-6">
-                          <p className="text-white/70 leading-relaxed">
-                            {aiSummary}
-                          </p>
-                          <div className="mt-4 pt-4 border-t border-white/10 flex items-center gap-2 text-white/50 text-sm">
-                            <AlertCircle className="w-4 h-4" />
-                            Review the summary before submitting
-                          </div>
-                        </CardContent>
-                      </Card>
-                    </motion.div>
-                  )}
-
-                  {aiSummary && !isProcessing && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.3 }}
-                      className="flex justify-end gap-4"
-                    >
-                      <Button
-                        variant="outline"
-                        onClick={resetForm}
-                        className="bg-white/[0.04] border-white/[0.06] text-white/70 hover:bg-white/[0.08]"
-                      >
-                        Cancel
-                      </Button>
-                      <Button
-                        onClick={handleSubmit}
-                        className="bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white gap-2"
-                      >
-                        <Send className="w-4 h-4" />
-                        Submit Report
-                      </Button>
-                    </motion.div>
-                  )}
-                </motion.div>
-              )}
-            </AnimatePresence>
+        {/* Central Interface */}
+        <div className="relative w-full flex flex-col items-center justify-center min-h-[400px]">
+          {/* Waveform Animation */}
+          <div className="absolute inset-0 flex items-center justify-center gap-1.5 opacity-20 pointer-events-none">
+            {Array.from({ length: 40 }).map((_, i) => (
+              <motion.div
+                key={i}
+                animate={{
+                  height: isRecording ? [20, 80, 20] : [10, 30, 10],
+                  opacity: isRecording ? [0.2, 0.8, 0.2] : 0.2,
+                }}
+                transition={{
+                  duration: isRecording ? 0.5 + Math.random() : 2,
+                  repeat: Infinity,
+                  delay: i * 0.05,
+                }}
+                className={`w-1 rounded-full ${isRecording ? "bg-rose-500" : "bg-white/20"}`}
+              />
+            ))}
           </div>
 
-          <div className="space-y-6">
-            <Card className="bg-white/[0.02] border border-white/[0.06] shadow-xl">
-              <CardHeader>
-                <CardTitle className="text-lg flex items-center gap-2 text-white">
-                  <Clock className="w-5 h-5 text-white/40" />
-                  Your Reports
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {previousReports.map((report, i) => (
+          {/* Microphone Button */}
+          <motion.div
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="relative z-10"
+          >
+            <button
+              onClick={toggleRecording}
+              className={`relative w-48 h-48 rounded-full flex items-center justify-center transition-all duration-700 ${
+                isRecording
+                  ? "bg-rose-500 shadow-[0_0_100px_rgba(244,63,94,0.4)]"
+                  : "bg-white/5 border border-white/10 hover:border-rose-500/50 hover:bg-rose-500/10 shadow-[0_0_50px_rgba(0,0,0,0.5)]"
+              }`}
+            >
+              <AnimatePresence mode="wait">
+                {isRecording ? (
                   <motion.div
-                    key={report.id}
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: i * 0.1 }}
-                    className="p-4 rounded-xl bg-white/[0.02] border border-white/[0.06]"
+                    key="recording"
+                    initial={{ opacity: 0, scale: 0.5 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.5 }}
+                    className="flex flex-col items-center"
                   >
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="font-mono text-sm font-bold text-white/60">
-                        {report.id}
-                      </span>
-                      <Badge
-                        className={`text-xs ${
-                          report.status === "Resolved"
-                            ? "bg-emerald-500/15 text-emerald-400 border-emerald-500/20"
-                            : report.status === "In Review"
-                            ? "bg-amber-500/15 text-amber-400 border-amber-500/20"
-                            : "bg-white/[0.04] text-white/50 border-white/[0.06]"
-                        }`}
-                      >
-                        {report.status}
-                      </Badge>
-                    </div>
-                    <p className="text-sm text-white/70 mb-1">
-                      {report.summary}
-                    </p>
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs text-white/40">
-                        {report.date}
-                      </span>
-                      <Badge
-                        variant="secondary"
-                        className="text-xs bg-white/[0.04] text-white/50"
-                      >
-                        {report.category}
-                      </Badge>
-                    </div>
+                    <Activity className="w-16 h-16 text-white animate-pulse" />
+                    <span className="absolute -bottom-12 text-rose-400 font-black tracking-[0.3em] uppercase text-[10px] animate-pulse">
+                      Recording...
+                    </span>
                   </motion.div>
-                ))}
-              </CardContent>
-            </Card>
+                ) : (
+                  <motion.div
+                    key="idle"
+                    initial={{ opacity: 0, scale: 0.5 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.5 }}
+                  >
+                    <Mic className="w-16 h-16 text-white/80 group-hover:text-white" />
+                  </motion.div>
+                )}
+              </AnimatePresence>
 
-            <Card className="bg-gradient-to-br from-cyan-600/20 to-blue-600/20 border border-cyan-500/30 shadow-xl">
-              <CardContent className="p-6">
-                <Shield className="w-10 h-10 mb-4 text-cyan-400" />
-                <h3 className="text-lg font-bold mb-2 text-white">
-                  Your Privacy Matters
-                </h3>
-                <ul className="space-y-2 text-white/60 text-sm">
-                  <li className="flex items-start gap-2">
-                    <CheckCircle className="w-4 h-4 mt-0.5 shrink-0 text-cyan-400" />
-                    <span>No personal data is collected</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <CheckCircle className="w-4 h-4 mt-0.5 shrink-0 text-cyan-400" />
-                    <span>Voice recordings are processed locally</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <CheckCircle className="w-4 h-4 mt-0.5 shrink-0 text-cyan-400" />
-                    <span>Only transcribed text is stored</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <CheckCircle className="w-4 h-4 mt-0.5 shrink-0 text-cyan-400" />
-                    <span>End-to-end encryption enabled</span>
-                  </li>
-                </ul>
-              </CardContent>
-            </Card>
+              {/* Pulse Rings */}
+              {isRecording && (
+                <>
+                  <motion.div
+                    initial={{ scale: 1, opacity: 0.5 }}
+                    animate={{ scale: 1.5, opacity: 0 }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                    className="absolute inset-0 rounded-full border-2 border-rose-500"
+                  />
+                  <motion.div
+                    initial={{ scale: 1, opacity: 0.5 }}
+                    animate={{ scale: 2, opacity: 0 }}
+                    transition={{ duration: 2, repeat: Infinity, delay: 0.5 }}
+                    className="absolute inset-0 rounded-full border border-rose-500/50"
+                  />
+                </>
+              )}
+            </button>
+          </motion.div>
+
+          <div className="mt-24 flex gap-6">
+            <Button
+              variant="outline"
+              className="h-14 px-8 rounded-2xl bg-white/5 border-white/10 hover:bg-white/10 text-white font-black text-[10px] tracking-[0.2em] uppercase transition-all flex items-center gap-3"
+            >
+              <Upload className="w-4 h-4 text-cyan-400" />
+              Upload Signal
+            </Button>
+            <Button
+              variant="outline"
+              className="h-14 px-8 rounded-2xl bg-white/5 border-white/10 hover:bg-white/10 text-white font-black text-[10px] tracking-[0.2em] uppercase transition-all flex items-center gap-3"
+            >
+              <History className="w-4 h-4 text-rose-400" />
+              Archive
+            </Button>
           </div>
         </div>
+
+        {/* AI Summary Section */}
+        <AnimatePresence>
+          {showSummary && (
+            <motion.div
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 20 }}
+              className="w-full mt-32"
+            >
+              <div className="bg-white/[0.02] backdrop-blur-[40px] border border-white/[0.08] rounded-[48px] p-12 relative overflow-hidden group shadow-[0_50px_100px_-20px_rgba(0,0,0,0.5)]">
+                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-cyan-500/40 to-transparent" />
+
+                <div className="flex items-center justify-between mb-12">
+                  <div className="flex items-center gap-6">
+                    <div className="w-14 h-14 rounded-2xl bg-cyan-500/10 flex items-center justify-center border border-cyan-500/20 shadow-xl">
+                      <Sparkles className="w-7 h-7 text-cyan-400" />
+                    </div>
+                    <div>
+                      <h3 className="text-3xl font-black tracking-tighter">
+                        NEURAL ANALYSIS
+                      </h3>
+                      <p className="text-[10px] font-black text-cyan-400/60 uppercase tracking-widest mt-1">
+                        AI Transcription Active
+                      </p>
+                    </div>
+                  </div>
+                  <Badge className="bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 px-4 py-1.5 rounded-full text-[10px] font-black tracking-[0.2em] uppercase">
+                    Processed
+                  </Badge>
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-12">
+                  <div className="space-y-6">
+                    <p className="text-white/20 text-[10px] font-black uppercase tracking-widest">
+                      Original Transcription
+                    </p>
+                    <div className="p-8 rounded-[32px] bg-black/40 border border-white/5 font-medium text-white/60 leading-relaxed italic">
+                      "I want to report an ongoing safety concern in the north
+                      wing parking area. The lighting has been malfunctioning
+                      for three nights, creating a high-risk environment for
+                      students leaving late shifts..."
+                    </div>
+                  </div>
+
+                  <div className="space-y-6">
+                    <p className="text-cyan-400/20 text-[10px] font-black uppercase tracking-widest">
+                      AI Executive Summary
+                    </p>
+                    <div className="p-8 rounded-[32px] bg-cyan-500/5 border border-cyan-500/20">
+                      <div className="flex items-start gap-4 mb-6">
+                        <div className="w-1 h-12 bg-cyan-500 rounded-full" />
+                        <p className="text-lg font-bold text-white leading-snug">
+                          Infrastructure failure identified in North Wing.
+                          Immediate maintenance required to mitigate safety
+                          risks.
+                        </p>
+                      </div>
+                      <div className="flex flex-wrap gap-3">
+                        {["Safety", "Facilities", "High Priority"].map(
+                          (tag) => (
+                            <span
+                              key={tag}
+                              className="text-[9px] font-black uppercase tracking-widest px-3 py-1 rounded-lg bg-cyan-500/10 text-cyan-400 border border-cyan-500/20"
+                            >
+                              {tag}
+                            </span>
+                          )
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-12 pt-12 border-t border-white/5 flex items-center justify-between">
+                  <p className="text-white/30 text-xs font-medium max-w-md">
+                    Note: Your voice signature has been scrubbed and replaced
+                    with a neural-generated monotone to ensure absolute
+                    anonymity.
+                  </p>
+                  <Button className="h-16 px-12 rounded-[24px] bg-cyan-500 hover:bg-cyan-400 text-black font-black text-xs tracking-[0.2em] uppercase transition-all shadow-[0_20px_40px_rgba(6,182,212,0.3)] group">
+                    Submit to Authorities
+                    <ChevronRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                  </Button>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Info Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full mt-32">
+          {[
+            {
+              icon: Shield,
+              title: "Zero Trace",
+              desc: "No IP logging, no metadata, no identity leaks.",
+              color: "rose",
+            },
+            {
+              icon: Zap,
+              title: "AI Scrubbing",
+              desc: "Voices are re-synthesized to prevent bio-recognition.",
+              color: "cyan",
+            },
+            {
+              icon: Volume2,
+              title: "Safe Storage",
+              desc: "Reports are encrypted with 256-bit military standards.",
+              color: "violet",
+            },
+          ].map((item, i) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5 + i * 0.1 }}
+              className="p-8 rounded-[32px] bg-white/[0.02] border border-white/[0.05] hover:bg-white/[0.04] transition-all group"
+            >
+              <div
+                className={`w-14 h-14 rounded-2xl bg-${item.color}-500/10 flex items-center justify-center border border-${item.color}-500/20 mb-6 group-hover:rotate-12 transition-transform`}
+              >
+                <item.icon className={`w-7 h-7 text-${item.color}-400`} />
+              </div>
+              <h4 className="text-xl font-black tracking-tight mb-2 uppercase">
+                {item.title}
+              </h4>
+              <p className="text-white/40 text-sm font-medium leading-relaxed">
+                {item.desc}
+              </p>
+            </motion.div>
+          ))}
+        </div>
       </main>
+
+      <footer className="p-12 border-t border-white/[0.03] text-center">
+        <p className="text-[10px] font-black text-white/10 uppercase tracking-[0.5em]">
+          Neural Encryption Active • Sector 7 Reporting Protocol
+        </p>
+      </footer>
     </div>
   );
 }

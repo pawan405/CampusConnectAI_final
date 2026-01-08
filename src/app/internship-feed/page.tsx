@@ -30,6 +30,9 @@ import {
   CheckCircle2,
   Trophy,
   Lightbulb,
+  MoreVertical,
+  Flag,
+  ExternalLink,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -44,6 +47,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { toast } from "sonner";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const initialPosts = [
   {
@@ -138,6 +148,12 @@ export default function InternshipFeedPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [filterSkill, setFilterSkill] = useState("all");
   const [showNewPostModal, setShowNewPostModal] = useState(false);
+  const [showChatModal, setShowChatModal] = useState(false);
+  const [chatRecipient, setChatRecipient] = useState<string | null>(null);
+  const [chatMessage, setChatMessage] = useState("");
+  const [chatHistory, setChatHistory] = useState<
+    { sender: string; text: string }[]
+  >([]);
   const [newPost, setNewPost] = useState({
     company: "",
     role: "",
@@ -168,24 +184,88 @@ export default function InternshipFeedPage() {
 
   const handleLike = (id: number) => {
     setPosts(
-      posts.map((post) =>
-        post.id === id
-          ? {
-              ...post,
-              liked: !post.liked,
-              likes: post.liked ? post.likes - 1 : post.likes + 1,
-            }
-          : post
-      )
+      posts.map((post) => {
+        if (post.id === id) {
+          const isLiking = !post.liked;
+          if (isLiking)
+            toast.success(`Liked ${post.company}'s experience!`, {
+              icon: <Heart className="w-4 h-4 fill-rose-500 text-rose-500" />,
+            });
+          return {
+            ...post,
+            liked: isLiking,
+            likes: isLiking ? post.likes + 1 : post.likes - 1,
+          };
+        }
+        return post;
+      })
     );
   };
 
   const handleSave = (id: number) => {
     setPosts(
-      posts.map((post) =>
-        post.id === id ? { ...post, saved: !post.saved } : post
-      )
+      posts.map((post) => {
+        if (post.id === id) {
+          const isSaving = !post.saved;
+          toast.success(
+            isSaving
+              ? "Experience saved to your collection"
+              : "Experience removed from collection",
+            {
+              icon: (
+                <Bookmark
+                  className={`w-4 h-4 ${isSaving ? "fill-amber-500 text-amber-500" : ""}`}
+                />
+              ),
+            }
+          );
+          return { ...post, saved: isSaving };
+        }
+        return post;
+      })
     );
+  };
+
+  const handleShare = (post: any) => {
+    const url = typeof window !== "undefined" ? window.location.href : "";
+    navigator.clipboard.writeText(`${url}?post=${post.id}`);
+    toast.success("Link copied to clipboard!", {
+      description: `Share ${post.author}'s ${post.company} journey with others.`,
+    });
+  };
+
+  const handleMessage = (author: string) => {
+    setChatRecipient(author);
+    setShowChatModal(true);
+    if (chatHistory.length === 0) {
+      setChatHistory([
+        {
+          sender: author,
+          text: `Hey! I saw you looking at my experience at ${posts.find((p) => p.author === author)?.company}. Happy to help with any questions!`,
+        },
+      ]);
+    }
+  };
+
+  const handleSendMessage = () => {
+    if (!chatMessage.trim()) return;
+    setChatHistory([...chatHistory, { sender: "You", text: chatMessage }]);
+    setChatMessage("");
+    setTimeout(() => {
+      setChatHistory((prev) => [
+        ...prev,
+        {
+          sender: chatRecipient || "System",
+          text: "That's a great question! I'll get back to you with more details shortly.",
+        },
+      ]);
+    }, 1000);
+  };
+
+  const handleReport = (company: string) => {
+    toast.error("Report submitted", {
+      description: `Thank you for helping us keep ${company} reviews authentic.`,
+    });
   };
 
   const handleSubmitPost = () => {
@@ -197,6 +277,7 @@ export default function InternshipFeedPage() {
       .split(",")
       .map((s) => s.trim())
       .filter((s) => s);
+
     const post = {
       id: posts.length + 1,
       ...newPost,
@@ -208,6 +289,7 @@ export default function InternshipFeedPage() {
       saved: false,
       liked: false,
     };
+
     setPosts([post, ...posts]);
     setShowNewPostModal(false);
     setNewPost({
@@ -224,6 +306,14 @@ export default function InternshipFeedPage() {
       rating: 5,
       author: "",
       year: "",
+    });
+
+    toast.success("Experience shared successfully!", {
+      description: "Your story is now live and helping other students.",
+      action: {
+        label: "View",
+        onClick: () => window.scrollTo({ top: 0, behavior: "smooth" }),
+      },
     });
   };
 
@@ -337,11 +427,7 @@ export default function InternshipFeedPage() {
                   <div className="flex flex-wrap gap-2">
                     <Badge
                       variant={filterSkill === "all" ? "default" : "outline"}
-                      className={`cursor-pointer ${
-                        filterSkill === "all"
-                          ? "bg-violet-500 text-white"
-                          : "border-white/[0.06] text-white/60 hover:bg-white/[0.04]"
-                      }`}
+                      className={`cursor-pointer ${filterSkill === "all" ? "bg-violet-500 text-white" : "border-white/[0.06] text-white/60 hover:bg-white/[0.04]"}`}
                       onClick={() => setFilterSkill("all")}
                     >
                       All
@@ -354,11 +440,7 @@ export default function InternshipFeedPage() {
                             ? "default"
                             : "outline"
                         }
-                        className={`cursor-pointer ${
-                          filterSkill === skill.toLowerCase()
-                            ? "bg-violet-500 text-white"
-                            : "border-white/[0.06] text-white/60 hover:bg-white/[0.04]"
-                        }`}
+                        className={`cursor-pointer ${filterSkill === skill.toLowerCase() ? "bg-violet-500 text-white" : "border-white/[0.06] text-white/60 hover:bg-white/[0.04]"}`}
                         onClick={() => setFilterSkill(skill.toLowerCase())}
                       >
                         {skill}
@@ -431,17 +513,52 @@ export default function InternshipFeedPage() {
                             </div>
                           </div>
                           <div className="flex flex-col items-end gap-2">
-                            <div className="flex items-center gap-1">
-                              {[...Array(5)].map((_, i) => (
-                                <Star
-                                  key={i}
-                                  className={`w-4 h-4 ${
-                                    i < post.rating
-                                      ? "text-amber-400 fill-amber-400"
-                                      : "text-white/10"
-                                  }`}
-                                />
-                              ))}
+                            <div className="flex items-center gap-2">
+                              <div className="flex items-center gap-1">
+                                {[...Array(5)].map((_, i) => (
+                                  <Star
+                                    key={i}
+                                    className={`w-4 h-4 ${i < post.rating ? "text-amber-400 fill-amber-400" : "text-white/10"}`}
+                                  />
+                                ))}
+                              </div>
+                              <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-8 w-8 text-white/30 hover:text-white hover:bg-white/10"
+                                  >
+                                    <MoreVertical className="w-4 h-4" />
+                                  </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent
+                                  align="end"
+                                  className="bg-[#12121a] border-white/10 text-white"
+                                >
+                                  <DropdownMenuItem
+                                    className="focus:bg-white/10 focus:text-white cursor-pointer"
+                                    onClick={() => handleShare(post)}
+                                  >
+                                    <Share2 className="w-4 h-4 mr-2" /> Share
+                                    Post
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem
+                                    className="focus:bg-white/10 focus:text-white cursor-pointer"
+                                    onClick={() => handleSave(post.id)}
+                                  >
+                                    <Bookmark className="w-4 h-4 mr-2" />{" "}
+                                    {post.saved ? "Remove Save" : "Save Story"}
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem
+                                    className="focus:bg-white/10 text-rose-400 focus:text-rose-400 cursor-pointer"
+                                    onClick={() => handleReport(post.company)}
+                                  >
+                                    <Flag className="w-4 h-4 mr-2" /> Report
+                                    Post
+                                  </DropdownMenuItem>
+                                </DropdownMenuContent>
+                              </DropdownMenu>
                             </div>
                             <p className="text-xs text-white/40 font-medium flex items-center gap-1">
                               <MapPin className="w-3 h-3" /> {post.location}
@@ -544,15 +661,16 @@ export default function InternshipFeedPage() {
                             }`}
                           >
                             <Heart
-                              className={`w-4 h-4 ${
-                                post.liked ? "fill-current" : ""
-                              }`}
+                              className={`w-4 h-4 ${post.liked ? "fill-current" : ""}`}
                             />
                             <span className="text-xs font-bold">
                               {post.likes}
                             </span>
                           </button>
-                          <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-white/40 hover:bg-white/[0.04] transition-all">
+                          <button
+                            onClick={() => handleMessage(post.author)}
+                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-white/40 hover:bg-white/[0.04] transition-all"
+                          >
                             <MessageCircle className="w-4 h-4" />
                             <span className="text-xs font-bold">
                               {post.comments}
@@ -561,7 +679,10 @@ export default function InternshipFeedPage() {
                         </div>
 
                         <div className="flex items-center gap-4">
-                          <div className="flex items-center gap-3">
+                          <button
+                            onClick={() => handleMessage(post.author)}
+                            className="flex items-center gap-3 hover:opacity-80 transition-opacity"
+                          >
                             <div className="text-right hidden sm:block">
                               <p className="text-xs font-bold text-white">
                                 {post.author}
@@ -573,7 +694,7 @@ export default function InternshipFeedPage() {
                             <div className="w-8 h-8 rounded-full bg-violet-500/20 border border-violet-500/30 flex items-center justify-center text-violet-400 text-[10px] font-bold">
                               {post.author.charAt(0)}
                             </div>
-                          </div>
+                          </button>
                           <div className="flex items-center gap-2 border-l border-white/[0.06] pl-4">
                             <button
                               onClick={() => handleSave(post.id)}
@@ -584,12 +705,13 @@ export default function InternshipFeedPage() {
                               }`}
                             >
                               <Bookmark
-                                className={`w-5 h-5 ${
-                                  post.saved ? "fill-current" : ""
-                                }`}
+                                className={`w-5 h-5 ${post.saved ? "fill-current" : ""}`}
                               />
                             </button>
-                            <button className="text-white/30 hover:text-violet-400 transition-colors">
+                            <button
+                              onClick={() => handleShare(post)}
+                              className="text-white/30 hover:text-violet-400 transition-colors"
+                            >
                               <Share2 className="w-4 h-4" />
                             </button>
                           </div>
@@ -903,11 +1025,7 @@ export default function InternshipFeedPage() {
                                 }
                               >
                                 <Star
-                                  className={`w-6 h-6 ${
-                                    num <= newPost.rating
-                                      ? "text-amber-400 fill-amber-400"
-                                      : "text-white/10"
-                                  }`}
+                                  className={`w-6 h-6 ${num <= newPost.rating ? "text-amber-400 fill-amber-400" : "text-white/10"}`}
                                 />
                               </button>
                             ))}
@@ -929,6 +1047,93 @@ export default function InternshipFeedPage() {
                     </TabsContent>
                   </Tabs>
                 </CardContent>
+              </Card>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Chat Modal */}
+      <AnimatePresence>
+        {showChatModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[60] flex items-end md:items-center justify-center p-4"
+            onClick={() => setShowChatModal(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0, y: 100 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.95, opacity: 0, y: 100 }}
+              onClick={(e) => e.stopPropagation()}
+              className="w-full max-w-lg h-[600px] flex flex-col"
+            >
+              <Card className="bg-[#0c0c12] border border-white/[0.06] shadow-2xl flex-1 flex flex-col overflow-hidden">
+                <div className="p-4 border-b border-white/[0.06] flex items-center justify-between bg-white/[0.02]">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-violet-500/20 flex items-center justify-center text-violet-400 font-bold">
+                      {chatRecipient?.charAt(0)}
+                    </div>
+                    <div>
+                      <p className="font-bold text-white text-sm">
+                        {chatRecipient}
+                      </p>
+                      <div className="flex items-center gap-1.5">
+                        <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                        <p className="text-[10px] text-white/40 uppercase font-black">
+                          Online
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => setShowChatModal(false)}
+                    className="p-2 hover:bg-white/5 rounded-full transition-colors"
+                  >
+                    <X className="w-5 h-5 text-white/40" />
+                  </button>
+                </div>
+
+                <div className="flex-1 overflow-y-auto p-4 space-y-4">
+                  {chatHistory.map((msg, i) => (
+                    <div
+                      key={i}
+                      className={`flex ${msg.sender === "You" ? "justify-end" : "justify-start"}`}
+                    >
+                      <div
+                        className={`max-w-[80%] p-3 rounded-2xl text-sm ${
+                          msg.sender === "You"
+                            ? "bg-violet-500 text-white rounded-tr-none"
+                            : "bg-white/[0.04] text-white/80 border border-white/[0.06] rounded-tl-none"
+                        }`}
+                      >
+                        {msg.text}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="p-4 border-t border-white/[0.06] bg-white/[0.02]">
+                  <div className="relative">
+                    <Input
+                      placeholder="Type a message..."
+                      className="bg-black/50 border-white/[0.1] h-12 pr-12 text-white placeholder:text-white/20 rounded-xl"
+                      value={chatMessage}
+                      onChange={(e) => setChatMessage(e.target.value)}
+                      onKeyDown={(e) =>
+                        e.key === "Enter" && handleSendMessage()
+                      }
+                    />
+                    <button
+                      onClick={handleSendMessage}
+                      className="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-violet-500 hover:bg-violet-600 text-white rounded-lg transition-colors"
+                    >
+                      <Send className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
               </Card>
             </motion.div>
           </motion.div>
