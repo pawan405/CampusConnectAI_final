@@ -326,7 +326,18 @@ export default function DashboardPage() {
           <section className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {stats.map((stat, i) => (
               <TiltCard key={i} className="h-48 group">
-                <div className="w-full h-full bg-white/[0.03] backdrop-blur-xl border border-white/[0.08] rounded-3xl p-6 flex flex-col justify-between hover:bg-white/[0.06] transition-all">
+                <motion.div
+                  animate={{
+                    y: [0, -8, 0],
+                  }}
+                  transition={{
+                    duration: 5,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                    delay: i * 0.3,
+                  }}
+                  className="w-full h-full bg-white/[0.03] backdrop-blur-xl border border-white/[0.08] rounded-3xl p-6 flex flex-col justify-between hover:bg-white/[0.06] transition-all"
+                >
                   <div className="flex justify-between items-start">
                     <div
                       className={`w-12 h-12 rounded-xl bg-${stat.color}-500/10 border border-${stat.color}-500/20 flex items-center justify-center`}
@@ -371,7 +382,7 @@ export default function DashboardPage() {
                       {stat.label}
                     </p>
                   </div>
-                </div>
+                </motion.div>
               </TiltCard>
             ))}
           </section>
@@ -384,24 +395,37 @@ export default function DashboardPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {features.map((feature, i) => (
                 <Link key={i} href={feature.href}>
-                  <div className="group h-full bg-white/[0.03] backdrop-blur-xl border border-white/[0.08] rounded-3xl p-6 flex flex-col hover:bg-white/[0.06] transition-all cursor-pointer">
-                    <div
-                      className="w-14 h-14 rounded-2xl flex items-center justify-center mb-6 border border-white/10"
-                      style={{ backgroundColor: `${feature.accent}22` }}
+                  <TiltCard className="h-full">
+                    <motion.div
+                      animate={{
+                        y: [0, -10, 0],
+                      }}
+                      transition={{
+                        duration: 4,
+                        repeat: Infinity,
+                        ease: "easeInOut",
+                        delay: i * 0.2,
+                      }}
+                      className="group h-full bg-white/[0.03] backdrop-blur-xl border border-white/[0.08] rounded-3xl p-6 flex flex-col hover:bg-white/[0.06] transition-all cursor-pointer"
                     >
-                      <feature.icon
-                        className="w-7 h-7"
-                        style={{ color: feature.accent }}
-                      />
-                    </div>
-                    <h3 className="text-xl font-bold mb-2">{feature.title}</h3>
-                    <p className="text-white/40 text-sm line-clamp-3 mb-6">
-                      {feature.desc}
-                    </p>
-                    <div className="mt-auto flex items-center text-[10px] font-black text-cyan-400 uppercase tracking-widest group-hover:gap-2 transition-all">
-                      Access System <ArrowRight className="w-3 h-3" />
-                    </div>
-                  </div>
+                      <div
+                        className="w-14 h-14 rounded-2xl flex items-center justify-center mb-6 border border-white/10"
+                        style={{ backgroundColor: `${feature.accent}22` }}
+                      >
+                        <feature.icon
+                          className="w-7 h-7"
+                          style={{ color: feature.accent }}
+                        />
+                      </div>
+                      <h3 className="text-xl font-bold mb-2">{feature.title}</h3>
+                      <p className="text-white/40 text-sm line-clamp-3 mb-6">
+                        {feature.desc}
+                      </p>
+                      <div className="mt-auto flex items-center text-[10px] font-black text-cyan-400 uppercase tracking-widest group-hover:gap-2 transition-all">
+                        Access System <ArrowRight className="w-3 h-3" />
+                      </div>
+                    </motion.div>
+                  </TiltCard>
                 </Link>
               ))}
             </div>
@@ -409,7 +433,17 @@ export default function DashboardPage() {
 
           {/* Activity */}
           <section className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <div className="bg-white/[0.02] backdrop-blur-xl border border-white/[0.08] rounded-[32px] p-8">
+            <motion.div
+              animate={{
+                y: [0, -6, 0],
+              }}
+              transition={{
+                duration: 6,
+                repeat: Infinity,
+                ease: "easeInOut",
+              }}
+              className="bg-white/[0.02] backdrop-blur-xl border border-white/[0.08] rounded-[32px] p-8"
+            >
               <h3 className="text-2xl font-black mb-8">System Activity</h3>
               <div className="space-y-6">
                 {[
@@ -444,9 +478,20 @@ export default function DashboardPage() {
                   </div>
                 ))}
               </div>
-            </div>
+            </motion.div>
 
-            <div className="bg-gradient-to-br from-cyan-500/10 to-purple-500/10 backdrop-blur-xl border border-white/[0.1] rounded-[32px] p-8 flex flex-col justify-between">
+            <motion.div
+              animate={{
+                y: [0, -12, 0],
+              }}
+              transition={{
+                duration: 4.5,
+                repeat: Infinity,
+                ease: "easeInOut",
+                delay: 0.5,
+              }}
+              className="bg-gradient-to-br from-cyan-500/10 to-purple-500/10 backdrop-blur-xl border border-white/[0.1] rounded-[32px] p-8 flex flex-col justify-between"
+            >
               <div>
                 <Brain className="w-10 h-10 text-cyan-400 mb-6" />
                 <h3 className="text-4xl font-black mb-4 leading-tight">
@@ -459,7 +504,7 @@ export default function DashboardPage() {
               <Button className="mt-8 h-14 rounded-2xl bg-cyan-500 hover:bg-cyan-400 text-black font-black uppercase tracking-widest text-xs">
                 Analyze Matches
               </Button>
-            </div>
+            </motion.div>
           </section>
         </main>
 
