@@ -449,13 +449,6 @@ export default function CrackHackPage() {
                 >
                   EXPLORE NOW <ArrowRight className="ml-2 w-5 h-5" />
                 </Button>
-                <Button
-                  variant="outline"
-                  size="lg"
-                  className="h-16 px-8 rounded-full border-white/10 hover:bg-white/5 text-white font-black text-lg backdrop-blur-md"
-                >
-                  HAVE A PROJECT?
-                </Button>
               </motion.div>
             </motion.div>
 
