@@ -373,39 +373,38 @@ export default function CrackHackPage() {
         <>
           {/* Fixed Background 3D Scene */}
           <div className="fixed inset-0 z-0 pointer-events-none">
-            <Canvas shadows gl={{ antialias: true, alpha: true }}>
-              <PerspectiveCamera makeDefault position={[0, 0, 10]} fov={50} />
-              <ambientLight intensity={0.5} />
-              <pointLight
-                position={[10, 10, 10]}
-                intensity={2}
-                color="#00f2ff"
-              />
-              <pointLight
-                position={[-10, -10, 10]}
-                intensity={2}
-                color="#bc13fe"
-              />
+              <Canvas shadows gl={{ antialias: true, alpha: true }}>
+                <PerspectiveCamera makeDefault position={[0, 0, 10]} fov={50} />
+                <ambientLight intensity={0.5} />
+                <pointLight
+                  position={[10, 10, 10]}
+                  intensity={2}
+                  color="#00f2ff"
+                />
+                <pointLight
+                  position={[-10, -10, 10]}
+                  intensity={2}
+                  color="#bc13fe"
+                />
 
-              <FloatingRings />
-              <GridFloor />
+                <FloatingRings />
 
-              <group position={[5, 2, -5]}>
-                <HologramSphere />
-              </group>
-              <group position={[-6, -3, -8]}>
-                <HologramSphere />
-              </group>
+                <group position={[5, 2, -5]}>
+                  <HologramSphere />
+                </group>
+                <group position={[-6, -3, -8]}>
+                  <HologramSphere />
+                </group>
 
-              <OrbitControls
-                enableZoom={false}
-                enablePan={false}
-                autoRotate
-                autoRotateSpeed={0.5}
-                maxPolarAngle={Math.PI / 2}
-                minPolarAngle={Math.PI / 3}
-              />
-            </Canvas>
+                <OrbitControls
+                  enableZoom={false}
+                  enablePan={false}
+                  autoRotate
+                  autoRotateSpeed={0.5}
+                  maxPolarAngle={Math.PI / 2}
+                  minPolarAngle={Math.PI / 3}
+                />
+              </Canvas>
           </div>
 
           {/* Hero Section */}
