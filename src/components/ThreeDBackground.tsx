@@ -133,7 +133,7 @@ export default function ThreeDBackground() {
         <Scene />
       </Canvas>
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(6,182,212,0.1),transparent_70%)]" />
-      <div className="absolute inset-0 backdrop-blur-[100px]" />
+      <div className="absolute inset-0 backdrop-blur-[40px] opacity-60" />
     </div>
   );
 }

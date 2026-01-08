@@ -332,7 +332,7 @@ export default function DashboardPage() {
                     initial: { duration: 0.5, delay: i * 0.2 },
                     y: { duration: 4, repeat: Infinity, ease: "easeInOut", delay: i * 0.3 }
                   }}
-                  className="w-full h-full bg-white/[0.03] backdrop-blur-3xl border border-white/10 rounded-[40px] p-8 flex flex-col justify-between relative overflow-hidden transition-all duration-500 group-hover:border-cyan-500/30 group-hover:bg-white/[0.06] group-hover:shadow-[0_20px_80px_rgba(6,182,212,0.1)]"
+                  className="w-full h-full bg-black/40 backdrop-blur-3xl border border-white/10 rounded-[40px] p-8 flex flex-col justify-between relative overflow-hidden transition-all duration-500 group-hover:border-cyan-500/30 group-hover:bg-black/60 group-hover:shadow-[0_20px_80px_rgba(6,182,212,0.2)]"
                 >
                   <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-cyan-500/10 to-transparent blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
                   
@@ -396,7 +396,7 @@ export default function DashboardPage() {
                         initial: { delay: i * 0.1 },
                         y: { duration: 5, repeat: Infinity, ease: "easeInOut", delay: i * 0.4 }
                       }}
-                      className="h-full bg-white/[0.02] backdrop-blur-3xl border border-white/5 rounded-[48px] p-10 flex flex-col relative overflow-hidden transition-all duration-700 hover:bg-white/[0.08] hover:border-white/20 hover:shadow-[0_30px_100px_rgba(0,0,0,0.4)]"
+                      className="h-full bg-black/40 backdrop-blur-3xl border border-white/5 rounded-[48px] p-10 flex flex-col relative overflow-hidden transition-all duration-700 hover:bg-black/60 hover:border-white/20 hover:shadow-[0_30px_100px_rgba(0,0,0,0.4)]"
                     >
                       {/* Neon Highlight Top */}
                       <div 
@@ -436,7 +436,7 @@ export default function DashboardPage() {
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                className="h-full bg-white/[0.02] backdrop-blur-3xl border border-white/10 rounded-[56px] p-12 relative overflow-hidden group"
+                className="h-full bg-black/40 backdrop-blur-3xl border border-white/10 rounded-[56px] p-12 relative overflow-hidden group"
               >
                 <div className="flex items-center justify-between mb-12">
                   <div className="space-y-1">
@@ -482,10 +482,10 @@ export default function DashboardPage() {
                 initial={{ opacity: 0, x: 30 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
-                className="h-full bg-gradient-to-br from-cyan-600/20 via-purple-600/20 to-blue-600/20 backdrop-blur-3xl border border-white/20 rounded-[56px] p-12 flex flex-col justify-between group hover:border-white/40 transition-all duration-700 shadow-[0_40px_100px_rgba(6,182,212,0.15)]"
+                className="h-full bg-gradient-to-br from-cyan-900/40 via-purple-900/40 to-blue-900/40 backdrop-blur-3xl border border-white/20 rounded-[56px] p-12 flex flex-col justify-between group hover:border-white/40 transition-all duration-700 shadow-[0_40px_100px_rgba(6,182,212,0.15)]"
               >
                 <div>
-                  <div className="w-20 h-20 rounded-3xl bg-white/5 border border-white/10 flex items-center justify-center mb-12 group-hover:rotate-12 group-hover:scale-110 transition-all duration-700 relative">
+                  <div className="w-20 h-20 rounded-3xl bg-black/40 border border-white/10 flex items-center justify-center mb-12 group-hover:rotate-12 group-hover:scale-110 transition-all duration-700 relative">
                     <Brain className="w-10 h-10 text-cyan-400" />
                     <div className="absolute inset-0 bg-cyan-400/20 blur-2xl rounded-full" />
                   </div>
@@ -494,11 +494,11 @@ export default function DashboardPage() {
                     Analysis <br />
                     Complete.
                   </h3>
-                  <p className="text-white/50 text-lg font-medium leading-relaxed max-w-[280px]">
+                  <p className="text-white/70 text-lg font-medium leading-relaxed max-w-[280px]">
                     Your career vector has been updated with 14 new high-affinity opportunities.
                   </p>
                 </div>
-                <Button className="mt-12 h-20 w-full rounded-[32px] bg-white text-black font-black uppercase tracking-[0.3em] text-xs hover:bg-cyan-400 transition-all duration-500 shadow-[0_20px_50px_rgba(255,255,255,0.1)] group">
+                <Button className="mt-12 h-20 w-full rounded-[32px] bg-gradient-to-r from-cyan-500 to-purple-600 text-white font-black uppercase tracking-[0.3em] text-xs hover:scale-[1.02] transition-all duration-500 shadow-[0_20px_50px_rgba(6,182,212,0.3)] group border-none">
                   Access Intelligence <ArrowRight className="ml-3 w-4 h-4 group-hover:translate-x-2 transition-transform" />
                 </Button>
               </motion.div>
