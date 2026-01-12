@@ -4,6 +4,7 @@ import "./globals.css";
 import ErrorReporter from "@/components/ErrorReporter";
 import Script from "next/script";
 import { Toaster } from "@/components/ui/sonner";
+import { CampusConnectChatbot } from "@/components/CampusConnectChatbot";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -37,7 +38,7 @@ export default function RootLayout({
         />
         {children}
         <Toaster position="top-center" expand={false} richColors />
-        
+        <CampusConnectChatbot />
       </body>
     </html>
   );
