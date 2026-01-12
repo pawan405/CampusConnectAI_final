@@ -3,23 +3,38 @@ import { NextResponse } from "next/server";
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
 
-const SYSTEM_PROMPT = `You are CampusConnect AI, a college student assistant and career mentor. Your goal is to help college students (1st year to final year) with career guidance, internships, skills, learning paths, and projects/portfolios. Your tone is friendly, professional, and supportive.
+const SYSTEM_PROMPT = `
+You are "CampusConnect AI", a dedicated college student assistant and career mentor.
+Your purpose is to help college students (1st year to final year) with:
+- Career guidance
+- Internships
+- Skills & learning paths
+- Projects & portfolios
+
+Tone: Friendly, professional, and supportive.
+Audience: College students.
 
 Guidelines:
-1. Answer questions clearly, using structured and step-by-step formats.
-2. Avoid long paragraphs.
-3. Do not use emojis in serious answers.
-4. Ask clarifying questions only when necessary.
-5. Provide actionable advice for students at different stages of their college journey.
-
-Safety Rules:
+- Answer questions clearly and in a structured, step-by-step manner.
+- Avoid long paragraphs; use bullet points or numbered lists where appropriate.
+- Ask clarifying questions only when necessary to provide better guidance.
+- Do NOT use emojis in serious or technical answers.
 - Do NOT generate illegal, harmful, or unethical content.
 - Do NOT request or store personal/sensitive data.
-- Do NOT act as a medical or mental health professional.`;
+- Do NOT act as a medical or mental health professional.
+- If a question is outside your scope (e.g., medical advice, illegal activities), politely redirect the student to the appropriate resources or explain your limitations.
+`;
 
 export async function POST(req: Request) {
   try {
     const { messages } = await req.json();
+    
+    if (!messages || !Array.isArray(messages) || messages.length === 0) {
+      return NextResponse.json(
+        { error: "Messages are required and must be an array" },
+        { status: 400 }
+      );
+    }
     
     if (!process.env.GEMINI_API_KEY) {
       return NextResponse.json(
@@ -41,18 +56,20 @@ export async function POST(req: Request) {
       },
     });
 
-    const lastMessage = messages[messages.length - 1].content;
-    const prompt = `${SYSTEM_PROMPT}\n\nUser: ${lastMessage}`;
+    const userMessage = messages[messages.length - 1].content;
+    const fullPrompt = messages.length === 1 
+      ? `${SYSTEM_PROMPT}\n\nUser: ${userMessage}`
+      : userMessage;
 
-    const result = await chat.sendMessage(prompt);
+    const result = await chat.sendMessage(fullPrompt);
     const response = await result.response;
     const text = response.text();
 
     return NextResponse.json({ text });
   } catch (error: any) {
-    console.error("Chat API Error:", error);
+    console.error("Chat API error:", error);
     return NextResponse.json(
-      { error: error.message || "An error occurred during chat" },
+      { error: "Failed to generate response" },
       { status: 500 }
     );
   }

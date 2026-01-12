@@ -2,20 +2,9 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { 
-  MessageCircle, 
-  X, 
-  Send, 
-  Bot, 
-  User, 
-  Loader2, 
-  ChevronDown,
-  Sparkles,
-  Gamepad2,
-  BookOpen,
-  Briefcase
-} from "lucide-react";
+import { MessageCircle, X, Send, User, Bot, Loader2, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
@@ -25,40 +14,33 @@ interface Message {
   content: string;
 }
 
-const SUGGESTED_QUESTIONS = [
-  { label: "Career Roadmap", icon: Briefcase, query: "Can you help me build a career roadmap for Web Development?" },
-  { label: "Internships", icon: Sparkles, query: "What are the best platforms to find tech internships?" },
-  { label: "Projects", icon: Gamepad2, query: "Give me some unique project ideas for a 2nd-year CS student." },
-  { label: "Skill Path", icon: BookOpen, query: "How should I start learning AI and Machine Learning?" },
-];
-
 export function CampusConnectChatbot() {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
     {
       role: "bot",
-      content: "Hi there! I'm CampusConnect AI, your career mentor. How can I help you today? Whether it's internships, skills, or projects, I've got your back!"
-    }
+      content: "Hello! I'm CampusConnect AI. How can I help you today with your career, skills, or projects?",
+    },
   ]);
-  const [inputValue, setInputValue] = useState("");
+  const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const scrollAreaRef = useRef<HTMLDivElement>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (scrollAreaRef.current) {
-      const scrollContainer = scrollAreaRef.current.querySelector('[data-radix-scroll-area-viewport]');
-      if (scrollContainer) {
-        scrollContainer.scrollTop = scrollContainer.scrollHeight;
-      }
+    if (scrollRef.current) {
+      scrollRef.current.scrollTo({
+        top: scrollRef.current.scrollHeight,
+        behavior: "smooth",
+      });
     }
-  }, [messages, isLoading]);
+  }, [messages]);
 
-  const handleSendMessage = async (content: string = inputValue) => {
-    if (!content.trim() || isLoading) return;
+  const handleSendMessage = async () => {
+    if (!input.trim() || isLoading) return;
 
-    const userMessage: Message = { role: "user", content };
-    setMessages((prev) => [...prev, userMessage]);
-    setInputValue("");
+    const userMessage = input.trim();
+    setInput("");
+    setMessages((prev) => [...prev, { role: "user", content: userMessage }]);
     setIsLoading(true);
 
     try {
@@ -66,166 +48,169 @@ export function CampusConnectChatbot() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          messages: [...messages, userMessage].map(m => ({
-            role: m.role === "user" ? "user" : "assistant",
-            content: m.content
-          }))
-        })
+          messages: messages.concat({ role: "user", content: userMessage }).map((m) => ({
+            role: m.role === "bot" ? "assistant" : "user",
+            content: m.content,
+          })),
+        }),
       });
 
       const data = await response.json();
-      if (data.error) throw new Error(data.error);
+
+      if (data.error) {
+        throw new Error(data.error);
+      }
 
       setMessages((prev) => [...prev, { role: "bot", content: data.text }]);
     } catch (error) {
       console.error("Chat error:", error);
-      setMessages((prev) => [...prev, { role: "bot", content: "Sorry, I'm having some trouble connecting. Please try again later." }]);
+      setMessages((prev) => [
+        ...prev,
+        { role: "bot", content: "I'm sorry, I'm having trouble connecting right now. Please try again later." },
+      ]);
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="fixed bottom-6 right-6 z-[100] font-sans">
+    <div className="fixed bottom-6 right-6 z-[100] flex flex-col items-end">
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            initial={{ opacity: 0, scale: 0.9, y: 20, transformOrigin: "bottom right" }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.9, y: 20 }}
-            className="mb-4 w-[380px] sm:w-[420px] h-[600px] max-h-[80vh] flex flex-col bg-black/80 backdrop-blur-3xl border border-white/20 rounded-[32px] shadow-[0_20px_60px_rgba(0,0,0,0.6)] overflow-hidden"
+            initial={{ opacity: 0, y: 20, scale: 0.95, transformOrigin: "bottom right" }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 20, scale: 0.95 }}
+            transition={{ duration: 0.2, ease: "easeOut" }}
+            className="mb-4"
           >
-            {/* Header */}
-            <div className="p-6 border-b border-white/10 bg-gradient-to-r from-cyan-500/10 to-purple-500/10 flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-400 to-purple-500 p-[1px]">
-                  <div className="w-full h-full rounded-[11px] bg-black flex items-center justify-center">
-                    <Bot className="w-5 h-5 text-cyan-400" />
+            <Card className="w-[380px] sm:w-[420px] h-[550px] flex flex-col bg-zinc-950/95 backdrop-blur-xl border-zinc-800 shadow-2xl overflow-hidden">
+              <CardHeader className="bg-gradient-to-r from-blue-600/20 to-indigo-600/20 border-b border-zinc-800 py-4 px-6">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center shadow-lg shadow-blue-500/20">
+                      <Sparkles className="w-6 h-6 text-white" />
+                    </div>
+                    <div>
+                      <CardTitle className="text-lg font-bold text-white tracking-tight">CampusConnect AI</CardTitle>
+                      <div className="flex items-center gap-1.5">
+                        <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                        <span className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">Online Assistant</span>
+                      </div>
+                    </div>
                   </div>
-                </div>
-                <div>
-                  <h3 className="text-white font-bold text-lg leading-tight">CampusConnect AI</h3>
-                  <div className="flex items-center gap-1.5">
-                    <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                    <span className="text-[10px] text-white/50 uppercase tracking-widest font-bold">Always Online</span>
-                  </div>
-                </div>
-              </div>
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                onClick={() => setIsOpen(false)}
-                className="text-white/40 hover:text-white hover:bg-white/10 rounded-xl"
-              >
-                <X className="w-5 h-5" />
-              </Button>
-            </div>
-
-            {/* Chat Area */}
-            <ScrollArea ref={scrollAreaRef} className="flex-1 p-6">
-              <div className="space-y-6">
-                {messages.map((msg, i) => (
-                  <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    key={i}
-                    className={cn(
-                      "flex gap-3 max-w-[85%]",
-                      msg.role === "user" ? "ml-auto flex-row-reverse" : ""
-                    )}
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setIsOpen(false)}
+                    className="h-9 w-9 text-zinc-400 hover:text-white hover:bg-zinc-800/50 rounded-full"
                   >
-                    <div className={cn(
-                      "w-8 h-8 rounded-lg flex-shrink-0 flex items-center justify-center border",
-                      msg.role === "user" ? "bg-white/10 border-white/10" : "bg-cyan-500/10 border-cyan-500/20"
-                    )}>
-                      {msg.role === "user" ? <User className="w-4 h-4 text-white/60" /> : <Bot className="w-4 h-4 text-cyan-400" />}
-                    </div>
-                    <div className={cn(
-                      "p-4 rounded-2xl text-sm leading-relaxed",
-                      msg.role === "user" 
-                        ? "bg-cyan-500 text-black font-medium rounded-tr-none" 
-                        : "bg-white/5 border border-white/10 text-white/90 rounded-tl-none"
-                    )}>
-                      {msg.content.split('\n').map((line, j) => (
-                        <p key={j} className={j > 0 ? "mt-2" : ""}>{line}</p>
-                      ))}
-                    </div>
-                  </motion.div>
-                ))}
-                {isLoading && (
-                  <div className="flex gap-3 max-w-[85%]">
-                    <div className="w-8 h-8 rounded-lg flex-shrink-0 flex items-center justify-center border bg-cyan-500/10 border-cyan-500/20">
-                      <Bot className="w-4 h-4 text-cyan-400" />
-                    </div>
-                    <div className="p-4 rounded-2xl rounded-tl-none bg-white/5 border border-white/10 flex items-center gap-2">
-                      <Loader2 className="w-4 h-4 text-cyan-400 animate-spin" />
-                      <span className="text-sm text-white/40">CampusConnect is thinking...</span>
-                    </div>
-                  </div>
-                )}
-              </div>
-              
-              {messages.length === 1 && (
-                <div className="mt-8 grid grid-cols-2 gap-3">
-                  {SUGGESTED_QUESTIONS.map((item, i) => (
-                    <button
-                      key={i}
-                      onClick={() => handleSendMessage(item.query)}
-                      className="text-left p-3 rounded-2xl bg-white/5 border border-white/10 hover:border-cyan-500/30 hover:bg-white/10 transition-all group"
-                    >
-                      <item.icon className="w-4 h-4 text-cyan-400 mb-2 group-hover:scale-110 transition-transform" />
-                      <span className="text-[11px] font-bold text-white/60 group-hover:text-white">{item.label}</span>
-                    </button>
-                  ))}
+                    <X className="w-5 h-5" />
+                  </Button>
                 </div>
-              )}
-            </ScrollArea>
+              </CardHeader>
 
-            {/* Input Area */}
-            <div className="p-6 border-t border-white/10 bg-black/40">
-              <form 
-                onSubmit={(e) => { e.preventDefault(); handleSendMessage(); }}
-                className="relative flex items-center gap-3"
-              >
-                <Input
-                  value={inputValue}
-                  onChange={(e) => setInputValue(e.target.value)}
-                  placeholder="Ask about your career..."
-                  className="h-12 bg-white/5 border-white/10 rounded-2xl text-sm focus:border-cyan-500/30 text-white placeholder:text-white/20"
-                />
-                <Button 
-                  type="submit"
-                  disabled={!inputValue.trim() || isLoading}
-                  className="h-12 w-12 rounded-2xl bg-cyan-500 hover:bg-cyan-400 text-black flex-shrink-0 transition-all hover:shadow-[0_0_20px_rgba(6,182,212,0.4)]"
+              <CardContent className="flex-1 p-0 overflow-hidden relative">
+                <ScrollArea className="h-full px-6 py-6" ref={scrollRef}>
+                  <div className="space-y-6">
+                    {messages.map((message, index) => (
+                      <div
+                        key={index}
+                        className={cn(
+                          "flex w-full gap-3",
+                          message.role === "user" ? "flex-row-reverse" : "flex-row"
+                        )}
+                      >
+                        <div
+                          className={cn(
+                            "flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center border",
+                            message.role === "user" 
+                              ? "bg-zinc-800 border-zinc-700 text-blue-400" 
+                              : "bg-blue-600 border-blue-500 text-white"
+                          )}
+                        >
+                          {message.role === "user" ? <User className="w-4 h-4" /> : <Bot className="w-4 h-4" />}
+                        </div>
+                        <div
+                          className={cn(
+                            "max-w-[80%] rounded-2xl px-4 py-3 text-sm leading-relaxed",
+                            message.role === "user"
+                              ? "bg-zinc-800 text-zinc-100 rounded-tr-none"
+                              : "bg-zinc-900/50 border border-zinc-800 text-zinc-100 rounded-tl-none"
+                          )}
+                        >
+                          <div className="whitespace-pre-wrap">{message.content}</div>
+                        </div>
+                      </div>
+                    ))}
+                    {isLoading && (
+                      <div className="flex w-full gap-3">
+                        <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white">
+                          <Bot className="w-4 h-4" />
+                        </div>
+                        <div className="bg-zinc-900/50 border border-zinc-800 text-zinc-400 rounded-2xl rounded-tl-none px-4 py-3 text-sm flex items-center gap-2">
+                          <Loader2 className="w-3 h-3 animate-spin" />
+                          AI is thinking...
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </ScrollArea>
+              </CardContent>
+
+              <CardFooter className="p-4 bg-zinc-950/50 border-t border-zinc-800">
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    handleSendMessage();
+                  }}
+                  className="flex w-full items-center gap-2"
                 >
-                  <Send className="w-5 h-5" />
-                </Button>
-              </form>
-              <p className="mt-4 text-center text-[10px] font-bold text-white/20 uppercase tracking-[0.2em]">
-                Powered by Gemini 1.5 Flash
-              </p>
-            </div>
+                  <Input
+                    placeholder="Ask about careers, projects..."
+                    value={input}
+                    onChange={(e) => setInput(e.target.value)}
+                    disabled={isLoading}
+                    className="flex-1 bg-zinc-900 border-zinc-800 text-white placeholder:text-zinc-600 focus:ring-blue-500/20 focus:border-blue-500/50 h-11 px-4"
+                  />
+                  <Button
+                    type="submit"
+                    disabled={isLoading || !input.trim()}
+                    className="h-11 w-11 p-0 bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-500/20"
+                  >
+                    <Send className="w-5 h-5" />
+                  </Button>
+                </form>
+              </CardFooter>
+            </Card>
           </motion.div>
         )}
       </AnimatePresence>
 
-      <motion.button
+      <motion.div
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
-        onClick={() => setIsOpen(!isOpen)}
-        className={cn(
-          "w-16 h-16 rounded-[24px] flex items-center justify-center shadow-[0_15px_40px_rgba(0,0,0,0.5)] transition-all duration-500",
-          isOpen 
-            ? "bg-rose-500 rotate-90" 
-            : "bg-gradient-to-br from-cyan-400 to-purple-500 hover:shadow-[0_0_30px_rgba(6,182,212,0.5)]"
-        )}
+        className="relative"
       >
-        {isOpen ? (
-          <X className="w-7 h-7 text-white" />
-        ) : (
-          <MessageCircle className="w-7 h-7 text-white fill-white/20" />
-        )}
-      </motion.button>
+        <Button
+          onClick={() => setIsOpen(!isOpen)}
+          className={cn(
+            "h-16 w-16 rounded-2xl shadow-2xl transition-all duration-300 flex items-center justify-center group",
+            isOpen 
+              ? "bg-zinc-800 hover:bg-zinc-700 text-white border border-zinc-700" 
+              : "bg-gradient-to-tr from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white shadow-blue-500/20"
+          )}
+        >
+          {isOpen ? (
+            <X className="w-7 h-7" />
+          ) : (
+            <>
+              <MessageCircle className="w-7 h-7 group-hover:rotate-12 transition-transform" />
+              <div className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full border-2 border-black animate-bounce" />
+            </>
+          )}
+        </Button>
+      </motion.div>
     </div>
   );
 }
