@@ -61,7 +61,7 @@ export function CampusConnectChatbot() {
         throw new Error(data.error);
       }
 
-      setMessages((prev) => [...prev, { role: "bot", content: data.text }]);
+        setMessages((prev) => [...prev, { role: "bot", content: data.content }]);
     } catch (error) {
       console.error("Chat error:", error);
       setMessages((prev) => [

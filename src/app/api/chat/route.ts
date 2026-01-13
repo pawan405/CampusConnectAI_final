@@ -7,29 +7,51 @@ export async function POST(req: Request) {
   try {
     const { messages } = await req.json();
     
-    // Use gemini-1.5-flash which is more reliable and supports systemInstruction
+    // Use gemini-pro for better compatibility if 1.5-flash is not found
     const model = genAI.getGenerativeModel({ 
-      model: "gemini-1.5-flash",
-      systemInstruction: "You are CampusConnect AI, a helpful mentor for college students. You provide guidance on careers, skills, projects, and internships. Be concise and supportive."
+      model: "gemini-pro",
     });
 
-    // Gemini API expects the first message to be from 'user'
-    // and roles to alternate between 'user' and 'model'.
-    const history = messages.slice(0, -1).map((m: any) => ({
-      role: m.role === "assistant" ? "model" : "user",
-      parts: [{ text: m.content }],
-    })).filter((m: any, i: number, arr: any[]) => {
-      // Ensure the first message is 'user'
-      if (i === 0 && m.role !== 'user') return false;
-      return true;
-    });
+    const systemPrompt = "You are CampusConnect AI, a helpful mentor for college students. You provide guidance on careers, skills, projects, and internships. Be concise and supportive.";
+
+    // Gemini API expects history to start with 'user' and alternate roles
+    let history: any[] = [];
+    let lastRole = "";
+
+    for (const m of messages.slice(0, -1)) {
+      const role = m.role === "assistant" ? "model" : "user";
+      
+      // Skip if it's the same role as the previous one (Gemini requirement)
+      if (role === lastRole) continue;
+      
+      // Skip leading model messages
+      if (history.length === 0 && role !== "user") continue;
+
+      history.push({
+        role: role,
+        parts: [{ text: m.content }],
+      });
+      lastRole = role;
+    }
+
+    // Ensure the last message in history is 'model' so that the next message can be 'user'
+    // If the last message in history is 'user', we can't send another 'user' message
+    // unless we merge them or remove the last one.
+    if (history.length > 0 && history[history.length - 1].role === "user") {
+      history.pop();
+    }
+
+    // If history is empty, we can prepend the system prompt to the current message
+    const lastMessageContent = messages[messages.length - 1].content;
+    const currentPrompt = history.length === 0 
+      ? `${systemPrompt}\n\nUser: ${lastMessageContent}`
+      : lastMessageContent;
 
     const chat = model.startChat({
       history: history,
     });
 
-    const lastMessage = messages[messages.length - 1].content;
-    const result = await chat.sendMessage(lastMessage);
+    const result = await chat.sendMessage(currentPrompt);
     const response = await result.response;
     const text = response.text();
 
