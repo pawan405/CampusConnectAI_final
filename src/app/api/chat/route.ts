@@ -7,9 +7,9 @@ export async function POST(req: Request) {
   try {
     const { messages } = await req.json();
     
-    // Use gemini-pro for better compatibility if 1.5-flash is not found
+    // Use gemini-2.5-flash which is available for this API key
     const model = genAI.getGenerativeModel({ 
-      model: "gemini-pro",
+      model: "gemini-2.5-flash",
     });
 
     const systemPrompt = "You are CampusConnect AI, a helpful mentor for college students. You provide guidance on careers, skills, projects, and internships. Be concise and supportive.";
