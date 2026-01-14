@@ -35,9 +35,60 @@ export default function SilentScreamPage() {
   const [signalId, setSignalId] = useState<string | null>(null);
   const recognitionRef = useRef<any>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  const generateSummary = async (text: string) => {
+    if (!text) return "";
+    setIsProcessing(true);
+    setSummary("Analyzing transcription for safety protocols...");
+    try {
+      const response = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          messages: [
+            {
+              role: "user",
+              content: `Please provide a professional, concise executive summary for this report: "${text}". Focus on identifying key concerns and priority level. Keep it under 30 words.`,
+            },
+          ],
+        }),
+      });
+      const data = await response.json();
+      if (data.content) {
+        setSummary(data.content);
+        return data.content;
+      }
+      return "";
+    } catch (err) {
+      console.error("Failed to generate summary:", err);
+      setSummary("Summary unavailable. Please review transcription manually.");
+      return "Summary unavailable.";
+    } finally {
+      setIsProcessing(false);
+    }
+  };
 
   useEffect(() => {
     setMounted(true);
+    
+    // Global keydown listener for accessibility (type to start)
+    const handleGlobalKeyDown = (e: KeyboardEvent) => {
+      if (
+        !isRecording && 
+        !showSummary && 
+        e.key.length === 1 && 
+        !e.ctrlKey && 
+        !e.altKey && 
+        !e.metaKey
+      ) {
+        setShowSummary(true);
+        // We'll focus the textarea in the next render cycle or using a small timeout
+        setTimeout(() => textareaRef.current?.focus(), 50);
+      }
+    };
+
+    window.addEventListener("keydown", handleGlobalKeyDown);
     
     // Initialize Speech Recognition
     const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
@@ -62,10 +113,11 @@ export default function SilentScreamPage() {
     }
     
     return () => {
+      window.removeEventListener("keydown", handleGlobalKeyDown);
       if (timerRef.current) clearInterval(timerRef.current);
       if (recognitionRef.current) recognitionRef.current.stop();
     };
-  }, []);
+  }, [isRecording, showSummary]);
 
   const toggleRecording = async () => {
     if (isRecording) {
@@ -77,31 +129,7 @@ export default function SilentScreamPage() {
       
       // Generate AI Summary
       if (transcription) {
-        setIsProcessing(true);
-        setSummary("Analyzing transcription for safety protocols...");
-        try {
-          const response = await fetch("/api/chat", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              messages: [
-                {
-                  role: "user",
-                  content: `Please provide a professional, concise executive summary for this voice report: "${transcription}". Focus on identifying key concerns and priority level. Keep it under 30 words.`,
-                },
-              ],
-            }),
-          });
-          const data = await response.json();
-          if (data.content) {
-            setSummary(data.content);
-          }
-        } catch (err) {
-          console.error("Failed to generate summary:", err);
-          setSummary("Summary unavailable. Please review transcription manually.");
-        } finally {
-          setIsProcessing(false);
-        }
+        generateSummary(transcription);
       }
     } else {
       // Start recording
@@ -136,12 +164,18 @@ export default function SilentScreamPage() {
 
     setIsUploading(true);
     try {
+      // If summary is missing, generate it first
+      let currentSummary = summary;
+      if (transcription && !summary) {
+        currentSummary = await generateSummary(transcription);
+      }
+
       const response = await fetch("/api/signals", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           transcription,
-          summary,
+          summary: currentSummary,
           duration,
         }),
       });
@@ -388,13 +422,19 @@ export default function SilentScreamPage() {
 
                 <div className="grid md:grid-cols-2 gap-12">
                   <div className="space-y-6">
-                      <p className="text-white/20 text-[10px] font-black uppercase tracking-widest">
-                        Original Transcription
-                      </p>
-                      <div className="p-8 rounded-[32px] bg-black/40 border border-white/5 font-medium text-white/60 leading-relaxed italic min-h-[150px]">
-                        {transcription ? `"${transcription}"` : "Waiting for speech input..."}
+                        <p className="text-white/20 text-[10px] font-black uppercase tracking-widest">
+                          Original Transcription
+                        </p>
+                        <textarea
+                          ref={textareaRef}
+                          value={transcription}
+                          onChange={(e) => setTranscription(e.target.value)}
+                          onBlur={() => generateSummary(transcription)}
+                          className="w-full p-8 rounded-[32px] bg-black/40 border border-white/5 font-medium text-white/60 leading-relaxed italic min-h-[150px] resize-none focus:outline-none focus:border-cyan-500/50 transition-all"
+                          placeholder="Waiting for speech input..."
+                        />
                       </div>
-                    </div>
+
 
                   <div className="space-y-6">
                     <p className="text-cyan-400/20 text-[10px] font-black uppercase tracking-widest">
