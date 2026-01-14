@@ -74,6 +74,9 @@ export default function SilentScreamPage() {
     
     // Global keydown listener for accessibility (type to start)
     const handleGlobalKeyDown = (e: KeyboardEvent) => {
+      // Don't trigger if user is already in an input or textarea
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+
       if (
         !isRecording && 
         !showSummary && 
@@ -83,8 +86,14 @@ export default function SilentScreamPage() {
         !e.metaKey
       ) {
         setShowSummary(true);
-        // We'll focus the textarea in the next render cycle or using a small timeout
-        setTimeout(() => textareaRef.current?.focus(), 50);
+        setTranscription(e.key);
+        // We'll focus the textarea in the next render cycle
+        setTimeout(() => {
+          if (textareaRef.current) {
+            textareaRef.current.focus();
+            textareaRef.current.setSelectionRange(1, 1);
+          }
+        }, 50);
       }
     };
 
@@ -149,10 +158,20 @@ export default function SilentScreamPage() {
           }, 10);
         } catch (err) {
           console.error("Failed to start recognition:", err);
+          toast.error("Could not access microphone. Please check permissions.");
         }
       } else {
-        alert("Speech recognition is not supported in this browser.");
+        toast.error("Speech recognition is not supported in this browser. You can still type your report.");
+        setShowSummary(true);
+        setTimeout(() => textareaRef.current?.focus(), 100);
       }
+    }
+  };
+
+  const handleTextareaKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handleUploadSignal();
     }
   };
 
@@ -312,6 +331,7 @@ export default function SilentScreamPage() {
           >
             <button
               onClick={toggleRecording}
+              aria-label={isRecording ? "Stop recording" : "Start recording"}
               className={`relative w-48 h-48 rounded-full flex items-center justify-center transition-all duration-700 ${
                 isRecording
                   ? "bg-rose-500 shadow-[0_0_100px_rgba(244,63,94,0.4)]"
@@ -429,9 +449,10 @@ export default function SilentScreamPage() {
                           ref={textareaRef}
                           value={transcription}
                           onChange={(e) => setTranscription(e.target.value)}
+                          onKeyDown={handleTextareaKeyDown}
                           onBlur={() => generateSummary(transcription)}
                           className="w-full p-8 rounded-[32px] bg-black/40 border border-white/5 font-medium text-white/60 leading-relaxed italic min-h-[150px] resize-none focus:outline-none focus:border-cyan-500/50 transition-all"
-                          placeholder="Waiting for speech input..."
+                          placeholder="Type your report here or use voice input..."
                         />
                       </div>
 
