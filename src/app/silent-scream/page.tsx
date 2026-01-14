@@ -384,7 +384,38 @@ export default function SilentScreamPage() {
             </button>
           </motion.div>
 
-            <div className="mt-24 flex gap-6">
+          {/* Visible Text Input Bar */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mt-12 w-full max-w-2xl relative z-10"
+          >
+            <div className="relative group">
+              <div className="absolute -inset-0.5 bg-gradient-to-r from-rose-500/20 to-cyan-500/20 rounded-3xl blur opacity-20 group-hover:opacity-100 transition duration-1000"></div>
+              <textarea
+                value={transcription}
+                onChange={(e) => {
+                  setTranscription(e.target.value);
+                  if (!showSummary && e.target.value.trim().length > 0) {
+                    setShowSummary(true);
+                  }
+                }}
+                onKeyDown={handleTextareaKeyDown}
+                placeholder="Type your message here..."
+                className="relative w-full px-8 py-6 rounded-3xl bg-black/60 border border-white/10 text-white placeholder:text-white/20 focus:outline-none focus:border-rose-500/50 transition-all resize-none min-h-[100px] text-lg font-medium italic shadow-2xl"
+              />
+              <div className="absolute right-8 bottom-6 flex items-center gap-2 pointer-events-none opacity-40 group-hover:opacity-100 transition-opacity">
+                <kbd className="px-2 py-1 rounded bg-white/5 border border-white/10 text-[10px] font-black uppercase tracking-widest text-white/40">
+                  Enter
+                </kbd>
+                <span className="text-[10px] font-black uppercase tracking-widest text-white/20">
+                  to upload
+                </span>
+              </div>
+            </div>
+          </motion.div>
+
+          <div className="mt-12 flex gap-6">
               <Button
                 variant="outline"
                 onClick={handleUploadSignal}
