@@ -5,7 +5,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import {
   Mic,
-  Upload,
   ArrowLeft,
   Shield,
   Sparkles,
@@ -13,10 +12,9 @@ import {
   Lock,
   Zap,
   ChevronRight,
-    Activity,
-    History,
-    Loader2,
-  } from "lucide-react";
+  Activity,
+  Loader2,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import ThreeDBackground from "@/components/ThreeDBackground";
@@ -414,29 +412,6 @@ export default function SilentScreamPage() {
               </div>
             </div>
           </motion.div>
-
-          <div className="mt-12 flex gap-6">
-              <Button
-                variant="outline"
-                onClick={handleUploadSignal}
-                disabled={isUploading || isRecording}
-                className="h-14 px-8 rounded-2xl bg-white/5 border-white/10 hover:bg-white/10 text-white font-black text-[10px] tracking-[0.2em] uppercase transition-all flex items-center gap-3"
-              >
-                {isUploading ? (
-                  <Loader2 className="w-4 h-4 animate-spin text-cyan-400" />
-                ) : (
-                  <Upload className="w-4 h-4 text-cyan-400" />
-                )}
-                {isUploading ? "Uploading..." : "Upload Signal"}
-              </Button>
-              <Button
-                variant="outline"
-                className="h-14 px-8 rounded-2xl bg-white/5 border-white/10 hover:bg-white/10 text-white font-black text-[10px] tracking-[0.2em] uppercase transition-all flex items-center gap-3"
-              >
-                <History className="w-4 h-4 text-rose-400" />
-                Archive
-              </Button>
-            </div>
 
         </div>
 
