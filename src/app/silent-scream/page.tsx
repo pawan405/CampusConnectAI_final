@@ -20,6 +20,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import ThreeDBackground from "@/components/ThreeDBackground";
+import { toast } from "sonner";
 
 export default function SilentScreamPage() {
   const [isRecording, setIsRecording] = useState(false);
@@ -29,6 +30,9 @@ export default function SilentScreamPage() {
   const [summary, setSummary] = useState("");
   const [duration, setDuration] = useState(0);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [signalId, setSignalId] = useState<string | null>(null);
   const recognitionRef = useRef<any>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -121,6 +125,72 @@ export default function SilentScreamPage() {
       } else {
         alert("Speech recognition is not supported in this browser.");
       }
+    }
+  };
+
+  const handleUploadSignal = async () => {
+    if (!transcription) {
+      toast.error("No signal data to upload. Please record your message first.");
+      return;
+    }
+
+    setIsUploading(true);
+    try {
+      const response = await fetch("/api/signals", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          transcription,
+          summary,
+          duration,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setSignalId(data.signal.id);
+        toast.success("Signal uploaded securely to the encrypted database.");
+      } else {
+        throw new Error(data.error || "Upload failed");
+      }
+    } catch (error: any) {
+      console.error("Upload error:", error);
+      toast.error(`Upload failed: ${error.message}`);
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const handleSubmitToAuthorities = async () => {
+    if (!signalId) {
+      toast.error("Please upload the signal first before submitting.");
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const response = await fetch("/api/submissions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          signalId,
+          authorityName: "Campus Security",
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        toast.success("Signal successfully submitted to authorities. Reference ID: " + data.submission.id.slice(0, 8));
+      } else {
+        throw new Error(data.error || "Submission failed");
+      }
+    } catch (error: any) {
+      console.error("Submission error:", error);
+      toast.error(`Submission failed: ${error.message}`);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -260,22 +330,29 @@ export default function SilentScreamPage() {
             </button>
           </motion.div>
 
-          <div className="mt-24 flex gap-6">
-            <Button
-              variant="outline"
-              className="h-14 px-8 rounded-2xl bg-white/5 border-white/10 hover:bg-white/10 text-white font-black text-[10px] tracking-[0.2em] uppercase transition-all flex items-center gap-3"
-            >
-              <Upload className="w-4 h-4 text-cyan-400" />
-              Upload Signal
-            </Button>
-            <Button
-              variant="outline"
-              className="h-14 px-8 rounded-2xl bg-white/5 border-white/10 hover:bg-white/10 text-white font-black text-[10px] tracking-[0.2em] uppercase transition-all flex items-center gap-3"
-            >
-              <History className="w-4 h-4 text-rose-400" />
-              Archive
-            </Button>
-          </div>
+            <div className="mt-24 flex gap-6">
+              <Button
+                variant="outline"
+                onClick={handleUploadSignal}
+                disabled={isUploading || isRecording}
+                className="h-14 px-8 rounded-2xl bg-white/5 border-white/10 hover:bg-white/10 text-white font-black text-[10px] tracking-[0.2em] uppercase transition-all flex items-center gap-3"
+              >
+                {isUploading ? (
+                  <Loader2 className="w-4 h-4 animate-spin text-cyan-400" />
+                ) : (
+                  <Upload className="w-4 h-4 text-cyan-400" />
+                )}
+                {isUploading ? "Uploading..." : "Upload Signal"}
+              </Button>
+              <Button
+                variant="outline"
+                className="h-14 px-8 rounded-2xl bg-white/5 border-white/10 hover:bg-white/10 text-white font-black text-[10px] tracking-[0.2em] uppercase transition-all flex items-center gap-3"
+              >
+                <History className="w-4 h-4 text-rose-400" />
+                Archive
+              </Button>
+            </div>
+
         </div>
 
         {/* AI Summary Section */}
@@ -359,10 +436,19 @@ export default function SilentScreamPage() {
                     with a neural-generated monotone to ensure absolute
                     anonymity.
                   </p>
-                  <Button className="h-16 px-12 rounded-[24px] bg-cyan-500 hover:bg-cyan-400 text-black font-black text-xs tracking-[0.2em] uppercase transition-all shadow-[0_20px_40px_rgba(6,182,212,0.3)] group">
-                    Submit to Authorities
-                    <ChevronRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
-                  </Button>
+                    <Button
+                      onClick={handleSubmitToAuthorities}
+                      disabled={isSubmitting || !signalId}
+                      className="h-16 px-12 rounded-[24px] bg-cyan-500 hover:bg-cyan-400 text-black font-black text-xs tracking-[0.2em] uppercase transition-all shadow-[0_20px_40px_rgba(6,182,212,0.3)] group disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {isSubmitting ? (
+                        <Loader2 className="w-5 h-5 animate-spin mr-2" />
+                      ) : (
+                        <ChevronRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                      )}
+                      {isSubmitting ? "Submitting..." : "Submit to Authorities"}
+                    </Button>
+
                 </div>
               </div>
             </motion.div>
