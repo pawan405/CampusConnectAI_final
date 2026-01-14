@@ -13,9 +13,10 @@ import {
   Lock,
   Zap,
   ChevronRight,
-  Activity,
-  History,
-} from "lucide-react";
+    Activity,
+    History,
+    Loader2,
+  } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import ThreeDBackground from "@/components/ThreeDBackground";
@@ -24,18 +25,102 @@ export default function SilentScreamPage() {
   const [isRecording, setIsRecording] = useState(false);
   const [showSummary, setShowSummary] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [transcription, setTranscription] = useState("");
+  const [summary, setSummary] = useState("");
+  const [duration, setDuration] = useState(0);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const recognitionRef = useRef<any>(null);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     setMounted(true);
+    
+    // Initialize Speech Recognition
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (SpeechRecognition) {
+      const recognition = new SpeechRecognition();
+      recognition.continuous = true;
+      recognition.interimResults = true;
+      
+      recognition.onresult = (event: any) => {
+        let currentTranscription = "";
+        for (let i = 0; i < event.results.length; i++) {
+          currentTranscription += event.results[i][0].transcript;
+        }
+        setTranscription(currentTranscription);
+      };
+
+      recognition.onend = () => {
+        setIsRecording(false);
+      };
+
+      recognitionRef.current = recognition;
+    }
+    
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+      if (recognitionRef.current) recognitionRef.current.stop();
+    };
   }, []);
 
-  const toggleRecording = () => {
-    setIsRecording(!isRecording);
-    if (!isRecording) {
-      setTimeout(() => {
-        setIsRecording(false);
-        setShowSummary(true);
-      }, 5000);
+  const toggleRecording = async () => {
+    if (isRecording) {
+      // Stop recording
+      if (recognitionRef.current) recognitionRef.current.stop();
+      if (timerRef.current) clearInterval(timerRef.current);
+      setIsRecording(false);
+      setShowSummary(true);
+      
+      // Generate AI Summary
+      if (transcription) {
+        setIsProcessing(true);
+        setSummary("Analyzing transcription for safety protocols...");
+        try {
+          const response = await fetch("/api/chat", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              messages: [
+                {
+                  role: "user",
+                  content: `Please provide a professional, concise executive summary for this voice report: "${transcription}". Focus on identifying key concerns and priority level. Keep it under 30 words.`,
+                },
+              ],
+            }),
+          });
+          const data = await response.json();
+          if (data.content) {
+            setSummary(data.content);
+          }
+        } catch (err) {
+          console.error("Failed to generate summary:", err);
+          setSummary("Summary unavailable. Please review transcription manually.");
+        } finally {
+          setIsProcessing(false);
+        }
+      }
+    } else {
+      // Start recording
+      setTranscription("");
+      setDuration(0);
+      setSummary("");
+      setShowSummary(false);
+      
+      if (recognitionRef.current) {
+        try {
+          recognitionRef.current.start();
+          setIsRecording(true);
+          
+          const startTime = performance.now();
+          timerRef.current = setInterval(() => {
+            setDuration((performance.now() - startTime) / 1000);
+          }, 10);
+        } catch (err) {
+          console.error("Failed to start recognition:", err);
+        }
+      } else {
+        alert("Speech recognition is not supported in this browser.");
+      }
     }
   };
 
@@ -138,11 +223,11 @@ export default function SilentScreamPage() {
                     exit={{ opacity: 0, scale: 0.5 }}
                     className="flex flex-col items-center"
                   >
-                    <Activity className="w-16 h-16 text-white animate-pulse" />
-                    <span className="absolute -bottom-12 text-rose-400 font-black tracking-[0.3em] uppercase text-[10px] animate-pulse">
-                      Recording...
-                    </span>
-                  </motion.div>
+                      <Activity className="w-16 h-16 text-white animate-pulse" />
+                      <span className="absolute -bottom-12 text-rose-400 font-black tracking-[0.3em] uppercase text-[10px] animate-pulse">
+                        Recording ({duration.toFixed(2)}s)...
+                      </span>
+                    </motion.div>
                 ) : (
                   <motion.div
                     key="idle"
@@ -226,30 +311,32 @@ export default function SilentScreamPage() {
 
                 <div className="grid md:grid-cols-2 gap-12">
                   <div className="space-y-6">
-                    <p className="text-white/20 text-[10px] font-black uppercase tracking-widest">
-                      Original Transcription
-                    </p>
-                    <div className="p-8 rounded-[32px] bg-black/40 border border-white/5 font-medium text-white/60 leading-relaxed italic">
-                      "I want to report an ongoing safety concern in the north
-                      wing parking area. The lighting has been malfunctioning
-                      for three nights, creating a high-risk environment for
-                      students leaving late shifts..."
+                      <p className="text-white/20 text-[10px] font-black uppercase tracking-widest">
+                        Original Transcription
+                      </p>
+                      <div className="p-8 rounded-[32px] bg-black/40 border border-white/5 font-medium text-white/60 leading-relaxed italic min-h-[150px]">
+                        {transcription ? `"${transcription}"` : "Waiting for speech input..."}
+                      </div>
                     </div>
-                  </div>
 
                   <div className="space-y-6">
                     <p className="text-cyan-400/20 text-[10px] font-black uppercase tracking-widest">
                       AI Executive Summary
                     </p>
-                    <div className="p-8 rounded-[32px] bg-cyan-500/5 border border-cyan-500/20">
-                      <div className="flex items-start gap-4 mb-6">
-                        <div className="w-1 h-12 bg-cyan-500 rounded-full" />
-                        <p className="text-lg font-bold text-white leading-snug">
-                          Infrastructure failure identified in North Wing.
-                          Immediate maintenance required to mitigate safety
-                          risks.
-                        </p>
-                      </div>
+                      <div className="p-8 rounded-[32px] bg-cyan-500/5 border border-cyan-500/20">
+                        <div className="flex items-start gap-4 mb-6">
+                          <div className="w-1 h-12 bg-cyan-500 rounded-full" />
+                          <p className="text-lg font-bold text-white leading-snug">
+                            {isProcessing ? (
+                              <span className="flex items-center gap-2">
+                                <Loader2 className="w-4 h-4 animate-spin" />
+                                {summary}
+                              </span>
+                            ) : (
+                              summary || "Neural summary will appear here..."
+                            )}
+                          </p>
+                        </div>
                       <div className="flex flex-wrap gap-3">
                         {["Safety", "Facilities", "High Priority"].map(
                           (tag) => (
