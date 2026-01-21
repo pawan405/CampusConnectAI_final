@@ -122,19 +122,19 @@ export default function SilentScreamPage() {
   };
 
   const toggleRecording = async () => {
-    if (isStartingRef.current) return;
-    
     if (isRecording) {
-      console.log("[toggleRecording] Stopping recording...");
+      console.log("[toggleRecording] Stopping recording - aborting recognition...");
       if (recognitionRef.current) {
         try {
-          recognitionRef.current.stop();
+          recognitionRef.current.abort();
         } catch (e) {}
       }
       return;
     }
     
+    if (isStartingRef.current) return;
     isStartingRef.current = true;
+    
     cleanupRecognition();
     
     setTranscription("");
@@ -158,10 +158,35 @@ export default function SilentScreamPage() {
     recognition.lang = "en-US";
     
     let capturedTranscript = "";
+    let hasEnded = false;
+    
+    const finalizeRecognition = () => {
+      if (hasEnded) return;
+      hasEnded = true;
+      
+      console.log("[SpeechRecognition] Finalizing, transcript:", capturedTranscript);
+      
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
+      
+      setIsRecording(false);
+      isStartingRef.current = false;
+      recognitionRef.current = null;
+      setShowSummary(true);
+      
+      if (capturedTranscript) {
+        generateSummary(capturedTranscript);
+      } else {
+        toast.info("No speech was captured. You can type your message instead.");
+      }
+    };
     
     recognition.onstart = () => {
       console.log("[SpeechRecognition] Started - listening for speech...");
       setIsRecording(true);
+      isStartingRef.current = false;
       
       const startTime = performance.now();
       timerRef.current = setInterval(() => {
@@ -180,6 +205,9 @@ export default function SilentScreamPage() {
       console.log("[SpeechRecognition] Transcript:", transcript, "Confidence:", confidence);
       capturedTranscript = transcript;
       setTranscription(transcript);
+      try {
+        recognition.stop();
+      } catch (e) {}
     };
     
     recognition.onspeechend = () => {
@@ -190,51 +218,45 @@ export default function SilentScreamPage() {
     };
     
     recognition.onend = () => {
-      console.log("[SpeechRecognition] Recognition ended, transcript:", capturedTranscript);
-      if (timerRef.current) {
-        clearInterval(timerRef.current);
-        timerRef.current = null;
-      }
-      setIsRecording(false);
-      isStartingRef.current = false;
-      recognitionRef.current = null;
-      setShowSummary(true);
-      
-      if (capturedTranscript) {
-        generateSummary(capturedTranscript);
-      } else {
-        toast.info("No speech was captured. You can type your message instead.");
-      }
+      console.log("[SpeechRecognition] onend fired");
+      finalizeRecognition();
     };
     
     recognition.onerror = (event: any) => {
       console.error("[SpeechRecognition] Error:", event.error);
-      if (timerRef.current) {
-        clearInterval(timerRef.current);
-        timerRef.current = null;
-      }
-      setIsRecording(false);
-      isStartingRef.current = false;
-      recognitionRef.current = null;
       
       if (event.error === "not-allowed") {
+        if (timerRef.current) {
+          clearInterval(timerRef.current);
+          timerRef.current = null;
+        }
+        setIsRecording(false);
+        isStartingRef.current = false;
+        recognitionRef.current = null;
         toast.error("Microphone access denied. Please allow microphone permissions.");
-      } else if (event.error === "no-speech") {
-        setShowSummary(true);
+        return;
+      }
+      
+      if (event.error === "no-speech") {
         toast.info("No speech detected. You can type your message instead.");
       } else if (event.error !== "aborted") {
         toast.error(`Speech recognition error: ${event.error}`);
       }
+      
+      try {
+        recognition.abort();
+      } catch (e) {}
     };
     
     try {
       console.log("[toggleRecording] Starting speech recognition...");
-      recognition.start();
       recognitionRef.current = recognition;
+      recognition.start();
     } catch (err) {
       console.error("[toggleRecording] Failed to start:", err);
       toast.error("Could not start speech recognition. Please try again.");
       isStartingRef.current = false;
+      recognitionRef.current = null;
     }
   };
 
