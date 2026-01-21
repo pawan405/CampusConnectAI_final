@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useState } from "react";
+import React, { useRef, useCallback } from "react";
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 
 interface TiltCardProps {
@@ -14,13 +14,13 @@ export default function TiltCard({ children, className = "" }: TiltCardProps) {
   const x = useMotionValue(0);
   const y = useMotionValue(0);
 
-  const mouseXSpring = useSpring(x);
-  const mouseYSpring = useSpring(y);
+  const mouseXSpring = useSpring(x, { stiffness: 150, damping: 15 });
+  const mouseYSpring = useSpring(y, { stiffness: 150, damping: 15 });
 
   const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ["10deg", "-10deg"]);
   const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ["-10deg", "10deg"]);
 
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+  const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
     if (!ref.current) return;
 
     const rect = ref.current.getBoundingClientRect();
@@ -36,12 +36,12 @@ export default function TiltCard({ children, className = "" }: TiltCardProps) {
 
     x.set(xPct);
     y.set(yPct);
-  };
+  }, [x, y]);
 
-  const handleMouseLeave = () => {
+  const handleMouseLeave = useCallback(() => {
     x.set(0);
     y.set(0);
-  };
+  }, [x, y]);
 
   return (
     <motion.div
@@ -52,6 +52,8 @@ export default function TiltCard({ children, className = "" }: TiltCardProps) {
         rotateY,
         rotateX,
         transformStyle: "preserve-3d",
+        willChange: "transform",
+        backfaceVisibility: "hidden",
       }}
       className={`relative rounded-3xl transition-all duration-500 ease-out ${className}`}
     >
@@ -59,6 +61,8 @@ export default function TiltCard({ children, className = "" }: TiltCardProps) {
         style={{
           transform: "translateZ(50px)",
           transformStyle: "preserve-3d",
+          willChange: "transform",
+          backfaceVisibility: "hidden",
         }}
         className="relative h-full w-full rounded-3xl"
       >

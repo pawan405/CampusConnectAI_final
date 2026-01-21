@@ -2,6 +2,7 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   Brain,
   Mic,
@@ -24,6 +25,7 @@ import {
   Globe,
   Cpu,
 } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -140,8 +142,44 @@ function CountUp({ value, suffix = "" }: { value: number; suffix?: string }) {
 }
 
 export default function DashboardPage() {
+  const router = useRouter();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const [hackathonsModalOpen, setHackathonsModalOpen] = useState(false);
+  const [notifications] = useState([
+    { id: 1, title: "New Opportunities", message: "14 high-affinity opportunities found", time: "2m ago", read: false },
+    { id: 2, title: "Career Update", message: "Your progress has increased by 5%", time: "1h ago", read: false },
+    { id: 3, title: "Hackathon Reminder", message: "CYBERPUNK HACK 2077 starts in 2 days", time: "3h ago", read: true },
+  ]);
+
+  // Mock user interests (in real app, this would come from user profile)
+  const userInterests = ["AI", "React", "Machine Learning", "Web Development"];
+
+  // Participated hackathons
+  const participatedHackathons = [
+    { id: 1, name: "CYBERPUNK HACK 2077", date: "Jan 2024", status: "Completed", result: "Top 10", skills: ["AI", "React", "Blockchain"] },
+    { id: 2, name: "NEURAL NETWORK JAM", date: "Feb 2024", status: "Completed", result: "Winner", skills: ["AI", "ML", "Python"] },
+    { id: 3, name: "QUANTUM CODE CHALLENGE", date: "Mar 2024", status: "Completed", result: "Finalist", skills: ["Algorithms", "Quantum"] },
+    { id: 4, name: "GALAXY BUILDER", date: "Apr 2024", status: "Completed", result: "Participated", skills: ["Data Visualization", "React"] },
+    { id: 5, name: "AI INNOVATION SUMMIT", date: "May 2024", status: "Completed", result: "Top 5", skills: ["AI", "ML", "Deep Learning"] },
+    { id: 6, name: "WEB WARRIORS", date: "Jun 2024", status: "Completed", result: "Winner", skills: ["React", "Node.js", "Full Stack"] },
+    { id: 7, name: "BLOCKCHAIN BUILDER", date: "Jul 2024", status: "Completed", result: "Finalist", skills: ["Blockchain", "Smart Contracts"] },
+    { id: 8, name: "DATA SCIENCE CHALLENGE", date: "Aug 2024", status: "Completed", result: "Top 10", skills: ["Data Science", "Python", "ML"] },
+    { id: 9, name: "MOBILE APP MASTERS", date: "Sep 2024", status: "Completed", result: "Participated", skills: ["React Native", "Mobile"] },
+    { id: 10, name: "CLOUD ARCHITECTS", date: "Oct 2024", status: "Completed", result: "Finalist", skills: ["Cloud", "DevOps", "AWS"] },
+    { id: 11, name: "CYBER SECURITY HACK", date: "Nov 2024", status: "Completed", result: "Top 5", skills: ["Security", "Ethical Hacking"] },
+    { id: 12, name: "FULL STACK FRENZY", date: "Dec 2024", status: "Completed", result: "Winner", skills: ["React", "Node.js", "MongoDB"] },
+  ];
+
+  // Recommended hackathons based on interests
+  const recommendedHackathons = [
+    { id: 101, name: "AI MASTERS LEAGUE", date: "Upcoming", status: "Upcoming", match: "95%", reason: "Perfect match for your AI/ML interests", skills: ["AI", "ML", "Deep Learning"], organizer: "AI Institute" },
+    { id: 102, name: "REACT REVOLUTION", date: "Upcoming", status: "Upcoming", match: "90%", reason: "Matches your React expertise", skills: ["React", "Frontend", "Web Development"], organizer: "TechCorp" },
+    { id: 103, name: "MACHINE LEARNING MARATHON", date: "Upcoming", status: "Upcoming", match: "88%", reason: "Based on your ML participation history", skills: ["ML", "Python", "Data Science"], organizer: "ML Academy" },
+    { id: 104, name: "FULL STACK CHAMPIONSHIP", date: "Upcoming", status: "Upcoming", match: "85%", reason: "Combines your React + Backend skills", skills: ["React", "Node.js", "Full Stack"], organizer: "DevHub" },
+    { id: 105, name: "AI FOR GOOD", date: "Upcoming", status: "Upcoming", match: "92%", reason: "AI focus aligns with your interests", skills: ["AI", "Ethics", "Social Impact"], organizer: "Tech for Good" },
+  ];
 
   useEffect(() => {
     setMounted(true);
@@ -226,14 +264,51 @@ export default function DashboardPage() {
             </div>
 
             <div className="flex items-center gap-4">
-              <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/5 border border-white/10">
-                <div className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_#10b981]" />
-                <span className="text-[10px] font-black uppercase tracking-wider text-white/60">Node-01: Active</span>
-              </div>
-              <Button variant="ghost" size="icon" className="w-11 h-11 rounded-2xl border border-white/5 hover:bg-white/5 relative group">
-                <Bell className="w-5 h-5 text-white/60 group-hover:text-cyan-400 transition-colors" />
-                <span className="absolute top-3 right-3 w-2 h-2 bg-cyan-500 rounded-full shadow-[0_0_10px_#06b6d4] animate-pulse" />
-              </Button>
+              <DropdownMenu open={notificationsOpen} onOpenChange={setNotificationsOpen}>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon" className="w-11 h-11 rounded-2xl border border-white/5 hover:bg-white/5 relative group">
+                    <Bell className="w-5 h-5 text-white/60 group-hover:text-cyan-400 transition-colors" />
+                    <span className="absolute top-3 right-3 w-2 h-2 bg-cyan-500 rounded-full shadow-[0_0_10px_#06b6d4] animate-pulse" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-80 bg-black/90 backdrop-blur-2xl border-white/10 rounded-[24px] p-2 mt-4 shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
+                  <div className="px-3 py-2 border-b border-white/10">
+                    <h3 className="text-sm font-bold text-white">Notifications</h3>
+                  </div>
+                  <div className="max-h-96 overflow-y-auto">
+                    {notifications.map((notif) => (
+                      <DropdownMenuItem
+                        key={notif.id}
+                        onClick={() => {
+                          console.log("Notification clicked:", notif.title);
+                          setNotificationsOpen(false);
+                        }}
+                        className="rounded-xl focus:bg-white/5 cursor-pointer p-3 gap-3 text-white hover:text-white border-b border-white/5 last:border-0"
+                      >
+                        <div className="flex-1">
+                          <div className="flex items-start justify-between gap-2">
+                            <div className="flex-1">
+                              <p className={`text-sm font-bold ${!notif.read ? 'text-white' : 'text-white/60'}`}>
+                                {notif.title}
+                              </p>
+                              <p className="text-xs text-white/50 mt-1">{notif.message}</p>
+                              <p className="text-[10px] text-white/30 mt-1">{notif.time}</p>
+                            </div>
+                            {!notif.read && (
+                              <div className="w-2 h-2 bg-cyan-500 rounded-full mt-1" />
+                            )}
+                          </div>
+                        </div>
+                      </DropdownMenuItem>
+                    ))}
+                  </div>
+                  {notifications.length === 0 && (
+                    <div className="px-3 py-6 text-center text-white/50 text-sm">
+                      No notifications
+                    </div>
+                  )}
+                </DropdownMenuContent>
+              </DropdownMenu>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <button className="flex items-center gap-3 p-1 rounded-2xl border border-white/5 bg-white/5 hover:bg-white/10 transition-all hover:scale-105 duration-300">
@@ -245,12 +320,23 @@ export default function DashboardPage() {
                   </button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56 bg-black/90 backdrop-blur-2xl border-white/10 rounded-[24px] p-2 mt-4 shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
-                  <DropdownMenuItem className="rounded-xl focus:bg-white/5 focus:text-cyan-400 cursor-pointer p-3 gap-3">
-                    <User className="w-4 h-4" /> <span className="text-sm font-bold">Profile Interface</span>
+                  <DropdownMenuItem 
+                    onClick={() => {
+                      router.push("/settings");
+                    }}
+                    className="rounded-xl focus:bg-white/5 focus:text-cyan-400 cursor-pointer p-3 gap-3 text-white hover:text-white"
+                  >
+                    <User className="w-4 h-4 text-white" /> <span className="text-sm font-bold text-white">Profile Interface</span>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator className="bg-white/10" />
-                  <DropdownMenuItem className="rounded-xl focus:bg-rose-500/20 focus:text-rose-400 cursor-pointer p-3 gap-3">
-                    <LogOut className="w-4 h-4" /> <span className="text-sm font-bold">Disconnect</span>
+                  <DropdownMenuItem 
+                    onClick={() => {
+                      // Logout functionality
+                      router.push("/");
+                    }}
+                    className="rounded-xl focus:bg-rose-500/20 focus:text-rose-400 cursor-pointer p-3 gap-3 text-white hover:text-white"
+                  >
+                    <LogOut className="w-4 h-4 text-white" /> <span className="text-sm font-bold text-white">Disconnect</span>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -290,7 +376,12 @@ export default function DashboardPage() {
                 Your future, calculated in real-time.
               </p>
               <div className="flex flex-wrap gap-4 pt-4">
-                <Button className="h-16 px-10 rounded-2xl bg-cyan-500 hover:bg-cyan-400 text-black font-black uppercase tracking-[0.2em] text-xs transition-all hover:shadow-[0_0_40px_#06b6d4] group overflow-hidden relative">
+                <Button 
+                  onClick={() => {
+                    router.push("/analytics");
+                  }}
+                  className="h-16 px-10 rounded-2xl bg-cyan-500 hover:bg-cyan-400 text-black font-black uppercase tracking-[0.2em] text-xs transition-all hover:shadow-[0_0_40px_#06b6d4] group overflow-hidden relative"
+                >
                   <span className="relative z-10 flex items-center">
                     Analyze Matches <ArrowRight className="ml-3 w-4 h-4 group-hover:translate-x-2 transition-transform duration-500" />
                   </span>
@@ -298,7 +389,14 @@ export default function DashboardPage() {
                     className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300"
                   />
                 </Button>
-                <Button className="h-16 px-10 rounded-2xl bg-white/10 border border-white/20 hover:bg-white/20 text-white font-black uppercase tracking-[0.2em] text-xs transition-all backdrop-blur-md hover:border-white/40">
+                <Button 
+                  onClick={() => {
+                    // Navigate to network/connections page or show network modal
+                    console.log("View Network clicked");
+                    // You can add navigation here: router.push("/network")
+                  }}
+                  className="h-16 px-10 rounded-2xl bg-white/10 border border-white/20 hover:bg-white/20 text-white font-black uppercase tracking-[0.2em] text-xs transition-all backdrop-blur-md hover:border-white/40"
+                >
                   View Network
                 </Button>
               </div>
@@ -308,19 +406,30 @@ export default function DashboardPage() {
           {/* Stats Grid */}
           <section className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {stats.map((stat, i) => (
-              <TiltCard key={i} className="h-48 group">
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ 
-                    opacity: 1, 
-                    y: [0, -8, 0],
-                  }}
-                  transition={{ 
-                    initial: { duration: 0.5, delay: i * 0.2 },
-                    y: { duration: 4, repeat: Infinity, ease: "easeInOut", delay: i * 0.3 }
-                  }}
-                  className="w-full h-full bg-black/60 backdrop-blur-3xl border border-white/20 rounded-[40px] p-8 flex flex-col justify-between relative overflow-hidden transition-all duration-500 group-hover:border-cyan-500/50 group-hover:bg-black/80 group-hover:shadow-[0_20px_80px_rgba(6,182,212,0.3)]"
-                >
+              <div
+                key={i}
+                onClick={() => {
+                  if (stat.label === "Hackathons Joined") {
+                    setHackathonsModalOpen(true);
+                  }
+                }}
+                className={stat.label === "Hackathons Joined" ? "cursor-pointer" : ""}
+              >
+                <TiltCard className="h-48 group">
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ 
+                      opacity: 1, 
+                      y: [0, -8, 0],
+                    }}
+                    transition={{ 
+                      duration: 0.5, 
+                      delay: i * 0.2,
+                      y: { duration: 4, repeat: Infinity, ease: "easeInOut", delay: i * 0.3 }
+                    }}
+                    style={{ willChange: "transform, opacity", backfaceVisibility: "hidden" }}
+                    className="w-full h-full bg-black/60 backdrop-blur-3xl border border-white/20 rounded-[40px] p-8 flex flex-col justify-between relative overflow-hidden transition-all duration-500 group-hover:border-cyan-500/50 group-hover:bg-black/80 group-hover:shadow-[0_20px_80px_rgba(6,182,212,0.3)]"
+                  >
                   <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-cyan-500/20 to-transparent blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
                   
                   <div className="flex justify-between items-start">
@@ -352,10 +461,143 @@ export default function DashboardPage() {
                       {stat.label}
                     </p>
                   </div>
-                </motion.div>
-              </TiltCard>
+                  </motion.div>
+                </TiltCard>
+              </div>
             ))}
           </section>
+
+          {/* Hackathons Modal */}
+          <AnimatePresence>
+            {hackathonsModalOpen && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="fixed inset-0 z-[99999] flex items-center justify-center p-4 bg-black/95 backdrop-blur-md"
+                style={{ 
+                  pointerEvents: 'auto',
+                  position: 'fixed',
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  width: '100vw',
+                  height: '100vh',
+                }}
+                onClick={(e) => {
+                  if (e.target === e.currentTarget) setHackathonsModalOpen(false);
+                }}
+              >
+                <motion.div
+                  initial={{ scale: 0.9, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  exit={{ scale: 0.9, opacity: 0 }}
+                  onClick={(e) => e.stopPropagation()}
+                  className="relative bg-[#0c0c12] border-2 border-blue-500/30 rounded-2xl p-8 max-w-6xl w-full max-h-[90vh] overflow-y-auto shadow-2xl"
+                >
+                  <button
+                    onClick={() => setHackathonsModalOpen(false)}
+                    className="absolute top-4 right-4 w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center transition-colors z-10"
+                  >
+                    <X className="w-4 h-4 text-white/60" />
+                  </button>
+
+                  <div className="space-y-8">
+                    {/* Header */}
+                    <div>
+                      <h3 className="text-3xl font-black text-white mb-2">Your Hackathon Journey</h3>
+                      <p className="text-white/60 text-sm">You've participated in {participatedHackathons.length} hackathons</p>
+                    </div>
+
+                    {/* Participated Hackathons */}
+                    <div>
+                      <h4 className="text-xl font-black text-white mb-4 flex items-center gap-2">
+                        <Trophy className="w-5 h-5 text-blue-400" />
+                        Participated Hackathons ({participatedHackathons.length})
+                      </h4>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[300px] overflow-y-auto pr-2">
+                        {participatedHackathons.map((hack) => (
+                          <div
+                            key={hack.id}
+                            className="p-4 rounded-xl bg-white/5 border border-white/10 hover:border-blue-500/50 transition-all"
+                          >
+                            <div className="flex items-start justify-between mb-2">
+                              <h5 className="text-sm font-black text-white flex-1">{hack.name}</h5>
+                              <Badge className={`${
+                                hack.result === "Winner" ? "bg-emerald-500/20 text-emerald-400 border-emerald-500/30" :
+                                hack.result === "Top 5" || hack.result === "Top 10" ? "bg-blue-500/20 text-blue-400 border-blue-500/30" :
+                                hack.result === "Finalist" ? "bg-purple-500/20 text-purple-400 border-purple-500/30" :
+                                "bg-white/10 text-white/60 border-white/20"
+                              } text-[10px] ml-2`}>
+                                {hack.result}
+                              </Badge>
+                            </div>
+                            <p className="text-xs text-white/50 mb-2">{hack.date}</p>
+                            <div className="flex flex-wrap gap-1">
+                              {hack.skills.map((skill) => (
+                                <Badge key={skill} variant="secondary" className="bg-white/5 text-white/60 border-none text-[9px]">
+                                  {skill}
+                                </Badge>
+                              ))}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Recommended Hackathons */}
+                    <div>
+                      <h4 className="text-xl font-black text-white mb-4 flex items-center gap-2">
+                        <Sparkles className="w-5 h-5 text-purple-400" />
+                        Recommended for You ({recommendedHackathons.length})
+                      </h4>
+                      <p className="text-sm text-white/60 mb-4">
+                        Based on your interests: <span className="text-white font-bold">{userInterests.join(", ")}</span>
+                      </p>
+                      <div className="space-y-4">
+                        {recommendedHackathons.map((hack) => (
+                          <div
+                            key={hack.id}
+                            className="p-5 rounded-xl bg-gradient-to-r from-purple-500/10 to-blue-500/10 border border-purple-500/20 hover:border-purple-500/50 transition-all"
+                          >
+                            <div className="flex items-start justify-between mb-3">
+                              <div className="flex-1">
+                                <div className="flex items-center gap-3 mb-2">
+                                  <h5 className="text-lg font-black text-white">{hack.name}</h5>
+                                  <Badge className="bg-purple-500/20 text-purple-400 border-purple-500/30 text-[10px]">
+                                    {hack.match} Match
+                                  </Badge>
+                                </div>
+                                <p className="text-xs text-white/60 mb-2">{hack.organizer} • {hack.date}</p>
+                                <p className="text-sm text-purple-300 mb-3">{hack.reason}</p>
+                                <div className="flex flex-wrap gap-2">
+                                  {hack.skills.map((skill) => (
+                                    <Badge key={skill} variant="secondary" className="bg-white/10 text-white/80 border-white/20 text-[10px]">
+                                      {skill}
+                                    </Badge>
+                                  ))}
+                                </div>
+                              </div>
+                            </div>
+                            <Button
+                              onClick={() => {
+                                router.push("/hackathons");
+                                setHackathonsModalOpen(false);
+                              }}
+                              className="w-full bg-gradient-to-r from-purple-500 to-blue-600 hover:from-purple-400 hover:to-blue-500 text-white font-bold"
+                            >
+                              View Details
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           {/* Feature Modules */}
           <section className="space-y-12">
@@ -383,6 +625,7 @@ export default function DashboardPage() {
                         initial: { delay: i * 0.1 },
                         y: { duration: 5, repeat: Infinity, ease: "easeInOut", delay: i * 0.4 }
                       }}
+                      style={{ willChange: "transform, opacity", backfaceVisibility: "hidden" }}
                       className="h-full bg-black/60 backdrop-blur-3xl border border-white/20 rounded-[48px] p-10 flex flex-col relative overflow-hidden transition-all duration-700 hover:bg-black/80 hover:border-white/40 hover:shadow-[0_30px_100px_rgba(0,0,0,0.6)]"
                     >
                       {/* Neon Highlight Top */}
@@ -485,7 +728,12 @@ export default function DashboardPage() {
                     Your career vector has been updated with 14 new high-affinity opportunities.
                   </p>
                 </div>
-                <Button className="mt-12 h-20 w-full rounded-[32px] bg-gradient-to-r from-cyan-500 to-purple-600 text-white font-black uppercase tracking-[0.3em] text-xs hover:scale-[1.02] transition-all duration-500 shadow-[0_20px_60px_rgba(6,182,212,0.4)] group border-none">
+                <Button 
+                  onClick={() => {
+                    router.push("/analytics");
+                  }}
+                  className="mt-12 h-20 w-full rounded-[32px] bg-gradient-to-r from-cyan-500 to-purple-600 text-white font-black uppercase tracking-[0.3em] text-xs hover:scale-[1.02] transition-all duration-500 shadow-[0_20px_60px_rgba(6,182,212,0.4)] group border-none"
+                >
                   Access Intelligence <ArrowRight className="ml-3 w-4 h-4 group-hover:translate-x-2 transition-transform" />
                 </Button>
               </motion.div>

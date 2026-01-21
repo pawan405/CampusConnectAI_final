@@ -1,6 +1,8 @@
 "use client";
 
-import React, { useState, useEffect, useRef, useMemo } from "react";
+import React, { useState, useEffect, useRef, useMemo, useCallback } from "react";
+import { createPortal } from "react-dom";
+import { useRouter } from "next/navigation";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import {
   OrbitControls,
@@ -37,10 +39,13 @@ import {
   Star,
   Flame,
   Gamepad2,
+  X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { toast } from "sonner";
 
 // --- 3D Components ---
 
@@ -132,25 +137,50 @@ function HologramSphere() {
 // --- UI Components ---
 
 const HackathonCard = ({ hack, index }: { hack: any; index: number }) => {
+  const router = useRouter();
   const cardRef = useRef<HTMLDivElement>(null);
   const [rotateX, setRotateX] = useState(0);
   const [rotateY, setRotateY] = useState(0);
+  const rafRef = useRef<number | null>(null);
+  const isMountedRef = useRef(true);
 
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!cardRef.current) return;
-    const rect = cardRef.current.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    const centerX = rect.width / 2;
-    const centerY = rect.height / 2;
-    setRotateX((y - centerY) / 10);
-    setRotateY((centerX - x) / 10);
-  };
+  useEffect(() => {
+    isMountedRef.current = true;
+    return () => {
+      isMountedRef.current = false;
+      if (rafRef.current !== null) {
+        cancelAnimationFrame(rafRef.current);
+      }
+    };
+  }, []);
 
-  const handleMouseLeave = () => {
+  const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    if (!cardRef.current || !isMountedRef.current) return;
+    
+    if (rafRef.current !== null) {
+      cancelAnimationFrame(rafRef.current);
+    }
+    
+    rafRef.current = requestAnimationFrame(() => {
+      if (!cardRef.current || !isMountedRef.current) return;
+      const rect = cardRef.current.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      const centerX = rect.width / 2;
+      const centerY = rect.height / 2;
+      setRotateX((y - centerY) / 10);
+      setRotateY((centerX - x) / 10);
+    });
+  }, []);
+
+  const handleMouseLeave = useCallback(() => {
+    if (rafRef.current !== null) {
+      cancelAnimationFrame(rafRef.current);
+      rafRef.current = null;
+    }
     setRotateX(0);
     setRotateY(0);
-  };
+  }, []);
 
   return (
     <motion.div
@@ -158,6 +188,7 @@ const HackathonCard = ({ hack, index }: { hack: any; index: number }) => {
       whileInView={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.1, duration: 0.8, ease: "easeOut" }}
       viewport={{ once: true }}
+      style={{ willChange: "transform" }}
     >
       <div
         ref={cardRef}
@@ -167,6 +198,9 @@ const HackathonCard = ({ hack, index }: { hack: any; index: number }) => {
         style={{
           transform: `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`,
           transition: "transform 0.1s ease-out",
+          willChange: "transform",
+          backfaceVisibility: "hidden",
+          transformStyle: "preserve-3d",
         }}
       >
         <div className="absolute -inset-0.5 bg-gradient-to-r from-cyan-500 via-purple-500 to-emerald-500 rounded-2xl blur opacity-20 group-hover:opacity-60 transition duration-500" />
@@ -211,7 +245,13 @@ const HackathonCard = ({ hack, index }: { hack: any; index: number }) => {
               </div>
             </div>
 
-            <Button className="w-full bg-white/5 hover:bg-white/10 border-white/10 text-white font-bold group/btn relative overflow-hidden">
+            <Button 
+              onClick={() => {
+                // Navigate to hackathon details
+                router.push(`/hackathons/${hack.id}`);
+              }}
+              className="w-full bg-white/5 hover:bg-white/10 border-white/10 text-white font-bold group/btn relative overflow-hidden"
+            >
               <span className="relative z-10 flex items-center gap-2">
                 VIEW DETAILS{" "}
                 <ChevronRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
@@ -227,11 +267,83 @@ const HackathonCard = ({ hack, index }: { hack: any; index: number }) => {
 
 const TeamCard = ({ type }: { type: "create" | "join" }) => {
   const isCreate = type === "create";
+  const [showModal, setShowModal] = useState(false);
+  const [teamName, setTeamName] = useState("");
+  const [selectedSkills, setSelectedSkills] = useState<string[]>([]);
+  const [availableTeams, setAvailableTeams] = useState<any[]>([]);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Mock available teams for JOIN
+  useEffect(() => {
+    if (!isCreate) {
+      setAvailableTeams([
+        { id: 1, name: "AI Innovators", members: 3, maxMembers: 5, skills: ["React", "AI", "Design"], hackathon: "Cyberpunk Hack 2077" },
+        { id: 2, name: "Code Warriors", members: 2, maxMembers: 4, skills: ["Node.js", "ML", "UI/UX"], hackathon: "TechFest 2024" },
+        { id: 3, name: "Digital Dreamers", members: 4, maxMembers: 6, skills: ["React", "AI", "Backend"], hackathon: "Hack the Future" },
+      ]);
+    }
+  }, [isCreate]);
+
+  const handleClick = () => {
+    setShowModal(true);
+  };
+
+  const handleCreateTeam = () => {
+    if (!teamName.trim()) {
+      toast.error("Please enter a team name");
+      return;
+    }
+    if (selectedSkills.length === 0) {
+      toast.error("Please select at least one skill");
+      return;
+    }
+    
+    // Simulate team creation
+    console.log("Creating team:", { name: teamName, skills: selectedSkills });
+    toast.success(`Team "${teamName}" created successfully!`, {
+      description: `Skills: ${selectedSkills.join(", ")}`,
+    });
+    setShowModal(false);
+    setTeamName("");
+    setSelectedSkills([]);
+  };
+
+  const handleJoinTeam = (teamId: number) => {
+    const team = availableTeams.find(t => t.id === teamId);
+    if (team) {
+      if (team.members >= team.maxMembers) {
+        toast.error("Team is full!");
+        return;
+      }
+      console.log("Joining team:", team);
+      toast.success(`Successfully joined "${team.name}"!`, {
+        description: "You'll be notified about team updates.",
+      });
+      setShowModal(false);
+    }
+  };
+
+  const toggleSkill = (skill: string) => {
+    setSelectedSkills(prev => 
+      prev.includes(skill) 
+        ? prev.filter(s => s !== skill)
+        : [...prev, skill]
+    );
+  };
+
+  const allSkills = ["React", "AI", "Design", "Node.js", "Python", "ML", "UI/UX", "Backend", "Frontend", "Mobile"];
 
   return (
+    <>
     <motion.div
-      whileHover={{ y: -10, scale: 1.02 }}
+      onClick={handleClick}
+      whileHover={showModal ? {} : { y: -10, scale: 1.02 }}
       className="relative group cursor-pointer"
+      style={{ pointerEvents: showModal ? 'none' : 'auto' }}
     >
       <div
         className={`absolute -inset-1 bg-gradient-to-r ${isCreate ? "from-cyan-500 to-blue-600" : "from-purple-500 to-pink-600"} rounded-2xl blur-lg opacity-25 group-hover:opacity-75 transition duration-500`}
@@ -290,7 +402,138 @@ const TeamCard = ({ type }: { type: "create" | "join" }) => {
           )}
         </div>
       </Card>
+
+      {/* Modal - Portal to body */}
+      {mounted && typeof window !== 'undefined' && createPortal(
+        <AnimatePresence>
+          {showModal && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-[99999] flex items-center justify-center p-4 bg-black/95 backdrop-blur-md"
+              style={{ 
+                pointerEvents: 'auto',
+                position: 'fixed',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                width: '100vw',
+                height: '100vh',
+              }}
+              onClick={(e) => {
+                if (e.target === e.currentTarget) setShowModal(false);
+              }}
+            >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+              onMouseDown={(e) => e.stopPropagation()}
+              onMouseMove={(e) => e.stopPropagation()}
+              className={`relative bg-[#0c0c12] border ${isCreate ? "border-cyan-500/20" : "border-purple-500/20"} rounded-2xl p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto`}
+              style={{ pointerEvents: 'auto' }}
+            >
+              <button
+                onClick={() => setShowModal(false)}
+                className="absolute top-4 right-4 w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center transition-colors"
+              >
+                <X className="w-4 h-4 text-white/60" />
+              </button>
+
+              {isCreate ? (
+                <div className="space-y-6">
+                  <div>
+                    <h3 className="text-2xl font-black text-white mb-2">Create Your Team</h3>
+                    <p className="text-white/60 text-sm">Start your own squad and lead the project</p>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-sm font-bold text-white/80">Team Name</label>
+                    <Input
+                      value={teamName}
+                      onChange={(e) => setTeamName(e.target.value)}
+                      placeholder="Enter team name..."
+                      className="bg-white/5 border-white/10 text-white placeholder:text-white/30"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-sm font-bold text-white/80">Select Skills (Required)</label>
+                    <div className="flex flex-wrap gap-2">
+                      {allSkills.map((skill) => (
+                        <button
+                          key={skill}
+                          onClick={() => toggleSkill(skill)}
+                          className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${
+                            selectedSkills.includes(skill)
+                              ? "bg-cyan-500 text-black"
+                              : "bg-white/5 text-white/60 hover:bg-white/10"
+                          }`}
+                        >
+                          {skill}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <Button
+                    onClick={handleCreateTeam}
+                    className="w-full h-12 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-black font-black"
+                  >
+                    Create Team
+                  </Button>
+                </div>
+              ) : (
+                <div className="space-y-6">
+                  <div>
+                    <h3 className="text-2xl font-black text-white mb-2">Join a Team</h3>
+                    <p className="text-white/60 text-sm">Find the perfect match for your skills</p>
+                  </div>
+
+                  <div className="space-y-4">
+                    {availableTeams.map((team) => (
+                      <div
+                        key={team.id}
+                        className="p-4 rounded-xl bg-white/5 border border-white/10 hover:border-purple-500/50 transition-all"
+                      >
+                        <div className="flex items-start justify-between mb-3">
+                          <div>
+                            <h4 className="text-lg font-black text-white mb-1">{team.name}</h4>
+                            <p className="text-sm text-white/60">{team.hackathon}</p>
+                          </div>
+                          <Badge className="bg-purple-500/20 text-purple-400 border-purple-500/30">
+                            {team.members}/{team.maxMembers} members
+                          </Badge>
+                        </div>
+                        <div className="flex flex-wrap gap-2 mb-4">
+                          {team.skills.map((skill: string) => (
+                            <Badge key={skill} variant="secondary" className="bg-white/5 text-white/60 border-none">
+                              {skill}
+                            </Badge>
+                          ))}
+                        </div>
+                        <Button
+                          onClick={() => handleJoinTeam(team.id)}
+                          className="w-full bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-400 hover:to-pink-500 text-white font-bold"
+                        >
+                          Join Team
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>,
+      document.body
+      )}
     </motion.div>
+    </>
   );
 };
 
@@ -340,7 +583,9 @@ const mockHackathons = [
 ];
 
 export default function CrackHackPage() {
+  const router = useRouter();
   const [mounted, setMounted] = useState(false);
+  const [filterSkill, setFilterSkill] = useState("");
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Initialize useScroll with the ref
@@ -444,6 +689,13 @@ export default function CrackHackPage() {
                 className="flex gap-4 justify-center pt-8"
               >
                 <Button
+                  onClick={() => {
+                    // Scroll to hackathons section or navigate
+                    const element = document.getElementById("hackathons-section");
+                    if (element) {
+                      element.scrollIntoView({ behavior: "smooth" });
+                    }
+                  }}
                   size="lg"
                   className="h-16 px-8 rounded-full bg-cyan-500 hover:bg-cyan-400 text-black font-black text-lg shadow-[0_0_30px_rgba(6,182,212,0.5)]"
                 >
@@ -458,9 +710,6 @@ export default function CrackHackPage() {
               transition={{ duration: 2, repeat: Infinity }}
               className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
             >
-              <span className="text-[10px] font-bold text-white/20 tracking-widest uppercase">
-                SCROLL TO DISCOVER
-              </span>
               <div className="w-[1px] h-12 bg-gradient-to-b from-cyan-500 to-transparent" />
             </motion.div>
           </section>
@@ -468,7 +717,7 @@ export default function CrackHackPage() {
           {/* Content Wrapper */}
           <div className="relative z-10 max-w-7xl mx-auto px-6 space-y-32 pb-32">
             {/* Hackathon Discovery */}
-            <section className="space-y-16">
+            <section id="hackathons-section" className="space-y-16">
               <div className="flex flex-col md:flex-row justify-between items-end gap-6">
                 <div className="space-y-4">
                   <Badge className="bg-orange-500/10 text-orange-400 border-orange-500/20 px-4 py-1.5 text-xs font-bold tracking-widest uppercase">
@@ -483,7 +732,9 @@ export default function CrackHackPage() {
                     <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
                     <input
                       placeholder="FILTER BY SKILL..."
-                      className="bg-white/5 border border-white/10 rounded-full py-3 pl-12 pr-6 text-sm focus:outline-none focus:border-cyan-500/50 transition-colors w-64 uppercase font-bold tracking-wider"
+                      value={filterSkill}
+                      onChange={(e) => setFilterSkill(e.target.value)}
+                      className="bg-white/5 border border-white/10 rounded-full py-3 pl-12 pr-6 text-sm focus:outline-none focus:border-cyan-500/50 transition-colors w-64 uppercase font-bold tracking-wider text-white placeholder:text-white/50 caret-white"
                     />
                   </div>
                 </div>
@@ -491,7 +742,15 @@ export default function CrackHackPage() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 {mockHackathons
-                  .filter((h) => h.status === "Ongoing")
+                  .filter((h) => {
+                    if (h.status !== "Ongoing") return false;
+                    if (!filterSkill.trim()) return true;
+                    const skillLower = filterSkill.toLowerCase();
+                    return (
+                      h.name.toLowerCase().includes(skillLower) ||
+                      h.description.toLowerCase().includes(skillLower)
+                    );
+                  })
                   .map((hack, i) => (
                     <HackathonCard key={hack.id} hack={hack} index={i} />
                   ))}
@@ -503,7 +762,15 @@ export default function CrackHackPage() {
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                   {mockHackathons
-                    .filter((h) => h.status === "Upcoming")
+                    .filter((h) => {
+                      if (h.status !== "Upcoming") return false;
+                      if (!filterSkill.trim()) return true;
+                      const skillLower = filterSkill.toLowerCase();
+                      return (
+                        h.name.toLowerCase().includes(skillLower) ||
+                        h.description.toLowerCase().includes(skillLower)
+                      );
+                    })
                     .map((hack, i) => (
                       <HackathonCard key={hack.id} hack={hack} index={i} />
                     ))}

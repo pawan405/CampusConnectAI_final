@@ -182,6 +182,10 @@ export default function SettingsPage() {
                   </div>
                 </div>
                 <Button
+                  onClick={() => {
+                    // Enable 2FA functionality
+                    alert("2FA setup would be initiated here");
+                  }}
                   variant="outline"
                   className="border-white/[0.08] hover:bg-white/[0.06]"
                 >
@@ -201,6 +205,13 @@ export default function SettingsPage() {
                   </div>
                 </div>
                 <Button
+                  onClick={() => {
+                    if (confirm("Are you sure you want to delete your account? This action cannot be undone.")) {
+                      // Delete account functionality
+                      console.log("Account deletion initiated");
+                      alert("Account deletion would be processed here");
+                    }
+                  }}
                   variant="ghost"
                   className="text-rose-400 hover:bg-rose-500/10"
                 >
