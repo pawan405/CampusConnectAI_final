@@ -124,4 +124,4 @@ npm install
 node index.js
 (Environment variables required for Firebase & Gemini API)
 
-hiiiiiiiiiiiii
+done
