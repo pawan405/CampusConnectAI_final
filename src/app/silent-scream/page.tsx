@@ -35,6 +35,7 @@ export default function SilentScreamPage() {
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const isStartingRef = useRef(false);
+  const streamRef = useRef<MediaStream | null>(null);
 
   const generateSummary = async (text: string) => {
     if (!text) return "";
@@ -111,6 +112,10 @@ export default function SilentScreamPage() {
         recognitionRef.current.stop();
       } catch (e) {}
       recognitionRef.current = null;
+    }
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach(track => track.stop());
+      streamRef.current = null;
     }
     if (timerRef.current) {
       clearInterval(timerRef.current);
@@ -232,11 +237,18 @@ export default function SilentScreamPage() {
       setShowSummary(false);
       setSignalId(null);
       
+      let stream: MediaStream;
       try {
         console.log("[toggleRecording] Requesting microphone permission...");
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        console.log("[toggleRecording] Microphone permission granted");
-        stream.getTracks().forEach(track => track.stop());
+        stream = await navigator.mediaDevices.getUserMedia({ 
+          audio: {
+            echoCancellation: true,
+            noiseSuppression: true,
+            autoGainControl: true,
+          } 
+        });
+        console.log("[toggleRecording] Microphone permission granted, tracks:", stream.getAudioTracks().length);
+        streamRef.current = stream;
       } catch (err) {
         console.error("[toggleRecording] Microphone permission denied:", err);
         toast.error("Microphone access denied. Please allow microphone permissions and try again.");
@@ -259,10 +271,12 @@ export default function SilentScreamPage() {
         } catch (err) {
           console.error("[toggleRecording] Failed to start recognition:", err);
           toast.error("Could not start speech recognition. Please try again.");
+          cleanupRecognition();
           isStartingRef.current = false;
         }
       } else {
         toast.error("Speech recognition is not supported in this browser. You can still type your report.");
+        cleanupRecognition();
         setShowSummary(true);
         isStartingRef.current = false;
         setTimeout(() => textareaRef.current?.focus(), 100);
