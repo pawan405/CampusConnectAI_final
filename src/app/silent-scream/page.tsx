@@ -35,7 +35,6 @@ export default function SilentScreamPage() {
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const isStartingRef = useRef(false);
-  const streamRef = useRef<MediaStream | null>(null);
 
   const generateSummary = async (text: string) => {
     if (!text) return "";
@@ -106,16 +105,15 @@ export default function SilentScreamPage() {
   const cleanupRecognition = () => {
     if (recognitionRef.current) {
       try {
+        recognitionRef.current.onstart = null;
         recognitionRef.current.onresult = null;
         recognitionRef.current.onend = null;
         recognitionRef.current.onerror = null;
-        recognitionRef.current.stop();
+        recognitionRef.current.onspeechstart = null;
+        recognitionRef.current.onspeechend = null;
+        recognitionRef.current.abort();
       } catch (e) {}
       recognitionRef.current = null;
-    }
-    if (streamRef.current) {
-      streamRef.current.getTracks().forEach(track => track.stop());
-      streamRef.current = null;
     }
     if (timerRef.current) {
       clearInterval(timerRef.current);
@@ -123,168 +121,120 @@ export default function SilentScreamPage() {
     }
   };
 
-  const createRecognition = () => {
-    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-    if (!SpeechRecognition) return null;
-    
-    const recognition = new SpeechRecognition();
-    recognition.continuous = true;
-    recognition.interimResults = true;
-    recognition.lang = "en-US";
-    recognition.maxAlternatives = 1;
-    
-    let finalTranscript = "";
-    
-    recognition.onstart = () => {
-      console.log("[SpeechRecognition] Started listening...");
-      finalTranscript = "";
-    };
-    
-    recognition.onaudiostart = () => {
-      console.log("[SpeechRecognition] Audio capture started");
-    };
-    
-    recognition.onsoundstart = () => {
-      console.log("[SpeechRecognition] Sound detected");
-    };
-    
-    recognition.onspeechstart = () => {
-      console.log("[SpeechRecognition] Speech detected");
-    };
-    
-    recognition.onresult = (event: any) => {
-      console.log("[SpeechRecognition] Result received:", event.results.length, "results");
-      let interimTranscript = "";
-      
-      for (let i = event.resultIndex; i < event.results.length; i++) {
-        const transcript = event.results[i][0].transcript;
-        if (event.results[i].isFinal) {
-          finalTranscript += transcript + " ";
-          console.log("[SpeechRecognition] Final:", transcript);
-        } else {
-          interimTranscript += transcript;
-          console.log("[SpeechRecognition] Interim:", transcript);
-        }
-      }
-      
-      setTranscription((finalTranscript + interimTranscript).trim());
-    };
-    
-    recognition.onspeechend = () => {
-      console.log("[SpeechRecognition] Speech ended");
-    };
-    
-    recognition.onsoundend = () => {
-      console.log("[SpeechRecognition] Sound ended");
-    };
-    
-    recognition.onaudioend = () => {
-      console.log("[SpeechRecognition] Audio capture ended");
-    };
-
-    recognition.onend = () => {
-      console.log("[SpeechRecognition] Recognition ended");
-      setIsRecording(false);
-      isStartingRef.current = false;
-    };
-
-    recognition.onerror = (event: any) => {
-      console.error("[SpeechRecognition] Error:", event.error, event.message);
-      setIsRecording(false);
-      isStartingRef.current = false;
-      
-      if (event.error === "not-allowed") {
-        toast.error("Microphone access denied. Please allow microphone permissions in your browser settings.");
-      } else if (event.error === "no-speech") {
-        toast.info("No speech detected. Please try speaking closer to the microphone.");
-        if (!finalTranscript.trim()) {
-          setTranscription("");
-        }
-      } else if (event.error !== "aborted") {
-        toast.error(`Microphone error: ${event.error}. Please try again.`);
-      }
-    };
-
-    recognition.onnomatch = () => {
-      console.log("[SpeechRecognition] No match found");
-      toast.info("Could not recognize speech. Please speak clearly and try again.");
-    };
-
-    return recognition;
-  };
-
   const toggleRecording = async () => {
     if (isStartingRef.current) return;
     
     if (isRecording) {
       console.log("[toggleRecording] Stopping recording...");
-      cleanupRecognition();
+      if (recognitionRef.current) {
+        try {
+          recognitionRef.current.stop();
+        } catch (e) {}
+      }
+      return;
+    }
+    
+    isStartingRef.current = true;
+    cleanupRecognition();
+    
+    setTranscription("");
+    setDuration(0);
+    setSummary("");
+    setShowSummary(false);
+    setSignalId(null);
+    
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      toast.error("Speech recognition is not supported in this browser. You can still type your report.");
+      setShowSummary(true);
+      isStartingRef.current = false;
+      setTimeout(() => textareaRef.current?.focus(), 100);
+      return;
+    }
+    
+    const recognition = new SpeechRecognition();
+    recognition.continuous = false;
+    recognition.interimResults = false;
+    recognition.lang = "en-US";
+    
+    let capturedTranscript = "";
+    
+    recognition.onstart = () => {
+      console.log("[SpeechRecognition] Started - listening for speech...");
+      setIsRecording(true);
+      
+      const startTime = performance.now();
+      timerRef.current = setInterval(() => {
+        setDuration((performance.now() - startTime) / 1000);
+      }, 10);
+    };
+    
+    recognition.onspeechstart = () => {
+      console.log("[SpeechRecognition] Speech detected!");
+    };
+    
+    recognition.onresult = (event: any) => {
+      console.log("[SpeechRecognition] Result received");
+      const transcript = event.results[0][0].transcript;
+      const confidence = event.results[0][0].confidence;
+      console.log("[SpeechRecognition] Transcript:", transcript, "Confidence:", confidence);
+      capturedTranscript = transcript;
+      setTranscription(transcript);
+    };
+    
+    recognition.onspeechend = () => {
+      console.log("[SpeechRecognition] Speech ended, stopping recognition...");
+      try {
+        recognition.stop();
+      } catch (e) {}
+    };
+    
+    recognition.onend = () => {
+      console.log("[SpeechRecognition] Recognition ended, transcript:", capturedTranscript);
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
       setIsRecording(false);
+      isStartingRef.current = false;
+      recognitionRef.current = null;
       setShowSummary(true);
       
-      if (transcription) {
-        generateSummary(transcription);
+      if (capturedTranscript) {
+        generateSummary(capturedTranscript);
       } else {
         toast.info("No speech was captured. You can type your message instead.");
       }
-    } else {
-      isStartingRef.current = true;
-      cleanupRecognition();
-      
-      setTranscription("");
-      setDuration(0);
-      setSummary("");
-      setShowSummary(false);
-      setSignalId(null);
-      
-      let stream: MediaStream;
-      try {
-        console.log("[toggleRecording] Requesting microphone permission...");
-        stream = await navigator.mediaDevices.getUserMedia({ 
-          audio: {
-            echoCancellation: true,
-            noiseSuppression: true,
-            autoGainControl: true,
-          } 
-        });
-        console.log("[toggleRecording] Microphone permission granted, tracks:", stream.getAudioTracks().length);
-        streamRef.current = stream;
-      } catch (err) {
-        console.error("[toggleRecording] Microphone permission denied:", err);
-        toast.error("Microphone access denied. Please allow microphone permissions and try again.");
-        isStartingRef.current = false;
-        return;
+    };
+    
+    recognition.onerror = (event: any) => {
+      console.error("[SpeechRecognition] Error:", event.error);
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
       }
+      setIsRecording(false);
+      isStartingRef.current = false;
+      recognitionRef.current = null;
       
-      const recognition = createRecognition();
-      if (recognition) {
-        try {
-          console.log("[toggleRecording] Starting speech recognition...");
-          recognition.start();
-          recognitionRef.current = recognition;
-          setIsRecording(true);
-          
-          const startTime = performance.now();
-          timerRef.current = setInterval(() => {
-            setDuration((performance.now() - startTime) / 1000);
-          }, 10);
-        } catch (err) {
-          console.error("[toggleRecording] Failed to start recognition:", err);
-          toast.error("Could not start speech recognition. Please try again.");
-          cleanupRecognition();
-          isStartingRef.current = false;
-        }
-      } else {
-        toast.error("Speech recognition is not supported in this browser. You can still type your report.");
-        cleanupRecognition();
+      if (event.error === "not-allowed") {
+        toast.error("Microphone access denied. Please allow microphone permissions.");
+      } else if (event.error === "no-speech") {
         setShowSummary(true);
-        isStartingRef.current = false;
-        setTimeout(() => textareaRef.current?.focus(), 100);
+        toast.info("No speech detected. You can type your message instead.");
+      } else if (event.error !== "aborted") {
+        toast.error(`Speech recognition error: ${event.error}`);
       }
-      
-      setTimeout(() => {
-        isStartingRef.current = false;
-      }, 500);
+    };
+    
+    try {
+      console.log("[toggleRecording] Starting speech recognition...");
+      recognition.start();
+      recognitionRef.current = recognition;
+    } catch (err) {
+      console.error("[toggleRecording] Failed to start:", err);
+      toast.error("Could not start speech recognition. Please try again.");
+      isStartingRef.current = false;
     }
   };
 
