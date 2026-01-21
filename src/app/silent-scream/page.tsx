@@ -105,160 +105,108 @@ export default function SilentScreamPage() {
   const cleanupRecognition = () => {
     if (recognitionRef.current) {
       try {
-        recognitionRef.current.onstart = null;
-        recognitionRef.current.onresult = null;
-        recognitionRef.current.onend = null;
-        recognitionRef.current.onerror = null;
-        recognitionRef.current.onspeechstart = null;
-        recognitionRef.current.onspeechend = null;
-        recognitionRef.current.abort();
-      } catch (e) {}
+        recognitionRef.current.abort(); // 🚨 ONLY abort
+      } catch {}
       recognitionRef.current = null;
     }
+
     if (timerRef.current) {
       clearInterval(timerRef.current);
       timerRef.current = null;
     }
+
+    isStartingRef.current = false;
   };
 
-  const toggleRecording = async () => {
+  const toggleRecording = () => {
     if (isRecording) {
-      console.log("[toggleRecording] Stopping recording - aborting recognition...");
-      if (recognitionRef.current) {
-        try {
-          recognitionRef.current.abort();
-        } catch (e) {}
-      }
+      // 🔴 FORCE STOP
+      cleanupRecognition();
+      setIsRecording(false);
       return;
     }
-    
+
     if (isStartingRef.current) return;
     isStartingRef.current = true;
-    
+
     cleanupRecognition();
-    
+
     setTranscription("");
     setDuration(0);
     setSummary("");
     setShowSummary(false);
     setSignalId(null);
-    
-    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+
+    const SpeechRecognition =
+      (window as any).SpeechRecognition ||
+      (window as any).webkitSpeechRecognition;
+
     if (!SpeechRecognition) {
-      toast.error("Speech recognition is not supported in this browser. You can still type your report.");
+      toast.error("Speech recognition not supported. Please type your message.");
       setShowSummary(true);
       isStartingRef.current = false;
       setTimeout(() => textareaRef.current?.focus(), 100);
       return;
     }
-    
+
     const recognition = new SpeechRecognition();
+    recognition.lang = "en-US";
     recognition.continuous = false;
     recognition.interimResults = false;
-    recognition.lang = "en-US";
-    
-    let capturedTranscript = "";
-    let hasEnded = false;
-    
-    const finalizeRecognition = () => {
-      if (hasEnded) return;
-      hasEnded = true;
-      
-      console.log("[SpeechRecognition] Finalizing, transcript:", capturedTranscript);
-      
-      if (timerRef.current) {
-        clearInterval(timerRef.current);
-        timerRef.current = null;
-      }
-      
-      setIsRecording(false);
-      isStartingRef.current = false;
-      recognitionRef.current = null;
-      setShowSummary(true);
-      
-      if (capturedTranscript) {
-        generateSummary(capturedTranscript);
-      } else {
-        toast.info("No speech was captured. You can type your message instead.");
-      }
-    };
-    
+
+    let transcript = "";
+    let startTime = 0;
+
     recognition.onstart = () => {
-      console.log("[SpeechRecognition] Started - listening for speech...");
+      startTime = performance.now();
       setIsRecording(true);
       isStartingRef.current = false;
-      
-      const startTime = performance.now();
+
       timerRef.current = setInterval(() => {
         setDuration((performance.now() - startTime) / 1000);
       }, 10);
     };
-    
-    recognition.onspeechstart = () => {
-      console.log("[SpeechRecognition] Speech detected!");
-    };
-    
+
     recognition.onresult = (event: any) => {
-      console.log("[SpeechRecognition] Result received");
-      const transcript = event.results[0][0].transcript;
-      const confidence = event.results[0][0].confidence;
-      console.log("[SpeechRecognition] Transcript:", transcript, "Confidence:", confidence);
-      capturedTranscript = transcript;
+      transcript = event.results[0][0].transcript;
       setTranscription(transcript);
-      try {
-        recognition.stop();
-      } catch (e) {}
+      // Use abort() only to end the session
+      recognition.abort();
     };
-    
-    recognition.onspeechend = () => {
-      console.log("[SpeechRecognition] Speech ended, stopping recognition...");
-      try {
-        recognition.stop();
-      } catch (e) {}
-    };
-    
-    recognition.onend = () => {
-      console.log("[SpeechRecognition] onend fired");
-      finalizeRecognition();
-    };
-    
+
     recognition.onerror = (event: any) => {
-      console.error("[SpeechRecognition] Error:", event.error);
-      
-      if (event.error === "not-allowed") {
-        if (timerRef.current) {
-          clearInterval(timerRef.current);
-          timerRef.current = null;
-        }
-        setIsRecording(false);
-        isStartingRef.current = false;
-        recognitionRef.current = null;
-        toast.error("Microphone access denied. Please allow microphone permissions.");
-        return;
-      }
-      
-      if (event.error === "no-speech") {
+      console.error("Speech error:", event.error);
+
+      if (event.error !== "aborted") {
         toast.info("No speech detected. You can type your message instead.");
-      } else if (event.error !== "aborted") {
-        toast.error(`Speech recognition error: ${event.error}`);
       }
-      
-      try {
-        recognition.abort();
-      } catch (e) {}
+
+      cleanupRecognition();
+      setIsRecording(false);
+      setShowSummary(true);
     };
-    
+
+    recognition.onend = () => {
+      cleanupRecognition();
+      setIsRecording(false);
+      setShowSummary(true);
+
+      if (transcript.trim()) {
+        generateSummary(transcript);
+      }
+    };
+
+    recognitionRef.current = recognition;
+
     try {
-      console.log("[toggleRecording] Starting speech recognition...");
-      recognitionRef.current = recognition;
       recognition.start();
     } catch (err) {
-      console.error("[toggleRecording] Failed to start:", err);
-      toast.error("Could not start speech recognition. Please try again.");
+      console.error("Failed to start recognition:", err);
+      cleanupRecognition();
       isStartingRef.current = false;
-      recognitionRef.current = null;
     }
   };
+
 
   const handleTextareaKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
