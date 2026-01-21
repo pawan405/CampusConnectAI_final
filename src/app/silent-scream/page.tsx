@@ -125,27 +125,84 @@ export default function SilentScreamPage() {
     const recognition = new SpeechRecognition();
     recognition.continuous = true;
     recognition.interimResults = true;
+    recognition.lang = "en-US";
+    recognition.maxAlternatives = 1;
+    
+    let finalTranscript = "";
+    
+    recognition.onstart = () => {
+      console.log("[SpeechRecognition] Started listening...");
+      finalTranscript = "";
+    };
+    
+    recognition.onaudiostart = () => {
+      console.log("[SpeechRecognition] Audio capture started");
+    };
+    
+    recognition.onsoundstart = () => {
+      console.log("[SpeechRecognition] Sound detected");
+    };
+    
+    recognition.onspeechstart = () => {
+      console.log("[SpeechRecognition] Speech detected");
+    };
     
     recognition.onresult = (event: any) => {
-      let currentTranscription = "";
-      for (let i = 0; i < event.results.length; i++) {
-        currentTranscription += event.results[i][0].transcript;
+      console.log("[SpeechRecognition] Result received:", event.results.length, "results");
+      let interimTranscript = "";
+      
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        const transcript = event.results[i][0].transcript;
+        if (event.results[i].isFinal) {
+          finalTranscript += transcript + " ";
+          console.log("[SpeechRecognition] Final:", transcript);
+        } else {
+          interimTranscript += transcript;
+          console.log("[SpeechRecognition] Interim:", transcript);
+        }
       }
-      setTranscription(currentTranscription);
+      
+      setTranscription((finalTranscript + interimTranscript).trim());
+    };
+    
+    recognition.onspeechend = () => {
+      console.log("[SpeechRecognition] Speech ended");
+    };
+    
+    recognition.onsoundend = () => {
+      console.log("[SpeechRecognition] Sound ended");
+    };
+    
+    recognition.onaudioend = () => {
+      console.log("[SpeechRecognition] Audio capture ended");
     };
 
     recognition.onend = () => {
+      console.log("[SpeechRecognition] Recognition ended");
       setIsRecording(false);
       isStartingRef.current = false;
     };
 
     recognition.onerror = (event: any) => {
-      console.error("Speech recognition error:", event.error);
+      console.error("[SpeechRecognition] Error:", event.error, event.message);
       setIsRecording(false);
       isStartingRef.current = false;
-      if (event.error !== "aborted") {
+      
+      if (event.error === "not-allowed") {
+        toast.error("Microphone access denied. Please allow microphone permissions in your browser settings.");
+      } else if (event.error === "no-speech") {
+        toast.info("No speech detected. Please try speaking closer to the microphone.");
+        if (!finalTranscript.trim()) {
+          setTranscription("");
+        }
+      } else if (event.error !== "aborted") {
         toast.error(`Microphone error: ${event.error}. Please try again.`);
       }
+    };
+
+    recognition.onnomatch = () => {
+      console.log("[SpeechRecognition] No match found");
+      toast.info("Could not recognize speech. Please speak clearly and try again.");
     };
 
     return recognition;
@@ -155,12 +212,15 @@ export default function SilentScreamPage() {
     if (isStartingRef.current) return;
     
     if (isRecording) {
+      console.log("[toggleRecording] Stopping recording...");
       cleanupRecognition();
       setIsRecording(false);
       setShowSummary(true);
       
       if (transcription) {
         generateSummary(transcription);
+      } else {
+        toast.info("No speech was captured. You can type your message instead.");
       }
     } else {
       isStartingRef.current = true;
@@ -172,9 +232,22 @@ export default function SilentScreamPage() {
       setShowSummary(false);
       setSignalId(null);
       
+      try {
+        console.log("[toggleRecording] Requesting microphone permission...");
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        console.log("[toggleRecording] Microphone permission granted");
+        stream.getTracks().forEach(track => track.stop());
+      } catch (err) {
+        console.error("[toggleRecording] Microphone permission denied:", err);
+        toast.error("Microphone access denied. Please allow microphone permissions and try again.");
+        isStartingRef.current = false;
+        return;
+      }
+      
       const recognition = createRecognition();
       if (recognition) {
         try {
+          console.log("[toggleRecording] Starting speech recognition...");
           recognition.start();
           recognitionRef.current = recognition;
           setIsRecording(true);
@@ -184,8 +257,8 @@ export default function SilentScreamPage() {
             setDuration((performance.now() - startTime) / 1000);
           }, 10);
         } catch (err) {
-          console.error("Failed to start recognition:", err);
-          toast.error("Could not access microphone. Please check permissions.");
+          console.error("[toggleRecording] Failed to start recognition:", err);
+          toast.error("Could not start speech recognition. Please try again.");
           isStartingRef.current = false;
         }
       } else {
