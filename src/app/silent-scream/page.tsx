@@ -34,6 +34,7 @@ export default function SilentScreamPage() {
   const recognitionRef = useRef<any>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const isStartingRef = useRef(false);
 
   const generateSummary = async (text: string) => {
     if (!text) return "";
@@ -70,9 +71,7 @@ export default function SilentScreamPage() {
   useEffect(() => {
     setMounted(true);
     
-    // Global keydown listener for accessibility (type to start)
     const handleGlobalKeyDown = (e: KeyboardEvent) => {
-      // Don't trigger if user is already in an input or textarea
       if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
 
       if (
@@ -85,7 +84,6 @@ export default function SilentScreamPage() {
       ) {
         setShowSummary(true);
         setTranscription(e.key);
-        // We'll focus the textarea in the next render cycle
         setTimeout(() => {
           if (textareaRef.current) {
             textareaRef.current.focus();
@@ -97,57 +95,88 @@ export default function SilentScreamPage() {
 
     window.addEventListener("keydown", handleGlobalKeyDown);
     
-    // Initialize Speech Recognition
-    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-    if (SpeechRecognition) {
-      const recognition = new SpeechRecognition();
-      recognition.continuous = true;
-      recognition.interimResults = true;
-      
-      recognition.onresult = (event: any) => {
-        let currentTranscription = "";
-        for (let i = 0; i < event.results.length; i++) {
-          currentTranscription += event.results[i][0].transcript;
-        }
-        setTranscription(currentTranscription);
-      };
-
-      recognition.onend = () => {
-        setIsRecording(false);
-      };
-
-      recognitionRef.current = recognition;
-    }
-    
     return () => {
       window.removeEventListener("keydown", handleGlobalKeyDown);
       if (timerRef.current) clearInterval(timerRef.current);
-      if (recognitionRef.current) recognitionRef.current.stop();
+      cleanupRecognition();
     };
   }, [isRecording, showSummary]);
 
+  const cleanupRecognition = () => {
+    if (recognitionRef.current) {
+      try {
+        recognitionRef.current.onresult = null;
+        recognitionRef.current.onend = null;
+        recognitionRef.current.onerror = null;
+        recognitionRef.current.stop();
+      } catch (e) {}
+      recognitionRef.current = null;
+    }
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
+  };
+
+  const createRecognition = () => {
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SpeechRecognition) return null;
+    
+    const recognition = new SpeechRecognition();
+    recognition.continuous = true;
+    recognition.interimResults = true;
+    
+    recognition.onresult = (event: any) => {
+      let currentTranscription = "";
+      for (let i = 0; i < event.results.length; i++) {
+        currentTranscription += event.results[i][0].transcript;
+      }
+      setTranscription(currentTranscription);
+    };
+
+    recognition.onend = () => {
+      setIsRecording(false);
+      isStartingRef.current = false;
+    };
+
+    recognition.onerror = (event: any) => {
+      console.error("Speech recognition error:", event.error);
+      setIsRecording(false);
+      isStartingRef.current = false;
+      if (event.error !== "aborted") {
+        toast.error(`Microphone error: ${event.error}. Please try again.`);
+      }
+    };
+
+    return recognition;
+  };
+
   const toggleRecording = async () => {
+    if (isStartingRef.current) return;
+    
     if (isRecording) {
-      // Stop recording
-      if (recognitionRef.current) recognitionRef.current.stop();
-      if (timerRef.current) clearInterval(timerRef.current);
+      cleanupRecognition();
       setIsRecording(false);
       setShowSummary(true);
       
-      // Generate AI Summary
       if (transcription) {
         generateSummary(transcription);
       }
     } else {
-      // Start recording
+      isStartingRef.current = true;
+      cleanupRecognition();
+      
       setTranscription("");
       setDuration(0);
       setSummary("");
       setShowSummary(false);
+      setSignalId(null);
       
-      if (recognitionRef.current) {
+      const recognition = createRecognition();
+      if (recognition) {
         try {
-          recognitionRef.current.start();
+          recognition.start();
+          recognitionRef.current = recognition;
           setIsRecording(true);
           
           const startTime = performance.now();
@@ -157,12 +186,18 @@ export default function SilentScreamPage() {
         } catch (err) {
           console.error("Failed to start recognition:", err);
           toast.error("Could not access microphone. Please check permissions.");
+          isStartingRef.current = false;
         }
       } else {
         toast.error("Speech recognition is not supported in this browser. You can still type your report.");
         setShowSummary(true);
+        isStartingRef.current = false;
         setTimeout(() => textareaRef.current?.focus(), 100);
       }
+      
+      setTimeout(() => {
+        isStartingRef.current = false;
+      }, 500);
     }
   };
 
