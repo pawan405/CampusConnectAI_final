@@ -217,6 +217,17 @@ const TeamCard = ({ type }: { type: "create" | "join" }) => {
   const [members, setMembers] = useState("");
   const [open, setOpen] = useState(false);
 
+  const [teamMembers, setTeamMembers] = useState<string[]>([]);
+  const [newMember, setNewMember] = useState("");
+
+  const handleAddMember = () => {
+    if (newMember.trim()) {
+      setTeamMembers([...teamMembers, newMember.trim()]);
+      setNewMember("");
+      toast.success("Member staged", { description: `${newMember} added to potential roster.` });
+    }
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (isCreate) {
@@ -224,17 +235,18 @@ const TeamCard = ({ type }: { type: "create" | "join" }) => {
         toast.error("Vessel identification required", { description: "Please enter a team name." });
         return;
       }
-      toast.success("Team Broadcast Initiated", {
-        description: `Team "${teamName}" has been registered in the neural network.`,
+      toast.success("Team Registered", {
+        description: `Team "${teamName}" with ${teamMembers.length + 1} members is now live.`,
       });
     } else {
       toast.success("Join Request Transmitted", {
-        description: "Your profile has been shared with the team leads.",
+        description: "Your profile has been shared with the team leads. Expect a sync soon.",
       });
     }
     setOpen(false);
     setTeamName("");
     setMembers("");
+    setTeamMembers([]);
   };
 
   return (
@@ -304,7 +316,7 @@ const TeamCard = ({ type }: { type: "create" | "join" }) => {
           </Card>
         </motion.div>
       </DialogTrigger>
-      <DialogContent className="bg-[#0c0c12] border-white/10 text-white max-w-md rounded-[32px] backdrop-blur-3xl p-8">
+      <DialogContent className="bg-[#0c0c12] border-white/10 text-white max-w-md rounded-[32px] backdrop-blur-3xl p-8 shadow-[0_0_100px_rgba(0,0,0,0.8)]">
         <DialogHeader>
           <DialogTitle className="text-3xl font-black uppercase tracking-tighter">
             {isCreate ? "Initialize Team" : "Find Your Squad"}
@@ -313,9 +325,9 @@ const TeamCard = ({ type }: { type: "create" | "join" }) => {
             {isCreate ? "Define your vision and recruit innovators" : "Connect with ongoing projects"}
           </DialogDescription>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-6 mt-8">
+        <div className="space-y-6 mt-8">
           {isCreate ? (
-            <>
+            <div className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="teamName" className="text-xs font-black text-white/40 uppercase tracking-widest">Team Identity</Label>
                 <Input
@@ -327,38 +339,65 @@ const TeamCard = ({ type }: { type: "create" | "join" }) => {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="members" className="text-xs font-black text-white/40 uppercase tracking-widest">Target Members (Optional)</Label>
-                <Input
-                  id="members"
-                  placeholder="E.G. DESIGNER, AI ENGINEER"
-                  value={members}
-                  onChange={(e) => setMembers(e.target.value)}
-                  className="h-14 bg-white/5 border-white/10 rounded-2xl focus:border-cyan-500/50 uppercase font-bold"
-                />
+                <Label className="text-xs font-black text-white/40 uppercase tracking-widest">Recruit Members</Label>
+                <div className="flex gap-2">
+                  <Input
+                    placeholder="EMAIL OR USERNAME"
+                    value={newMember}
+                    onChange={(e) => setNewMember(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && handleAddMember()}
+                    className="h-14 bg-white/5 border-white/10 rounded-2xl focus:border-cyan-500/50 uppercase font-bold"
+                  />
+                  <Button type="button" onClick={handleAddMember} className="h-14 w-14 rounded-2xl bg-white/10 border border-white/10 hover:bg-white/20">
+                    <Plus className="w-5 h-5" />
+                  </Button>
+                </div>
+                <div className="flex flex-wrap gap-2 mt-4">
+                  {teamMembers.map((m, i) => (
+                    <Badge key={i} className="bg-cyan-500/20 text-cyan-400 border-cyan-500/30 px-3 py-1">
+                      {m.toUpperCase()}
+                    </Badge>
+                  ))}
+                </div>
               </div>
-            </>
+            </div>
           ) : (
             <div className="space-y-4">
-               <div className="p-4 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-between">
-                  <div>
-                    <p className="font-bold text-sm">CYBER STRIKE</p>
-                    <p className="text-[10px] text-white/40 font-black tracking-widest">3/4 MEMBERS</p>
-                  </div>
-                  <Button variant="ghost" size="sm" className="text-purple-400 hover:text-purple-300 hover:bg-purple-500/10">JOIN</Button>
-               </div>
-               <div className="p-4 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-between">
-                  <div>
-                    <p className="font-bold text-sm">VOID RUNNERS</p>
-                    <p className="text-[10px] text-white/40 font-black tracking-widest">1/4 MEMBERS</p>
-                  </div>
-                  <Button variant="ghost" size="sm" className="text-purple-400 hover:text-purple-300 hover:bg-purple-500/10">JOIN</Button>
-               </div>
+               {[
+                 { name: "CYBER STRIKE", members: "3/4" },
+                 { name: "VOID RUNNERS", members: "1/4" },
+                 { name: "NEURAL NEXUS", members: "2/4" }
+               ].map((t) => (
+                 <div key={t.name} className="p-4 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-between group hover:border-purple-500/30 transition-all">
+                    <div>
+                      <p className="font-bold text-sm group-hover:text-purple-400 transition-colors">{t.name}</p>
+                      <p className="text-[10px] text-white/40 font-black tracking-widest">{t.members} MEMBERS</p>
+                    </div>
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      className="text-purple-400 hover:text-purple-300 hover:bg-purple-500/10 font-black text-[10px]"
+                      onClick={() => {
+                        toast.success("Sync Request Sent", { description: `Your profile shared with ${t.name}.` });
+                        setOpen(false);
+                      }}
+                    >
+                      SYNC
+                    </Button>
+                 </div>
+               ))}
             </div>
           )}
-          <Button type="submit" className={`w-full h-16 rounded-2xl font-black uppercase tracking-widest ${isCreate ? "bg-cyan-500 hover:bg-cyan-400 text-black" : "bg-purple-600 hover:bg-purple-500 text-white"}`}>
-            {isCreate ? "CREATE TEAM" : "REQUEST TO JOIN"}
-          </Button>
-        </form>
+          
+          {isCreate && (
+            <Button 
+              onClick={handleSubmit} 
+              className="w-full h-16 rounded-2xl font-black uppercase tracking-widest bg-cyan-500 hover:bg-cyan-400 text-black shadow-[0_10px_30px_rgba(6,182,212,0.3)]"
+            >
+              INITIALIZE TEAM
+            </Button>
+          )}
+        </div>
       </DialogContent>
     </Dialog>
   );
@@ -563,11 +602,6 @@ export default function CrackHackPage() {
                       value={searchFilter}
                       onChange={(e) => {
                         setSearchFilter(e.target.value);
-                        if (e.target.value.trim()) {
-                          toast.info(`Filtering by: ${e.target.value}`, {
-                            description: "Search functionality will filter hackathons in the next update.",
-                          });
-                        }
                       }}
                       className="bg-white/5 border border-white/10 rounded-full py-3 pl-12 pr-6 text-sm focus:outline-none focus:border-cyan-500/50 transition-colors w-64 uppercase font-bold tracking-wider"
                     />

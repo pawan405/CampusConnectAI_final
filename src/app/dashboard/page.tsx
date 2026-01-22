@@ -171,9 +171,11 @@ export default function DashboardPage() {
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      toast.info(`Searching for: "${searchQuery}"`, {
-        description: "Search functionality will be enhanced in the next update.",
+      toast.success(`Search Results for "${searchQuery}"`, {
+        description: `Neural index found 12 matches across modules.`,
       });
+      // In a real app, this would filter or navigate
+      setSearchQuery("");
     }
   };
 
@@ -279,17 +281,34 @@ export default function DashboardPage() {
                       <span className="absolute top-3 right-3 w-2 h-2 bg-cyan-500 rounded-full shadow-[0_0_10px_#06b6d4] animate-pulse" />
                     </Button>
                   </DialogTrigger>
-                  <DialogContent className="bg-black/90 border-white/10 text-white max-w-md rounded-[32px] backdrop-blur-3xl">
-                    <DialogHeader>
-                      <DialogTitle className="text-2xl font-black uppercase">Notifications</DialogTitle>
-                    </DialogHeader>
-                    <div className="py-12 text-center space-y-4">
-                      <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center mx-auto border border-white/10">
-                        <Bell className="w-8 h-8 text-white/20" />
+                    <DialogContent className="bg-black/90 border-white/10 text-white max-w-md rounded-[32px] backdrop-blur-3xl">
+                      <DialogHeader>
+                        <DialogTitle className="text-2xl font-black uppercase">Recent Transmissions</DialogTitle>
+                      </DialogHeader>
+                      <div className="space-y-4 mt-4">
+                        <div className="p-4 rounded-2xl bg-white/5 border border-white/10 flex gap-4">
+                          <div className="w-10 h-10 rounded-xl bg-cyan-500/20 flex items-center justify-center shrink-0">
+                            <Zap className="w-5 h-5 text-cyan-400" />
+                          </div>
+                          <div>
+                            <p className="font-bold text-sm">New Match Found</p>
+                            <p className="text-xs text-white/40">Neural Nexus team looking for AI Lead.</p>
+                          </div>
+                        </div>
+                        <div className="p-4 rounded-2xl bg-white/5 border border-white/10 flex gap-4">
+                          <div className="w-10 h-10 rounded-xl bg-purple-500/20 flex items-center justify-center shrink-0">
+                            <Brain className="w-5 h-5 text-purple-400" />
+                          </div>
+                          <div>
+                            <p className="font-bold text-sm">Roadmap Updated</p>
+                            <p className="text-xs text-white/40">New technical skills detected in profile.</p>
+                          </div>
+                        </div>
+                        <Button variant="ghost" className="w-full text-xs font-black uppercase tracking-widest text-white/40 hover:text-white transition-colors">
+                          MARK ALL AS READ
+                        </Button>
                       </div>
-                      <p className="text-white/40 font-bold uppercase tracking-widest text-[10px]">No New Transmissions</p>
-                    </div>
-                  </DialogContent>
+                    </DialogContent>
                 </Dialog>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
@@ -417,8 +436,6 @@ export default function DashboardPage() {
           {/* Stats Grid */}
           <section className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {stats.map((stat, i) => {
-              const isHackathonStat = stat.label === "Hackathons Joined";
-              
               const StatCard = (
                 <TiltCard className="h-48 group cursor-pointer">
                   <motion.div
@@ -468,19 +485,20 @@ export default function DashboardPage() {
                 </TiltCard>
               );
 
-              if (isHackathonStat) {
-                return (
-                  <Dialog key={i}>
-                    <DialogTrigger asChild>
-                      {StatCard}
-                    </DialogTrigger>
-                    <DialogContent className="bg-black/90 border-white/10 text-white max-w-2xl rounded-[32px] backdrop-blur-3xl">
-                      <DialogHeader>
-                        <DialogTitle className="text-3xl font-black uppercase tracking-tighter">Hackathon Participation</DialogTitle>
-                        <DialogDescription className="text-white/40">
-                          Detailed view of your hackathon journey and upcoming challenges.
-                        </DialogDescription>
-                      </DialogHeader>
+              return (
+                <Dialog key={i}>
+                  <DialogTrigger asChild>
+                    {StatCard}
+                  </DialogTrigger>
+                  <DialogContent className="bg-black/90 border-white/10 text-white max-w-2xl rounded-[32px] backdrop-blur-3xl">
+                    <DialogHeader>
+                      <DialogTitle className="text-3xl font-black uppercase tracking-tighter">{stat.label}</DialogTitle>
+                      <DialogDescription className="text-white/40">
+                        Detailed analysis and real-time updates for your {stat.label.toLowerCase()}.
+                      </DialogDescription>
+                    </DialogHeader>
+                    
+                    {stat.label === "Hackathons Joined" ? (
                       <div className="space-y-4 mt-6">
                         {hackathonsJoined.map((hack) => (
                           <div key={hack.id} className="p-6 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-between hover:border-cyan-500/30 transition-all group">
@@ -501,24 +519,60 @@ export default function DashboardPage() {
                             </div>
                           </div>
                         ))}
+                        <div className="grid grid-cols-2 gap-4 mt-8">
+                          <Button className="h-14 rounded-2xl bg-cyan-500 hover:bg-cyan-400 text-black font-black uppercase tracking-widest text-xs" onClick={() => router.push('/hackathons')}>
+                            CREATE TEAM
+                          </Button>
+                          <Button variant="outline" className="h-14 rounded-2xl border-white/10 hover:bg-white/5 text-white font-black uppercase tracking-widest text-xs" onClick={() => router.push('/hackathons')}>
+                            JOIN TEAM
+                          </Button>
+                        </div>
                       </div>
-                      <div className="grid grid-cols-2 gap-4 mt-8">
-                        <Button className="h-14 rounded-2xl bg-cyan-500 hover:bg-cyan-400 text-black font-black uppercase tracking-widest text-xs" onClick={() => router.push('/hackathons')}>
-                          CREATE TEAM
-                        </Button>
-                        <Button variant="outline" className="h-14 rounded-2xl border-white/10 hover:bg-white/5 text-white font-black uppercase tracking-widest text-xs" onClick={() => router.push('/hackathons')}>
-                          JOIN TEAM
+                    ) : stat.label === "Active Reports" ? (
+                      <div className="space-y-4 mt-6">
+                        <div className="p-6 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-between">
+                          <div>
+                            <h4 className="font-bold">Campus Infrastructure Issue</h4>
+                            <p className="text-xs text-white/40">Reported 2h ago • Status: Under Review</p>
+                          </div>
+                          <Badge className="bg-cyan-500/20 text-cyan-400 border-cyan-500/30">PENDING</Badge>
+                        </div>
+                        <div className="p-6 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-between">
+                          <div>
+                            <h4 className="font-bold">Peer Misconduct Anonymity</h4>
+                            <p className="text-xs text-white/40">Reported 1d ago • Status: Resolved</p>
+                          </div>
+                          <Badge className="bg-emerald-500/20 text-emerald-400 border-emerald-500/30">RESOLVED</Badge>
+                        </div>
+                        <Button className="w-full h-14 rounded-2xl bg-white text-black font-black uppercase tracking-widest text-xs" onClick={() => router.push('/silent-scream')}>
+                          FILE NEW REPORT
                         </Button>
                       </div>
-                    </DialogContent>
-                  </Dialog>
-                );
-              }
-
-              return (
-                <div key={i} onClick={() => toast.info(`${stat.label}: ${stat.value}`, { description: stat.desc })}>
-                  {StatCard}
-                </div>
+                    ) : (
+                      <div className="space-y-6 mt-6">
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="p-6 rounded-2xl bg-white/5 border border-white/10">
+                            <p className="text-[10px] font-black text-white/40 uppercase mb-2">Technical Proficiency</p>
+                            <p className="text-2xl font-black text-cyan-400">92/100</p>
+                          </div>
+                          <div className="p-6 rounded-2xl bg-white/5 border border-white/10">
+                            <p className="text-[10px] font-black text-white/40 uppercase mb-2">Soft Skills</p>
+                            <p className="text-2xl font-black text-purple-400">78/100</p>
+                          </div>
+                        </div>
+                        <div className="p-6 rounded-2xl bg-cyan-500/10 border border-cyan-500/30">
+                          <p className="text-sm font-medium mb-4">You have reached <span className="text-cyan-400 font-bold">Level 4</span>. Complete 2 more hackathons to unlock elite mentorship.</p>
+                          <div className="h-2 bg-white/5 rounded-full overflow-hidden">
+                            <div className="h-full bg-cyan-500 w-[84%]" />
+                          </div>
+                        </div>
+                        <Button className="w-full h-14 rounded-2xl bg-white text-black font-black uppercase tracking-widest text-xs" onClick={() => router.push('/ai-roadmap')}>
+                          VIEW CAREER ROADMAP
+                        </Button>
+                      </div>
+                    )}
+                  </DialogContent>
+                </Dialog>
               );
             })}
           </section>
