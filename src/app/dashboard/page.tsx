@@ -2,6 +2,7 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   Brain,
   Mic,
@@ -36,6 +37,7 @@ import {
 import { useState, useEffect } from "react";
 import ThreeDBackground from "@/components/ThreeDBackground";
 import TiltCard from "@/components/TiltCard";
+import { toast } from "sonner";
 
 const navItems = [
   { icon: Activity, label: "System Core", href: "/dashboard", active: true },
@@ -140,12 +142,29 @@ function CountUp({ value, suffix = "" }: { value: number; suffix?: string }) {
 }
 
 export default function DashboardPage() {
+  const router = useRouter();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      toast.info(`Searching for: "${searchQuery}"`, {
+        description: "Search functionality will be enhanced in the next update.",
+      });
+    }
+  };
+
+  const handleActivityClick = (activity: typeof activities[0]) => {
+    toast.info(activity.title, {
+      description: `Viewing details for ${activity.title.toLowerCase()}.`,
+    });
+  };
 
   if (!mounted) return null;
 
@@ -216,13 +235,15 @@ export default function DashboardPage() {
               <button onClick={() => setSidebarOpen(true)} className="lg:hidden p-2 hover:bg-white/5 rounded-xl transition-colors">
                 <Menu className="w-6 h-6 text-white/60" />
               </button>
-              <div className="relative group hidden md:block">
+              <form onSubmit={handleSearch} className="relative group hidden md:block">
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/20 group-focus-within:text-cyan-400 transition-colors" />
                 <Input
                   placeholder="Query Neural Network..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
                   className="w-[300px] h-11 pl-12 bg-white/5 border-white/10 rounded-2xl text-sm focus:border-cyan-500/30 transition-all placeholder:text-white/20 focus:w-[400px] duration-300"
                 />
-              </div>
+              </form>
             </div>
 
             <div className="flex items-center gap-4">
@@ -230,7 +251,16 @@ export default function DashboardPage() {
                 <div className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_#10b981]" />
                 <span className="text-[10px] font-black uppercase tracking-wider text-white/60">Node-01: Active</span>
               </div>
-              <Button variant="ghost" size="icon" className="w-11 h-11 rounded-2xl border border-white/5 hover:bg-white/5 relative group">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="w-11 h-11 rounded-2xl border border-white/5 hover:bg-white/5 relative group"
+                onClick={() =>
+                  toast("Notifications are coming soon.", {
+                    description: "You’ll see important alerts from your campus here.",
+                  })
+                }
+              >
                 <Bell className="w-5 h-5 text-white/60 group-hover:text-cyan-400 transition-colors" />
                 <span className="absolute top-3 right-3 w-2 h-2 bg-cyan-500 rounded-full shadow-[0_0_10px_#06b6d4] animate-pulse" />
               </Button>
@@ -245,11 +275,26 @@ export default function DashboardPage() {
                   </button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56 bg-black/90 backdrop-blur-2xl border-white/10 rounded-[24px] p-2 mt-4 shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
-                  <DropdownMenuItem className="rounded-xl focus:bg-white/5 focus:text-cyan-400 cursor-pointer p-3 gap-3">
+                  <DropdownMenuItem 
+                    className="rounded-xl focus:bg-white/5 focus:text-cyan-400 cursor-pointer p-3 gap-3"
+                    onClick={() => {
+                      toast.info("Profile page coming soon", {
+                        description: "Your profile settings will be available here.",
+                      });
+                    }}
+                  >
                     <User className="w-4 h-4" /> <span className="text-sm font-bold">Profile Interface</span>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator className="bg-white/10" />
-                  <DropdownMenuItem className="rounded-xl focus:bg-rose-500/20 focus:text-rose-400 cursor-pointer p-3 gap-3">
+                  <DropdownMenuItem 
+                    className="rounded-xl focus:bg-rose-500/20 focus:text-rose-400 cursor-pointer p-3 gap-3"
+                    onClick={() => {
+                      toast.success("Logged out successfully", {
+                        description: "Redirecting to home page...",
+                      });
+                      setTimeout(() => router.push("/"), 1000);
+                    }}
+                  >
                     <LogOut className="w-4 h-4" /> <span className="text-sm font-bold">Disconnect</span>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
@@ -290,7 +335,10 @@ export default function DashboardPage() {
                 Your future, calculated in real-time.
               </p>
               <div className="flex flex-wrap gap-4 pt-4">
-                <Button className="h-16 px-10 rounded-2xl bg-cyan-500 hover:bg-cyan-400 text-black font-black uppercase tracking-[0.2em] text-xs transition-all hover:shadow-[0_0_40px_#06b6d4] group overflow-hidden relative">
+                <Button
+                  className="h-16 px-10 rounded-2xl bg-cyan-500 hover:bg-cyan-400 text-black font-black uppercase tracking-[0.2em] text-xs transition-all hover:shadow-[0_0_40px_#06b6d4] group overflow-hidden relative"
+                  onClick={() => router.push("/hackathons")}
+                >
                   <span className="relative z-10 flex items-center">
                     Analyze Matches <ArrowRight className="ml-3 w-4 h-4 group-hover:translate-x-2 transition-transform duration-500" />
                   </span>
@@ -298,7 +346,10 @@ export default function DashboardPage() {
                     className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300"
                   />
                 </Button>
-                <Button className="h-16 px-10 rounded-2xl bg-white/10 border border-white/20 hover:bg-white/20 text-white font-black uppercase tracking-[0.2em] text-xs transition-all backdrop-blur-md hover:border-white/40">
+                <Button
+                  className="h-16 px-10 rounded-2xl bg-white/10 border border-white/20 hover:bg-white/20 text-white font-black uppercase tracking-[0.2em] text-xs transition-all backdrop-blur-md hover:border-white/40"
+                  onClick={() => router.push("/analytics")}
+                >
                   View Network
                 </Button>
               </div>
@@ -441,7 +492,8 @@ export default function DashboardPage() {
                     <motion.div 
                       key={i} 
                       whileHover={{ x: 10, backgroundColor: "rgba(255,255,255,0.1)" }}
-                      className="flex items-center gap-6 p-6 rounded-[32px] bg-white/5 border border-white/10 group/item transition-all duration-300 hover:border-white/30"
+                      onClick={() => handleActivityClick(item)}
+                      className="flex items-center gap-6 p-6 rounded-[32px] bg-white/5 border border-white/10 group/item transition-all duration-300 hover:border-white/30 cursor-pointer"
                     >
                       <div className="w-14 h-14 rounded-2xl bg-black flex items-center justify-center border border-white/20 group-hover/item:border-cyan-500/50 transition-colors">
                         <item.icon className="w-6 h-6 text-white/60 group-hover/item:text-cyan-400 transition-colors" />
@@ -485,7 +537,10 @@ export default function DashboardPage() {
                     Your career vector has been updated with 14 new high-affinity opportunities.
                   </p>
                 </div>
-                <Button className="mt-12 h-20 w-full rounded-[32px] bg-gradient-to-r from-cyan-500 to-purple-600 text-white font-black uppercase tracking-[0.3em] text-xs hover:scale-[1.02] transition-all duration-500 shadow-[0_20px_60px_rgba(6,182,212,0.4)] group border-none">
+                <Button
+                  className="mt-12 h-20 w-full rounded-[32px] bg-gradient-to-r from-cyan-500 to-purple-600 text-white font-black uppercase tracking-[0.3em] text-xs hover:scale-[1.02] transition-all duration-500 shadow-[0_20px_60px_rgba(6,182,212,0.4)] group border-none"
+                  onClick={() => router.push("/ai-roadmap")}
+                >
                   Access Intelligence <ArrowRight className="ml-3 w-4 h-4 group-hover:translate-x-2 transition-transform" />
                 </Button>
               </motion.div>

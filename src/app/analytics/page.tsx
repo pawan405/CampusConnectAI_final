@@ -17,6 +17,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { toast } from "sonner";
 
 export default function AnalyticsPage() {
   const stats = [
@@ -206,7 +207,14 @@ export default function AnalyticsPage() {
               Download your full AI analytics report for the last 30 days.
             </p>
           </div>
-          <Button className="h-14 px-8 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-[#08080c] font-black uppercase tracking-widest text-sm transition-all shadow-lg shadow-emerald-500/20">
+          <Button
+            className="h-14 px-8 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-[#08080c] font-black uppercase tracking-widest text-sm transition-all shadow-lg shadow-emerald-500/20"
+            onClick={() =>
+              toast.success("Report download coming soon.", {
+                description: "In this demo build, analytics export is simulated only.",
+              })
+            }
+          >
             Download PDF Report
           </Button>
         </div>

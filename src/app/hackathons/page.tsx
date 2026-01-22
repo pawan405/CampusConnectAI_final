@@ -41,6 +41,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { toast } from "sonner";
 
 // --- 3D Components ---
 
@@ -211,7 +212,14 @@ const HackathonCard = ({ hack, index }: { hack: any; index: number }) => {
               </div>
             </div>
 
-            <Button className="w-full bg-white/5 hover:bg-white/10 border-white/10 text-white font-bold group/btn relative overflow-hidden">
+            <Button
+              className="w-full bg-white/5 hover:bg-white/10 border-white/10 text-white font-bold group/btn relative overflow-hidden"
+              onClick={() =>
+                toast.success(`Opening ${hack.name}`, {
+                  description: "Detailed hackathon pages will be added in the next version.",
+                })
+              }
+            >
               <span className="relative z-10 flex items-center gap-2">
                 VIEW DETAILS{" "}
                 <ChevronRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
@@ -228,9 +236,23 @@ const HackathonCard = ({ hack, index }: { hack: any; index: number }) => {
 const TeamCard = ({ type }: { type: "create" | "join" }) => {
   const isCreate = type === "create";
 
+  const handleClick = () => {
+    if (isCreate) {
+      toast.success("Team creation flow coming soon", {
+        description: "You'll be able to create and manage hackathon teams here.",
+      });
+    } else {
+      toast.success("Team discovery coming soon", {
+        description: "Browse and join hackathon teams matching your skills.",
+      });
+    }
+  };
+
   return (
     <motion.div
       whileHover={{ y: -10, scale: 1.02 }}
+      whileTap={{ scale: 0.98 }}
+      onClick={handleClick}
       className="relative group cursor-pointer"
     >
       <div
@@ -341,6 +363,7 @@ const mockHackathons = [
 
 export default function CrackHackPage() {
   const [mounted, setMounted] = useState(false);
+  const [searchFilter, setSearchFilter] = useState("");
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Initialize useScroll with the ref
@@ -446,6 +469,12 @@ export default function CrackHackPage() {
                 <Button
                   size="lg"
                   className="h-16 px-8 rounded-full bg-cyan-500 hover:bg-cyan-400 text-black font-black text-lg shadow-[0_0_30px_rgba(6,182,212,0.5)]"
+                  onClick={() => {
+                    const el = document.getElementById("hackathons-list");
+                    if (el) {
+                      el.scrollIntoView({ behavior: "smooth" });
+                    }
+                  }}
                 >
                   EXPLORE NOW <ArrowRight className="ml-2 w-5 h-5" />
                 </Button>
@@ -468,7 +497,7 @@ export default function CrackHackPage() {
           {/* Content Wrapper */}
           <div className="relative z-10 max-w-7xl mx-auto px-6 space-y-32 pb-32">
             {/* Hackathon Discovery */}
-            <section className="space-y-16">
+            <section id="hackathons-list" className="space-y-16">
               <div className="flex flex-col md:flex-row justify-between items-end gap-6">
                 <div className="space-y-4">
                   <Badge className="bg-orange-500/10 text-orange-400 border-orange-500/20 px-4 py-1.5 text-xs font-bold tracking-widest uppercase">
@@ -483,6 +512,15 @@ export default function CrackHackPage() {
                     <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
                     <input
                       placeholder="FILTER BY SKILL..."
+                      value={searchFilter}
+                      onChange={(e) => {
+                        setSearchFilter(e.target.value);
+                        if (e.target.value.trim()) {
+                          toast.info(`Filtering by: ${e.target.value}`, {
+                            description: "Search functionality will filter hackathons in the next update.",
+                          });
+                        }
+                      }}
                       className="bg-white/5 border border-white/10 rounded-full py-3 pl-12 pr-6 text-sm focus:outline-none focus:border-cyan-500/50 transition-colors w-64 uppercase font-bold tracking-wider"
                     />
                   </div>
