@@ -38,6 +38,7 @@ import { useState, useEffect } from "react";
 import ThreeDBackground from "@/components/ThreeDBackground";
 import TiltCard from "@/components/TiltCard";
 import { toast } from "sonner";
+import { HackathonParticipationView } from "@/components/HackathonParticipationView";
 
 const navItems = [
   { icon: Activity, label: "System Core", href: "/dashboard", active: true },
@@ -147,6 +148,7 @@ function CountUp({ value, suffix = "" }: { value: number; suffix?: string }) {
 export default function DashboardPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [isHackathonViewOpen, setIsHackathonViewOpen] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -315,58 +317,74 @@ export default function DashboardPage() {
           </section>
 
           {/* Stats Grid */}
-          <section className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {stats.map((stat, i) => (
-              <Link key={i} href={stat.href} className="group">
-                <TiltCard className="h-48">
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ 
-                      opacity: 1, 
-                      y: [0, -8, 0],
-                    }}
-                    transition={{ 
-                      initial: { duration: 0.5, delay: i * 0.2 },
-                      y: { duration: 4, repeat: Infinity, ease: "easeInOut", delay: i * 0.3 }
-                    }}
-                    className="w-full h-full bg-black/60 backdrop-blur-3xl border border-white/20 rounded-[40px] p-8 flex flex-col justify-between relative overflow-hidden transition-all duration-500 group-hover:border-cyan-500/50 group-hover:bg-black/80 group-hover:shadow-[0_20px_80px_rgba(6,182,212,0.3)]"
-                  >
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-cyan-500/20 to-transparent blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-                    
-                    <div className="flex justify-between items-start">
-                      <div className="w-14 h-14 rounded-2xl flex items-center justify-center border border-white/20 bg-white/10 shadow-[inset_0_0_15px_rgba(255,255,255,0.05)] group-hover:scale-110 group-hover:rotate-6 transition-all duration-500">
-                        <stat.icon className="w-7 h-7" style={{ color: stat.rgb && `rgb(${stat.rgb})`, filter: `drop-shadow(0 0 12px rgb(${stat.rgb}))` }} />
-                      </div>
-                      {stat.isCircular && (
-                        <div className="relative w-14 h-14 group-hover:rotate-12 transition-all duration-500">
-                          <svg className="w-full h-full -rotate-90">
-                            <circle cx="28" cy="28" r="24" stroke="rgba(255,255,255,0.1)" strokeWidth="4" fill="transparent" />
-                            <motion.circle
-                              initial={{ strokeDashoffset: 150.8 }}
-                              animate={{ strokeDashoffset: 150.8 * (1 - 0.84) }}
-                              transition={{ duration: 2, delay: 1 }}
-                              cx="28" cy="28" r="24" stroke="currentColor" strokeWidth="4" fill="transparent"
-                              strokeDasharray={150.8}
-                              className="text-purple-400 drop-shadow-[0_0_15px_#a855f7]"
-                            />
-                          </svg>
-                          <span className="absolute inset-0 flex items-center justify-center text-xs font-black">84</span>
+            <section className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {stats.map((stat, i) => {
+                const isHackathonCard = stat.label === "Hackathons Joined";
+                const CardContent = (
+                  <TiltCard className="h-48">
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ 
+                        opacity: 1, 
+                        y: [0, -8, 0],
+                      }}
+                      transition={{ 
+                        initial: { duration: 0.5, delay: i * 0.2 },
+                        y: { duration: 4, repeat: Infinity, ease: "easeInOut", delay: i * 0.3 }
+                      }}
+                      className="w-full h-full bg-black/60 backdrop-blur-3xl border border-white/20 rounded-[40px] p-8 flex flex-col justify-between relative overflow-hidden transition-all duration-500 group-hover:border-cyan-500/50 group-hover:bg-black/80 group-hover:shadow-[0_20px_80px_rgba(6,182,212,0.3)]"
+                    >
+                      <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-cyan-500/20 to-transparent blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+                      
+                      <div className="flex justify-between items-start">
+                        <div className="w-14 h-14 rounded-2xl flex items-center justify-center border border-white/20 bg-white/10 shadow-[inset_0_0_15px_rgba(255,255,255,0.05)] group-hover:scale-110 group-hover:rotate-6 transition-all duration-500">
+                          <stat.icon className="w-7 h-7" style={{ color: stat.rgb && `rgb(${stat.rgb})`, filter: `drop-shadow(0 0 12px rgb(${stat.rgb}))` }} />
                         </div>
-                      )}
-                    </div>
-                    <div>
-                      <h3 className="text-5xl font-black tracking-tighter text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.3)]">
-                        <CountUp value={stat.value} suffix={stat.suffix} />
-                      </h3>
-                      <p className="text-[10px] font-black text-white/50 uppercase tracking-[0.3em] mt-2 group-hover:text-white/80 transition-colors">
-                        {stat.label}
-                      </p>
-                    </div>
-                  </motion.div>
-                </TiltCard>
-              </Link>
-            ))}
-          </section>
+                        {stat.isCircular && (
+                          <div className="relative w-14 h-14 group-hover:rotate-12 transition-all duration-500">
+                            <svg className="w-full h-full -rotate-90">
+                              <circle cx="28" cy="28" r="24" stroke="rgba(255,255,255,0.1)" strokeWidth="4" fill="transparent" />
+                              <motion.circle
+                                initial={{ strokeDashoffset: 150.8 }}
+                                animate={{ strokeDashoffset: 150.8 * (1 - 0.84) }}
+                                transition={{ duration: 2, delay: 1 }}
+                                cx="28" cy="28" r="24" stroke="currentColor" strokeWidth="4" fill="transparent"
+                                strokeDasharray={150.8}
+                                className="text-purple-400 drop-shadow-[0_0_15px_#a855f7]"
+                              />
+                            </svg>
+                            <span className="absolute inset-0 flex items-center justify-center text-xs font-black">84</span>
+                          </div>
+                        )}
+                      </div>
+                      <div>
+                        <h3 className="text-5xl font-black tracking-tighter text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.3)]">
+                          <CountUp value={stat.value} suffix={stat.suffix} />
+                        </h3>
+                        <p className="text-[10px] font-black text-white/50 uppercase tracking-[0.3em] mt-2 group-hover:text-white/80 transition-colors">
+                          {stat.label}
+                        </p>
+                      </div>
+                    </motion.div>
+                  </TiltCard>
+                );
+
+                if (isHackathonCard) {
+                  return (
+                    <button key={i} onClick={() => setIsHackathonViewOpen(true)} className="group text-left p-0 border-none bg-transparent">
+                      {CardContent}
+                    </button>
+                  );
+                }
+
+                return (
+                  <Link key={i} href={stat.href} className="group">
+                    {CardContent}
+                  </Link>
+                );
+              })}
+            </section>
+
 
           {/* Feature Modules */}
           <section className="space-y-12">
@@ -535,6 +553,11 @@ export default function DashboardPage() {
           animation: gradient-x 10s ease infinite;
         }
       `}</style>
+
+      <HackathonParticipationView 
+        isOpen={isHackathonViewOpen} 
+        onClose={() => setIsHackathonViewOpen(false)} 
+      />
     </div>
   );
 }
