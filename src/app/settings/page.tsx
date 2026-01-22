@@ -167,46 +167,48 @@ export default function SettingsPage() {
               </div>
             </CardHeader>
             <CardContent className="space-y-6">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-xl bg-white/[0.04] flex items-center justify-center">
-                    <Smartphone className="w-5 h-5 text-white/40" />
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 rounded-xl bg-white/[0.04] flex items-center justify-center">
+                      <Smartphone className="w-5 h-5 text-white/40" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-bold">
+                        Two-Factor Authentication
+                      </p>
+                      <p className="text-xs text-white/40">
+                        Add an extra layer of security to your account.
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-sm font-bold">
-                      Two-Factor Authentication
-                    </p>
-                    <p className="text-xs text-white/40">
-                      Add an extra layer of security to your account.
-                    </p>
-                  </div>
+                  <Button
+                    variant="outline"
+                    onClick={() => toast.info("Two-Factor Authentication", { description: "Establishing secure link with your mobile device..." })}
+                    className="border-white/[0.08] hover:bg-white/[0.06]"
+                  >
+                    Enable
+                  </Button>
                 </div>
-                <Button
-                  variant="outline"
-                  className="border-white/[0.08] hover:bg-white/[0.06]"
-                >
-                  Enable
-                </Button>
-              </div>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-xl bg-white/[0.04] flex items-center justify-center">
-                    <Database className="w-5 h-5 text-white/40" />
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 rounded-xl bg-white/[0.04] flex items-center justify-center">
+                      <Database className="w-5 h-5 text-white/40" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-bold">Data Management</p>
+                      <p className="text-xs text-white/40">
+                        Download or delete your account data.
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-sm font-bold">Data Management</p>
-                    <p className="text-xs text-white/40">
-                      Download or delete your account data.
-                    </p>
-                  </div>
+                  <Button
+                    variant="ghost"
+                    onClick={() => toast.error("Critical Action", { description: "Are you sure you want to delete your neural profile? This action is irreversible." })}
+                    className="text-rose-400 hover:bg-rose-500/10"
+                  >
+                    Delete Account
+                  </Button>
                 </div>
-                <Button
-                  variant="ghost"
-                  className="text-rose-400 hover:bg-rose-500/10"
-                >
-                  Delete Account
-                </Button>
-              </div>
             </CardContent>
           </Card>
 

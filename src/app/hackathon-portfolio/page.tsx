@@ -254,62 +254,66 @@ export default function HackathonPortfolioPage() {
               </motion.div>
         </section>
 
-        {/* Summary Stats Grid */}
-        <section className="grid grid-cols-2 md:grid-cols-5 gap-6">
-          {statsData.map((stat, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.1 }}
-              className="p-8 rounded-[32px] bg-black/40 backdrop-blur-3xl border border-white/10 flex flex-col items-center justify-center text-center group hover:bg-black/60 hover:border-white/20 transition-all shadow-xl"
-            >
-              <div className={`w-12 h-12 rounded-2xl ${bgMap[stat.color]} flex items-center justify-center mb-4 group-hover:scale-110 group-hover:rotate-6 transition-all duration-500`}>
-                <stat.icon className={`w-6 h-6 ${iconColorMap[stat.color]}`} />
-              </div>
-              <span className="text-4xl font-black text-white tracking-tighter">
-                <CountUp value={stat.value} />
-              </span>
-              <span className="text-[10px] font-black text-white/40 uppercase tracking-[0.2em] mt-2">
-                {stat.label}
-              </span>
-            </motion.div>
-          ))}
-        </section>
-
-        {/* AI Performance Summary */}
-        <motion.section 
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="relative"
-        >
-          <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-purple-500/10 blur-3xl opacity-50" />
-          <TiltCard>
-            <div className="relative p-10 rounded-[48px] bg-black/40 backdrop-blur-3xl border border-white/10 shadow-2xl overflow-hidden group">
-              <div className="absolute top-0 right-0 p-8 opacity-20 group-hover:opacity-100 transition-opacity duration-700">
-                <Brain className="w-32 h-32 text-purple-500 blur-2xl" />
-              </div>
-              <div className="flex items-center gap-4 mb-8">
-                <div className="w-12 h-12 rounded-2xl bg-purple-500/20 flex items-center justify-center border border-purple-500/30">
-                  <Brain className="w-6 h-6 text-purple-400" />
+          {/* Summary Stats Grid */}
+          <section className="grid grid-cols-2 md:grid-cols-5 gap-6">
+            {statsData.map((stat, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.1 }}
+                onClick={() => toast.info(`Syncing ${stat.label}`, { description: `Aggregating neural metrics for ${stat.label} across all event nodes.` })}
+                className="p-8 rounded-[32px] bg-black/40 backdrop-blur-3xl border border-white/10 flex flex-col items-center justify-center text-center group hover:bg-black/60 hover:border-white/20 transition-all shadow-xl cursor-pointer"
+              >
+                <div className={`w-12 h-12 rounded-2xl ${bgMap[stat.color]} flex items-center justify-center mb-4 group-hover:scale-110 group-hover:rotate-6 transition-all duration-500`}>
+                  <stat.icon className={`w-6 h-6 ${iconColorMap[stat.color]}`} />
                 </div>
-                <h3 className="text-sm font-black text-white uppercase tracking-[0.4em]">AI Performance Synthesis</h3>
+                <span className="text-4xl font-black text-white tracking-tighter">
+                  <CountUp value={stat.value} />
+                </span>
+                <span className="text-[10px] font-black text-white/40 uppercase tracking-[0.2em] mt-2">
+                  {stat.label}
+                </span>
+              </motion.div>
+            ))}
+          </section>
+
+          {/* AI Performance Summary */}
+          <motion.section 
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="relative"
+          >
+            <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-purple-500/10 blur-3xl opacity-50" />
+            <TiltCard>
+              <div 
+                onClick={() => toast.info("Neural Synthesis", { description: "Recalculating performance summary based on recent hackathon data." })}
+                className="relative p-10 rounded-[48px] bg-black/40 backdrop-blur-3xl border border-white/10 shadow-2xl overflow-hidden group cursor-pointer"
+              >
+                <div className="absolute top-0 right-0 p-8 opacity-20 group-hover:opacity-100 transition-opacity duration-700">
+                  <Brain className="w-32 h-32 text-purple-500 blur-2xl" />
+                </div>
+                <div className="flex items-center gap-4 mb-8">
+                  <div className="w-12 h-12 rounded-2xl bg-purple-500/20 flex items-center justify-center border border-purple-500/30">
+                    <Brain className="w-6 h-6 text-purple-400" />
+                  </div>
+                  <h3 className="text-sm font-black text-white uppercase tracking-[0.4em]">AI Performance Synthesis</h3>
+                </div>
+                <p className="text-2xl lg:text-3xl text-white/90 leading-tight font-black tracking-tight max-w-4xl">
+                  “You have actively participated in multiple hackathons, showing strong <span className="text-blue-400 italic">consistency</span> and competitive spirit. 
+                  Your performance is strongest in <span className="text-purple-400">problem-solving</span> and <span className="text-emerald-400 underline decoration-emerald-500/30">team collaboration</span>. 
+                  You demonstrate a unique ability to bridge the gap between complex backend logic and user-centric design.”
+                </p>
+                <div className="mt-8 flex flex-wrap gap-3">
+                  {["Competitive", "Architect", "Collaborator", "High-Performance"].map((tag, i) => (
+                    <Badge key={i} variant="outline" className="px-4 py-2 rounded-xl bg-white/5 border-white/10 text-white/60 font-black uppercase text-[9px] tracking-widest group-hover:border-purple-500/40 group-hover:text-purple-400 transition-all duration-500">
+                      {tag}
+                    </Badge>
+                  ))}
+                </div>
               </div>
-              <p className="text-2xl lg:text-3xl text-white/90 leading-tight font-black tracking-tight max-w-4xl">
-                “You have actively participated in multiple hackathons, showing strong <span className="text-blue-400 italic">consistency</span> and competitive spirit. 
-                Your performance is strongest in <span className="text-purple-400">problem-solving</span> and <span className="text-emerald-400 underline decoration-emerald-500/30">team collaboration</span>. 
-                You demonstrate a unique ability to bridge the gap between complex backend logic and user-centric design.”
-              </p>
-              <div className="mt-8 flex flex-wrap gap-3">
-                {["Competitive", "Architect", "Collaborator", "High-Performance"].map((tag, i) => (
-                  <Badge key={i} variant="outline" className="px-4 py-2 rounded-xl bg-white/5 border-white/10 text-white/60 font-black uppercase text-[9px] tracking-widest group-hover:border-purple-500/40 group-hover:text-purple-400 transition-all duration-500">
-                    {tag}
-                  </Badge>
-                ))}
-              </div>
-            </div>
-          </TiltCard>
-        </motion.section>
+            </TiltCard>
+          </motion.section>
 
         {/* Detailed Experience List */}
         <section className="space-y-12">
