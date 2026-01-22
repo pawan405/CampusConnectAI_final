@@ -116,9 +116,9 @@ const features = [
 ];
 
 const activities = [
-  { title: "Neuro-Report Synced", time: "12m ago", icon: Shield, color: "cyan", status: "online" },
-  { title: "Career Path Updated", time: "4h ago", icon: Target, color: "purple", status: "syncing" },
-  { title: "Hackathon Match Found", time: "1h ago", icon: Zap, color: "blue", status: "new" },
+  { title: "Neuro-Report Synced", time: "12m ago", icon: Shield, color: "cyan", status: "online", href: "/silent-scream" },
+  { title: "Career Path Updated", time: "4h ago", icon: Target, color: "purple", status: "syncing", href: "/ai-roadmap" },
+  { title: "Hackathon Match Found", time: "1h ago", icon: Zap, color: "blue", status: "new", href: "/hackathons" },
 ];
 
 function CountUp({ value, suffix = "" }: { value: number; suffix?: string }) {
@@ -151,6 +151,26 @@ export default function DashboardPage() {
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  const handleNotification = () => {
+    const notifications = [
+      "New hackathon matches found for your profile!",
+      "Your Neuro-Report has been successfully synced.",
+      "Career Roadmap updated based on your recent activity.",
+      "New internship opportunities in your preferred domain.",
+    ];
+    const random = notifications[Math.floor(Math.random() * notifications.length)];
+    toast.info("Neural Notification", {
+      description: random,
+    });
+  };
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    toast.loading("Querying Neural Network...", {
+      duration: 2000,
+    });
+  };
 
   if (!mounted) return null;
 
@@ -221,20 +241,27 @@ export default function DashboardPage() {
               <button onClick={() => setSidebarOpen(true)} className="lg:hidden p-2 hover:bg-white/5 rounded-xl transition-colors">
                 <Menu className="w-6 h-6 text-white/60" />
               </button>
-              <div className="relative group hidden md:block">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/20 group-focus-within:text-cyan-400 transition-colors" />
-                <Input
-                  placeholder="Query Neural Network..."
-                  className="w-[300px] h-11 pl-12 bg-white/5 border-white/10 rounded-2xl text-sm focus:border-cyan-500/30 transition-all placeholder:text-white/20 focus:w-[400px] duration-300"
-                />
+                <div className="relative group hidden md:block">
+                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/20 group-focus-within:text-cyan-400 transition-colors" />
+                  <form onSubmit={handleSearch}>
+                    <Input
+                      placeholder="Query Neural Network..."
+                      className="w-[300px] h-11 pl-12 bg-white/5 border-white/10 rounded-2xl text-sm focus:border-cyan-500/30 transition-all placeholder:text-white/20 focus:w-[400px] duration-300"
+                    />
+                  </form>
+                </div>
               </div>
-            </div>
 
-            <div className="flex items-center gap-4">
-              <Button variant="ghost" size="icon" className="w-11 h-11 rounded-2xl border border-white/5 hover:bg-white/5 relative group">
-                <Bell className="w-5 h-5 text-white/60 group-hover:text-cyan-400 transition-colors" />
-                <span className="absolute top-3 right-3 w-2 h-2 bg-cyan-500 rounded-full shadow-[0_0_10px_#06b6d4] animate-pulse" />
-              </Button>
+              <div className="flex items-center gap-4">
+                <Button 
+                  onClick={handleNotification}
+                  variant="ghost" 
+                  size="icon" 
+                  className="w-11 h-11 rounded-2xl border border-white/5 hover:bg-white/5 relative group"
+                >
+                  <Bell className="w-5 h-5 text-white/60 group-hover:text-cyan-400 transition-colors" />
+                  <span className="absolute top-3 right-3 w-2 h-2 bg-cyan-500 rounded-full shadow-[0_0_10px_#06b6d4] animate-pulse" />
+                </Button>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <button className="flex items-center gap-3 p-1 rounded-2xl border border-white/5 bg-white/5 hover:bg-white/10 transition-all hover:scale-105 duration-300">
@@ -450,31 +477,32 @@ export default function DashboardPage() {
                   </div>
                 </div>
                 
-                <div className="space-y-4">
-                  {activities.map((item, i) => (
-                    <motion.div 
-                      key={i} 
-                      whileHover={{ x: 10, backgroundColor: "rgba(255,255,255,0.1)" }}
-                      className="flex items-center gap-6 p-6 rounded-[32px] bg-white/5 border border-white/10 group/item transition-all duration-300 hover:border-white/30"
-                    >
-                      <div className="w-14 h-14 rounded-2xl bg-black flex items-center justify-center border border-white/20 group-hover/item:border-cyan-500/50 transition-colors">
-                        <item.icon className="w-6 h-6 text-white/60 group-hover/item:text-cyan-400 transition-colors" />
-                      </div>
-                      <div className="flex-1">
-                        <div className="flex items-center gap-3">
-                          <p className="font-black text-lg text-white/80 group-hover/item:text-white transition-colors">{item.title}</p>
-                          {item.status === "new" && (
-                            <span className="px-2 py-0.5 rounded-md bg-emerald-500/30 text-emerald-400 text-[8px] font-black border border-emerald-500/30">NEW</span>
-                          )}
-                        </div>
-                        <p className="text-[10px] text-white/40 uppercase tracking-widest mt-1 font-black group-hover/item:text-white/60">{item.time} // {item.status}</p>
-                      </div>
-                      <div className="w-10 h-10 rounded-full flex items-center justify-center border border-white/10 group-hover/item:bg-white/20 transition-all">
-                        <ArrowRight className="w-4 h-4 text-white/30 group-hover/item:text-white" />
-                      </div>
-                    </motion.div>
-                  ))}
-                </div>
+                  <div className="space-y-4">
+                    {activities.map((item, i) => (
+                      <Link key={i} href={item.href}>
+                        <motion.div 
+                          whileHover={{ x: 10, backgroundColor: "rgba(255,255,255,0.1)" }}
+                          className="flex items-center gap-6 p-6 rounded-[32px] bg-white/5 border border-white/10 group/item transition-all duration-300 hover:border-white/30 cursor-pointer mb-4 last:mb-0"
+                        >
+                          <div className="w-14 h-14 rounded-2xl bg-black flex items-center justify-center border border-white/20 group-hover/item:border-cyan-500/50 transition-colors">
+                            <item.icon className="w-6 h-6 text-white/60 group-hover/item:text-cyan-400 transition-colors" />
+                          </div>
+                          <div className="flex-1">
+                            <div className="flex items-center gap-3">
+                              <p className="font-black text-lg text-white/80 group-hover/item:text-white transition-colors">{item.title}</p>
+                              {item.status === "new" && (
+                                <span className="px-2 py-0.5 rounded-md bg-emerald-500/30 text-emerald-400 text-[8px] font-black border border-emerald-500/30">NEW</span>
+                              )}
+                            </div>
+                            <p className="text-[10px] text-white/40 uppercase tracking-widest mt-1 font-black group-hover/item:text-white/60">{item.time} // {item.status}</p>
+                          </div>
+                          <div className="w-10 h-10 rounded-full flex items-center justify-center border border-white/10 group-hover/item:bg-white/20 transition-all">
+                            <ArrowRight className="w-4 h-4 text-white/30 group-hover/item:text-white" />
+                          </div>
+                        </motion.div>
+                      </Link>
+                    ))}
+                  </div>
               </motion.div>
             </div>
 

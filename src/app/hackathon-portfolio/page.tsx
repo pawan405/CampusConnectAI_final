@@ -25,6 +25,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 import ThreeDBackground from "@/components/ThreeDBackground";
 import TiltCard from "@/components/TiltCard";
 
@@ -172,6 +173,22 @@ function CountUp({ value, suffix = "" }: { value: number; suffix?: string }) {
 export default function HackathonPortfolioPage() {
   const [mounted, setMounted] = useState(false);
 
+  const handleDownloadCV = () => {
+    toast.promise(new Promise((resolve) => setTimeout(resolve, 2000)), {
+      loading: "Generating Neural CV...",
+      success: "Neural CV downloaded successfully!",
+      error: "Failed to generate CV.",
+    });
+  };
+
+  const handleSharePortfolio = () => {
+    const url = typeof window !== "undefined" ? window.location.href : "";
+    navigator.clipboard.writeText(url);
+    toast.success("Portfolio link copied to clipboard!", {
+      description: "You can now share your neural journey with the world.",
+    });
+  };
+
   useEffect(() => {
     setMounted(true);
   }, []);
@@ -217,18 +234,24 @@ export default function HackathonPortfolioPage() {
             </div>
           </motion.div>
 
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="flex items-center gap-4"
-          >
-            <Button className="h-14 px-8 rounded-2xl bg-white/10 border border-white/20 hover:bg-white/20 text-white font-black uppercase tracking-[0.2em] text-[10px] backdrop-blur-md transition-all">
-              Download CV
-            </Button>
-            <Button className="h-14 px-8 rounded-2xl bg-cyan-500 hover:bg-cyan-400 text-black font-black uppercase tracking-[0.2em] text-[10px] shadow-[0_0_30px_rgba(6,182,212,0.4)] transition-all">
-              Share Portfolio
-            </Button>
-          </motion.div>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="flex items-center gap-4"
+            >
+              <Button 
+                onClick={handleDownloadCV}
+                className="h-14 px-8 rounded-2xl bg-white/10 border border-white/20 hover:bg-white/20 text-white font-black uppercase tracking-[0.2em] text-[10px] backdrop-blur-md transition-all"
+              >
+                Download CV
+              </Button>
+              <Button 
+                onClick={handleSharePortfolio}
+                className="h-14 px-8 rounded-2xl bg-cyan-500 hover:bg-cyan-400 text-black font-black uppercase tracking-[0.2em] text-[10px] shadow-[0_0_30px_rgba(6,182,212,0.4)] transition-all"
+              >
+                Share Portfolio
+              </Button>
+            </motion.div>
         </section>
 
         {/* Summary Stats Grid */}
