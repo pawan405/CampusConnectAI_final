@@ -41,17 +41,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { toast } from "sonner";
 
 // --- 3D Components ---
 
@@ -94,6 +83,22 @@ function FloatingRings() {
           toneMapped={false}
         />
       </mesh>
+    </group>
+  );
+}
+
+function GridFloor() {
+  return (
+    <group position={[0, -5, 0]}>
+      <Grid
+        infiniteGrid
+        fadeDistance={50}
+        fadeStrength={5}
+        cellSize={1}
+        sectionSize={5}
+        sectionColor="#404040"
+        cellColor="#202020"
+      />
     </group>
   );
 }
@@ -148,329 +153,144 @@ const HackathonCard = ({ hack, index }: { hack: any; index: number }) => {
   };
 
   return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ delay: index * 0.1, duration: 0.8, ease: "easeOut" }}
-          viewport={{ once: true }}
-          className="cursor-pointer"
-        >
-          <div
-            ref={cardRef}
-            onMouseMove={handleMouseMove}
-            onMouseLeave={handleMouseLeave}
-            className="relative group perspective-1000"
-            style={{
-              transform: `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`,
-              transition: "transform 0.1s ease-out",
-            }}
-          >
-            <div className="absolute -inset-0.5 bg-gradient-to-r from-cyan-500 via-purple-500 to-emerald-500 rounded-2xl blur opacity-20 group-hover:opacity-60 transition duration-500" />
-            <Card className="relative bg-black/40 backdrop-blur-xl border-white/10 border-t-white/20 h-full overflow-hidden">
-              <CardContent className="p-6">
-                <div className="flex justify-between items-start mb-6">
-                  <div
-                    className={`p-3 rounded-xl bg-white/5 border border-white/10 group-hover:scale-110 transition-transform duration-300`}
-                  >
-                    {hack.status === "Ongoing" ? (
-                      <Flame className="w-6 h-6 text-orange-500 animate-pulse" />
-                    ) : (
-                      <Rocket className="w-6 h-6 text-cyan-400" />
-                    )}
-                  </div>
-                  <Badge
-                    variant="outline"
-                    className={`${hack.status === "Ongoing" ? "bg-orange-500/10 text-orange-400 border-orange-500/20" : "bg-cyan-500/10 text-cyan-400 border-cyan-500/20"} px-3 py-1 font-bold tracking-wider`}
-                  >
-                    {hack.status.toUpperCase()}
-                  </Badge>
-                </div>
-
-                <h3 className="text-xl font-black mb-2 text-white group-hover:text-cyan-400 transition-colors">
-                  {hack.name}
-                </h3>
-
-                <p className="text-white/40 text-sm mb-6 line-clamp-2">
-                  {hack.description}
-                </p>
-
-                <div className="space-y-3 mb-8">
-                  <div className="flex items-center gap-2 text-xs text-white/50">
-                    <Globe className="w-3.5 h-3.5 text-emerald-400" />
-                    <span>
-                      {hack.organizer} • {hack.mode}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2 text-xs text-white/50">
-                    <Clock className="w-3.5 h-3.5 text-purple-400" />
-                    <span>{hack.duration}</span>
-                  </div>
-                </div>
-
-                <Button
-                  className="w-full bg-white/5 hover:bg-white/10 border-white/10 text-white font-bold group/btn relative overflow-hidden"
-                >
-                  <span className="relative z-10 flex items-center gap-2">
-                    VIEW DETAILS{" "}
-                    <ChevronRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
-                  </span>
-                  <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/20 to-purple-500/20 translate-x-[-100%] group-hover/btn:translate-x-0 transition-transform duration-500" />
-                </Button>
-              </CardContent>
-            </Card>
-          </div>
-        </motion.div>
-      </DialogTrigger>
-      <DialogContent className="bg-[#0c0c12] border-white/10 text-white max-w-2xl rounded-[32px] backdrop-blur-3xl p-8">
-        <DialogHeader>
-          <div className="flex items-center gap-4 mb-4">
-            <div className="w-12 h-12 rounded-2xl bg-cyan-500/20 flex items-center justify-center border border-cyan-500/30">
-              <Trophy className="w-6 h-6 text-cyan-400" />
+    <motion.div
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      transition={{ delay: index * 0.1, duration: 0.8, ease: "easeOut" }}
+      viewport={{ once: true }}
+    >
+      <div
+        ref={cardRef}
+        onMouseMove={handleMouseMove}
+        onMouseLeave={handleMouseLeave}
+        className="relative group perspective-1000"
+        style={{
+          transform: `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`,
+          transition: "transform 0.1s ease-out",
+        }}
+      >
+        <div className="absolute -inset-0.5 bg-gradient-to-r from-cyan-500 via-purple-500 to-emerald-500 rounded-2xl blur opacity-20 group-hover:opacity-60 transition duration-500" />
+        <Card className="relative bg-black/40 backdrop-blur-xl border-white/10 border-t-white/20 h-full overflow-hidden">
+          <CardContent className="p-6">
+            <div className="flex justify-between items-start mb-6">
+              <div
+                className={`p-3 rounded-xl bg-white/5 border border-white/10 group-hover:scale-110 transition-transform duration-300`}
+              >
+                {hack.status === "Ongoing" ? (
+                  <Flame className="w-6 h-6 text-orange-500 animate-pulse" />
+                ) : (
+                  <Rocket className="w-6 h-6 text-cyan-400" />
+                )}
+              </div>
+              <Badge
+                variant="outline"
+                className={`${hack.status === "Ongoing" ? "bg-orange-500/10 text-orange-400 border-orange-500/20" : "bg-cyan-500/10 text-cyan-400 border-cyan-500/20"} px-3 py-1 font-bold tracking-wider`}
+              >
+                {hack.status.toUpperCase()}
+              </Badge>
             </div>
-            <div>
-              <DialogTitle className="text-3xl font-black uppercase tracking-tighter">{hack.name}</DialogTitle>
-              <DialogDescription className="text-white/40 font-bold uppercase tracking-widest text-[10px]">
-                {hack.organizer} • {hack.mode} • {hack.duration}
-              </DialogDescription>
-            </div>
-          </div>
-        </DialogHeader>
-        <div className="space-y-8 mt-6">
-          <div className="space-y-4">
-            <h4 className="text-xs font-black text-white/40 uppercase tracking-[0.2em]">Abstract</h4>
-            <p className="text-white/70 leading-relaxed font-medium">{hack.description}</p>
-          </div>
-          
-          <div className="grid grid-cols-2 gap-4">
-            <div className="p-6 rounded-2xl bg-white/5 border border-white/10">
-              <h4 className="text-[10px] font-black text-cyan-400 uppercase tracking-widest mb-3">Prize Pool</h4>
-              <p className="text-2xl font-black">$25,000</p>
-            </div>
-            <div className="p-6 rounded-2xl bg-white/5 border border-white/10">
-              <h4 className="text-[10px] font-black text-purple-400 uppercase tracking-widest mb-3">Participants</h4>
-              <p className="text-2xl font-black">1.2K+</p>
-            </div>
-          </div>
 
-          <div className="p-6 rounded-2xl bg-gradient-to-br from-cyan-500/10 to-purple-500/10 border border-white/10">
-            <h4 className="text-xs font-black text-white/60 uppercase tracking-widest mb-4">Challenge Tracks</h4>
-            <div className="flex flex-wrap gap-2">
-              {["Core AI", "Infrastructure", "User Experience", "Security"].map(track => (
-                <Badge key={track} variant="secondary" className="bg-white/5 text-white/80 border-white/10">
-                  {track}
-                </Badge>
-              ))}
-            </div>
-          </div>
+            <h3 className="text-xl font-black mb-2 text-white group-hover:text-cyan-400 transition-colors">
+              {hack.name}
+            </h3>
 
-          <div className="flex gap-4 pt-4">
-            <Button className="flex-1 h-16 rounded-2xl bg-cyan-500 hover:bg-cyan-400 text-black font-black uppercase tracking-widest" onClick={() => toast.success("Successfully registered!", { description: `You are now enrolled in ${hack.name}` })}>
-              REGISTER FOR EVENT
+            <p className="text-white/40 text-sm mb-6 line-clamp-2">
+              {hack.description}
+            </p>
+
+            <div className="space-y-3 mb-8">
+              <div className="flex items-center gap-2 text-xs text-white/50">
+                <Globe className="w-3.5 h-3.5 text-emerald-400" />
+                <span>
+                  {hack.organizer} • {hack.mode}
+                </span>
+              </div>
+              <div className="flex items-center gap-2 text-xs text-white/50">
+                <Clock className="w-3.5 h-3.5 text-purple-400" />
+                <span>{hack.duration}</span>
+              </div>
+            </div>
+
+            <Button className="w-full bg-white/5 hover:bg-white/10 border-white/10 text-white font-bold group/btn relative overflow-hidden">
+              <span className="relative z-10 flex items-center gap-2">
+                VIEW DETAILS{" "}
+                <ChevronRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
+              </span>
+              <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/20 to-purple-500/20 translate-x-[-100%] group-hover/btn:translate-x-0 transition-transform duration-500" />
             </Button>
-            <Button variant="outline" className="h-16 px-8 rounded-2xl border-white/10 hover:bg-white/5 text-white font-black uppercase tracking-widest" onClick={() => {
-               const el = document.getElementById('team-zone');
-               if(el) el.scrollIntoView({behavior: 'smooth'});
-            }}>
-              FIND TEAM
-            </Button>
-          </div>
-        </div>
-      </DialogContent>
-    </Dialog>
+          </CardContent>
+        </Card>
+      </div>
+    </motion.div>
   );
 };
 
 const TeamCard = ({ type }: { type: "create" | "join" }) => {
   const isCreate = type === "create";
-  const [teamName, setTeamName] = useState("");
-  const [members, setMembers] = useState("");
-  const [open, setOpen] = useState(false);
-
-  const [teamMembers, setTeamMembers] = useState<string[]>([]);
-  const [newMember, setNewMember] = useState("");
-
-  const handleAddMember = () => {
-    if (newMember.trim()) {
-      setTeamMembers([...teamMembers, newMember.trim()]);
-      setNewMember("");
-      toast.success("Member staged", { description: `${newMember} added to potential roster.` });
-    }
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (isCreate) {
-      if (!teamName.trim()) {
-        toast.error("Vessel identification required", { description: "Please enter a team name." });
-        return;
-      }
-      toast.success("Team Registered", {
-        description: `Team "${teamName}" with ${teamMembers.length + 1} members is now live.`,
-      });
-    } else {
-      toast.success("Join Request Transmitted", {
-        description: "Your profile has been shared with the team leads. Expect a sync soon.",
-      });
-    }
-    setOpen(false);
-    setTeamName("");
-    setMembers("");
-    setTeamMembers([]);
-  };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <motion.div
-          whileHover={{ y: -10, scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
-          className="relative group cursor-pointer"
+    <motion.div
+      whileHover={{ y: -10, scale: 1.02 }}
+      className="relative group cursor-pointer"
+    >
+      <div
+        className={`absolute -inset-1 bg-gradient-to-r ${isCreate ? "from-cyan-500 to-blue-600" : "from-purple-500 to-pink-600"} rounded-2xl blur-lg opacity-25 group-hover:opacity-75 transition duration-500`}
+      />
+      <Card className="relative bg-[#0c0c12]/80 backdrop-blur-2xl border-white/10 border-t-white/20 p-8 h-full flex flex-col items-center text-center overflow-hidden">
+        {/* Animated Background Element */}
+        <div className="absolute -top-10 -right-10 w-32 h-32 bg-white/5 rounded-full blur-3xl group-hover:bg-white/10 transition-colors" />
+
+        <div
+          className={`w-20 h-20 rounded-2xl flex items-center justify-center mb-6 relative`}
         >
           <div
-            className={`absolute -inset-1 bg-gradient-to-r ${isCreate ? "from-cyan-500 to-blue-600" : "from-purple-500 to-pink-600"} rounded-2xl blur-lg opacity-25 group-hover:opacity-75 transition duration-500`}
+            className={`absolute inset-0 bg-gradient-to-br ${isCreate ? "from-cyan-500 to-blue-500" : "from-purple-500 to-pink-500"} blur-xl opacity-40 group-hover:opacity-80 transition-opacity`}
           />
-          <Card className="relative bg-[#0c0c12]/80 backdrop-blur-2xl border-white/10 border-t-white/20 p-8 h-full flex flex-col items-center text-center overflow-hidden">
-            {/* Animated Background Element */}
-            <div className="absolute -top-10 -right-10 w-32 h-32 bg-white/5 rounded-full blur-3xl group-hover:bg-white/10 transition-colors" />
+          <div className="relative bg-black/40 w-full h-full rounded-2xl flex items-center justify-center border border-white/10">
+            {isCreate ? (
+              <Plus className="w-10 h-10 text-cyan-400 group-hover:rotate-90 transition-transform duration-500" />
+            ) : (
+              <Magnet className="w-10 h-10 text-purple-400 group-hover:scale-125 transition-transform" />
+            )}
+          </div>
+        </div>
 
-            <div
-              className={`w-20 h-20 rounded-2xl flex items-center justify-center mb-6 relative`}
-            >
-              <div
-                className={`absolute inset-0 bg-gradient-to-br ${isCreate ? "from-cyan-500 to-blue-500" : "from-purple-500 to-pink-500"} blur-xl opacity-40 group-hover:opacity-80 transition-opacity`}
-              />
-              <div className="relative bg-black/40 w-full h-full rounded-2xl flex items-center justify-center border border-white/10">
-                {isCreate ? (
-                  <Plus className="w-10 h-10 text-cyan-400 group-hover:rotate-90 transition-transform duration-500" />
-                ) : (
-                  <Magnet className="w-10 h-10 text-purple-400 group-hover:scale-125 transition-transform" />
-                )}
-              </div>
-            </div>
+        <h3 className="text-2xl font-black mb-3 text-white">
+          {isCreate ? "CREATE TEAM" : "JOIN TEAM"}
+        </h3>
 
-            <h3 className="text-2xl font-black mb-3 text-white">
-              {isCreate ? "CREATE TEAM" : "JOIN TEAM"}
-            </h3>
+        <p className="text-white/40 text-sm leading-relaxed mb-6">
+          {isCreate
+            ? "Start your own squad, lead the project, and define the vision."
+            : "Find the perfect match for your skills and join a winning project."}
+        </p>
 
-            <p className="text-white/40 text-sm leading-relaxed mb-6">
-              {isCreate
-                ? "Start your own squad, lead the project, and define the vision."
-                : "Find the perfect match for your skills and join a winning project."}
-            </p>
-
-            <div className="flex gap-2 mt-auto">
-              {isCreate ? (
-                ["React", "AI", "Design"].map((s) => (
-                  <Badge
-                    key={s}
-                    variant="secondary"
-                    className="bg-white/5 text-cyan-400 border-none"
-                  >
-                    {s}
-                  </Badge>
-                ))
-              ) : (
-                <div className="flex -space-x-2">
-                  {[1, 2, 3, 4].map((i) => (
-                    <div
-                      key={i}
-                      className="w-8 h-8 rounded-full border-2 border-[#0c0c12] bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-[10px] font-bold"
-                    >
-                      U{i}
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          </Card>
-        </motion.div>
-      </DialogTrigger>
-      <DialogContent className="bg-[#0c0c12] border-white/10 text-white max-w-md rounded-[32px] backdrop-blur-3xl p-8 shadow-[0_0_100px_rgba(0,0,0,0.8)]">
-        <DialogHeader>
-          <DialogTitle className="text-3xl font-black uppercase tracking-tighter">
-            {isCreate ? "Initialize Team" : "Find Your Squad"}
-          </DialogTitle>
-          <DialogDescription className="text-white/40 font-bold uppercase tracking-widest text-[10px]">
-            {isCreate ? "Define your vision and recruit innovators" : "Connect with ongoing projects"}
-          </DialogDescription>
-        </DialogHeader>
-        <div className="space-y-6 mt-8">
+        <div className="flex gap-2 mt-auto">
           {isCreate ? (
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="teamName" className="text-xs font-black text-white/40 uppercase tracking-widest">Team Identity</Label>
-                <Input
-                  id="teamName"
-                  placeholder="E.G. NEURAL NEXUS"
-                  value={teamName}
-                  onChange={(e) => setTeamName(e.target.value)}
-                  className="h-14 bg-white/5 border-white/10 rounded-2xl focus:border-cyan-500/50 uppercase font-bold"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label className="text-xs font-black text-white/40 uppercase tracking-widest">Recruit Members</Label>
-                <div className="flex gap-2">
-                  <Input
-                    placeholder="EMAIL OR USERNAME"
-                    value={newMember}
-                    onChange={(e) => setNewMember(e.target.value)}
-                    onKeyDown={(e) => e.key === 'Enter' && handleAddMember()}
-                    className="h-14 bg-white/5 border-white/10 rounded-2xl focus:border-cyan-500/50 uppercase font-bold"
-                  />
-                  <Button type="button" onClick={handleAddMember} className="h-14 w-14 rounded-2xl bg-white/10 border border-white/10 hover:bg-white/20">
-                    <Plus className="w-5 h-5" />
-                  </Button>
-                </div>
-                <div className="flex flex-wrap gap-2 mt-4">
-                  {teamMembers.map((m, i) => (
-                    <Badge key={i} className="bg-cyan-500/20 text-cyan-400 border-cyan-500/30 px-3 py-1">
-                      {m.toUpperCase()}
-                    </Badge>
-                  ))}
-                </div>
-              </div>
-            </div>
+            ["React", "AI", "Design"].map((s) => (
+              <Badge
+                key={s}
+                variant="secondary"
+                className="bg-white/5 text-cyan-400 border-none"
+              >
+                {s}
+              </Badge>
+            ))
           ) : (
-            <div className="space-y-4">
-               {[
-                 { name: "CYBER STRIKE", members: "3/4" },
-                 { name: "VOID RUNNERS", members: "1/4" },
-                 { name: "NEURAL NEXUS", members: "2/4" }
-               ].map((t) => (
-                 <div key={t.name} className="p-4 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-between group hover:border-purple-500/30 transition-all">
-                    <div>
-                      <p className="font-bold text-sm group-hover:text-purple-400 transition-colors">{t.name}</p>
-                      <p className="text-[10px] text-white/40 font-black tracking-widest">{t.members} MEMBERS</p>
-                    </div>
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
-                      className="text-purple-400 hover:text-purple-300 hover:bg-purple-500/10 font-black text-[10px]"
-                      onClick={() => {
-                        toast.success("Sync Request Sent", { description: `Your profile shared with ${t.name}.` });
-                        setOpen(false);
-                      }}
-                    >
-                      SYNC
-                    </Button>
-                 </div>
-               ))}
+            <div className="flex -space-x-2">
+              {[1, 2, 3, 4].map((i) => (
+                <div
+                  key={i}
+                  className="w-8 h-8 rounded-full border-2 border-[#0c0c12] bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-[10px] font-bold"
+                >
+                  U{i}
+                </div>
+              ))}
             </div>
-          )}
-          
-          {isCreate && (
-            <Button 
-              onClick={handleSubmit} 
-              className="w-full h-16 rounded-2xl font-black uppercase tracking-widest bg-cyan-500 hover:bg-cyan-400 text-black shadow-[0_10px_30px_rgba(6,182,212,0.3)]"
-            >
-              INITIALIZE TEAM
-            </Button>
           )}
         </div>
-      </DialogContent>
-    </Dialog>
+      </Card>
+    </motion.div>
   );
 };
 
@@ -521,7 +341,6 @@ const mockHackathons = [
 
 export default function CrackHackPage() {
   const [mounted, setMounted] = useState(false);
-  const [searchFilter, setSearchFilter] = useState("");
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Initialize useScroll with the ref
@@ -627,12 +446,6 @@ export default function CrackHackPage() {
                 <Button
                   size="lg"
                   className="h-16 px-8 rounded-full bg-cyan-500 hover:bg-cyan-400 text-black font-black text-lg shadow-[0_0_30px_rgba(6,182,212,0.5)]"
-                  onClick={() => {
-                    const el = document.getElementById("hackathons-list");
-                    if (el) {
-                      el.scrollIntoView({ behavior: "smooth" });
-                    }
-                  }}
                 >
                   EXPLORE NOW <ArrowRight className="ml-2 w-5 h-5" />
                 </Button>
@@ -655,7 +468,7 @@ export default function CrackHackPage() {
           {/* Content Wrapper */}
           <div className="relative z-10 max-w-7xl mx-auto px-6 space-y-32 pb-32">
             {/* Hackathon Discovery */}
-            <section id="hackathons-list" className="space-y-16">
+            <section className="space-y-16">
               <div className="flex flex-col md:flex-row justify-between items-end gap-6">
                 <div className="space-y-4">
                   <Badge className="bg-orange-500/10 text-orange-400 border-orange-500/20 px-4 py-1.5 text-xs font-bold tracking-widest uppercase">
@@ -670,10 +483,6 @@ export default function CrackHackPage() {
                     <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
                     <input
                       placeholder="FILTER BY SKILL..."
-                      value={searchFilter}
-                      onChange={(e) => {
-                        setSearchFilter(e.target.value);
-                      }}
                       className="bg-white/5 border border-white/10 rounded-full py-3 pl-12 pr-6 text-sm focus:outline-none focus:border-cyan-500/50 transition-colors w-64 uppercase font-bold tracking-wider"
                     />
                   </div>
