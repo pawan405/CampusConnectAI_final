@@ -56,6 +56,7 @@ const stats = [
     desc: "+1 sync today",
     progress: 75,
     rgb: "6, 182, 212",
+    href: "/silent-scream"
   },
   {
     label: "Career Progress",
@@ -66,6 +67,7 @@ const stats = [
     desc: "Level 4 reached",
     isCircular: true,
     rgb: "168, 85, 247",
+    href: "/ai-roadmap"
   },
   {
     label: "Hackathons Joined",
@@ -74,6 +76,7 @@ const stats = [
     color: "blue",
     desc: "3 upcoming events",
     rgb: "59, 130, 246",
+    href: "/hackathons"
   },
 ];
 
@@ -291,71 +294,77 @@ export default function DashboardPage() {
                 A high-performance AI ecosystem built to guide the next generation of innovators. 
                 Your future, calculated in real-time.
               </p>
-              <div className="flex flex-wrap gap-4 pt-4">
-                <Button className="h-16 px-10 rounded-2xl bg-cyan-500 hover:bg-cyan-400 text-black font-black uppercase tracking-[0.2em] text-xs transition-all hover:shadow-[0_0_40px_#06b6d4] group overflow-hidden relative">
-                  <span className="relative z-10 flex items-center">
-                    Analyze Matches <ArrowRight className="ml-3 w-4 h-4 group-hover:translate-x-2 transition-transform duration-500" />
-                  </span>
-                  <motion.div 
-                    className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300"
-                  />
-                </Button>
-                <Button className="h-16 px-10 rounded-2xl bg-white/10 border border-white/20 hover:bg-white/20 text-white font-black uppercase tracking-[0.2em] text-xs transition-all backdrop-blur-md hover:border-white/40">
-                  View Network
-                </Button>
-              </div>
+                <div className="flex flex-wrap gap-4 pt-4">
+                  <Link href="/match-analysis">
+                    <Button className="h-16 px-10 rounded-2xl bg-cyan-500 hover:bg-cyan-400 text-black font-black uppercase tracking-[0.2em] text-xs transition-all hover:shadow-[0_0_40px_#06b6d4] group overflow-hidden relative">
+                      <span className="relative z-10 flex items-center">
+                        Analyze Matches <ArrowRight className="ml-3 w-4 h-4 group-hover:translate-x-2 transition-transform duration-500" />
+                      </span>
+                      <motion.div 
+                        className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300"
+                      />
+                    </Button>
+                  </Link>
+                  <Link href="/hackathons">
+                    <Button className="h-16 px-10 rounded-2xl bg-white/10 border border-white/20 hover:bg-white/20 text-white font-black uppercase tracking-[0.2em] text-xs transition-all backdrop-blur-md hover:border-white/40">
+                      View Network
+                    </Button>
+                  </Link>
+                </div>
             </motion.div>
           </section>
 
           {/* Stats Grid */}
           <section className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {stats.map((stat, i) => (
-              <TiltCard key={i} className="h-48 group">
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ 
-                    opacity: 1, 
-                    y: [0, -8, 0],
-                  }}
-                  transition={{ 
-                    initial: { duration: 0.5, delay: i * 0.2 },
-                    y: { duration: 4, repeat: Infinity, ease: "easeInOut", delay: i * 0.3 }
-                  }}
-                  className="w-full h-full bg-black/60 backdrop-blur-3xl border border-white/20 rounded-[40px] p-8 flex flex-col justify-between relative overflow-hidden transition-all duration-500 group-hover:border-cyan-500/50 group-hover:bg-black/80 group-hover:shadow-[0_20px_80px_rgba(6,182,212,0.3)]"
-                >
-                  <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-cyan-500/20 to-transparent blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-                  
-                  <div className="flex justify-between items-start">
-                    <div className="w-14 h-14 rounded-2xl flex items-center justify-center border border-white/20 bg-white/10 shadow-[inset_0_0_15px_rgba(255,255,255,0.05)] group-hover:scale-110 group-hover:rotate-6 transition-all duration-500">
-                      <stat.icon className="w-7 h-7" style={{ color: stat.rgb && `rgb(${stat.rgb})`, filter: `drop-shadow(0 0 12px rgb(${stat.rgb}))` }} />
-                    </div>
-                    {stat.isCircular && (
-                      <div className="relative w-14 h-14 group-hover:rotate-12 transition-all duration-500">
-                        <svg className="w-full h-full -rotate-90">
-                          <circle cx="28" cy="28" r="24" stroke="rgba(255,255,255,0.1)" strokeWidth="4" fill="transparent" />
-                          <motion.circle
-                            initial={{ strokeDashoffset: 150.8 }}
-                            animate={{ strokeDashoffset: 150.8 * (1 - 0.84) }}
-                            transition={{ duration: 2, delay: 1 }}
-                            cx="28" cy="28" r="24" stroke="currentColor" strokeWidth="4" fill="transparent"
-                            strokeDasharray={150.8}
-                            className="text-purple-400 drop-shadow-[0_0_15px_#a855f7]"
-                          />
-                        </svg>
-                        <span className="absolute inset-0 flex items-center justify-center text-xs font-black">84</span>
+              <Link key={i} href={stat.href} className="group">
+                <TiltCard className="h-48">
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ 
+                      opacity: 1, 
+                      y: [0, -8, 0],
+                    }}
+                    transition={{ 
+                      initial: { duration: 0.5, delay: i * 0.2 },
+                      y: { duration: 4, repeat: Infinity, ease: "easeInOut", delay: i * 0.3 }
+                    }}
+                    className="w-full h-full bg-black/60 backdrop-blur-3xl border border-white/20 rounded-[40px] p-8 flex flex-col justify-between relative overflow-hidden transition-all duration-500 group-hover:border-cyan-500/50 group-hover:bg-black/80 group-hover:shadow-[0_20px_80px_rgba(6,182,212,0.3)]"
+                  >
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-cyan-500/20 to-transparent blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+                    
+                    <div className="flex justify-between items-start">
+                      <div className="w-14 h-14 rounded-2xl flex items-center justify-center border border-white/20 bg-white/10 shadow-[inset_0_0_15px_rgba(255,255,255,0.05)] group-hover:scale-110 group-hover:rotate-6 transition-all duration-500">
+                        <stat.icon className="w-7 h-7" style={{ color: stat.rgb && `rgb(${stat.rgb})`, filter: `drop-shadow(0 0 12px rgb(${stat.rgb}))` }} />
                       </div>
-                    )}
-                  </div>
-                  <div>
-                    <h3 className="text-5xl font-black tracking-tighter text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.3)]">
-                      <CountUp value={stat.value} suffix={stat.suffix} />
-                    </h3>
-                    <p className="text-[10px] font-black text-white/50 uppercase tracking-[0.3em] mt-2 group-hover:text-white/80 transition-colors">
-                      {stat.label}
-                    </p>
-                  </div>
-                </motion.div>
-              </TiltCard>
+                      {stat.isCircular && (
+                        <div className="relative w-14 h-14 group-hover:rotate-12 transition-all duration-500">
+                          <svg className="w-full h-full -rotate-90">
+                            <circle cx="28" cy="28" r="24" stroke="rgba(255,255,255,0.1)" strokeWidth="4" fill="transparent" />
+                            <motion.circle
+                              initial={{ strokeDashoffset: 150.8 }}
+                              animate={{ strokeDashoffset: 150.8 * (1 - 0.84) }}
+                              transition={{ duration: 2, delay: 1 }}
+                              cx="28" cy="28" r="24" stroke="currentColor" strokeWidth="4" fill="transparent"
+                              strokeDasharray={150.8}
+                              className="text-purple-400 drop-shadow-[0_0_15px_#a855f7]"
+                            />
+                          </svg>
+                          <span className="absolute inset-0 flex items-center justify-center text-xs font-black">84</span>
+                        </div>
+                      )}
+                    </div>
+                    <div>
+                      <h3 className="text-5xl font-black tracking-tighter text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.3)]">
+                        <CountUp value={stat.value} suffix={stat.suffix} />
+                      </h3>
+                      <p className="text-[10px] font-black text-white/50 uppercase tracking-[0.3em] mt-2 group-hover:text-white/80 transition-colors">
+                        {stat.label}
+                      </p>
+                    </div>
+                  </motion.div>
+                </TiltCard>
+              </Link>
             ))}
           </section>
 
@@ -487,9 +496,11 @@ export default function DashboardPage() {
                     Your career vector has been updated with 14 new high-affinity opportunities.
                   </p>
                 </div>
-                <Button className="mt-12 h-20 w-full rounded-[32px] bg-gradient-to-r from-cyan-500 to-purple-600 text-white font-black uppercase tracking-[0.3em] text-xs hover:scale-[1.02] transition-all duration-500 shadow-[0_20px_60px_rgba(6,182,212,0.4)] group border-none">
-                  Access Intelligence <ArrowRight className="ml-3 w-4 h-4 group-hover:translate-x-2 transition-transform" />
-                </Button>
+                  <Link href="/match-analysis" className="block w-full mt-12">
+                    <Button className="h-20 w-full rounded-[32px] bg-gradient-to-r from-cyan-500 to-purple-600 text-white font-black uppercase tracking-[0.3em] text-xs hover:scale-[1.02] transition-all duration-500 shadow-[0_20px_60px_rgba(6,182,212,0.4)] group border-none">
+                      Access Intelligence <ArrowRight className="ml-3 w-4 h-4 group-hover:translate-x-2 transition-transform" />
+                    </Button>
+                  </Link>
               </motion.div>
             </div>
           </section>

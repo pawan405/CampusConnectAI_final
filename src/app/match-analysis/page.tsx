@@ -20,6 +20,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useState, useEffect } from "react";
 import ThreeDBackground from "@/components/ThreeDBackground";
+import { toast } from "sonner";
 
 export default function MatchAnalysisPage() {
   const [mounted, setMounted] = useState(false);
@@ -165,9 +166,13 @@ export default function MatchAnalysisPage() {
                         <span className="text-[10px] font-black text-white/50 uppercase tracking-tighter">Difficulty</span>
                         <span className="text-sm font-bold text-white uppercase">{hack.difficulty}</span>
                       </div>
-                      <Button variant="ghost" className="p-0 h-auto text-cyan-400 hover:text-cyan-300 gap-2 font-black text-xs uppercase tracking-widest">
-                        Join Event <ChevronRight className="w-4 h-4" />
-                      </Button>
+                        <Button 
+                          onClick={() => toast.success("Request sent to event organizers!")}
+                          variant="ghost" 
+                          className="p-0 h-auto text-cyan-400 hover:text-cyan-300 gap-2 font-black text-xs uppercase tracking-widest"
+                        >
+                          Join Event <ChevronRight className="w-4 h-4" />
+                        </Button>
                     </div>
                   </Card>
                 </motion.div>
@@ -184,9 +189,12 @@ export default function MatchAnalysisPage() {
                   Already have a squad? Let's check your skill balance and predict project compatibility before you sign up.
                 </p>
               </div>
-              <Button className="h-20 px-12 rounded-3xl bg-white text-black font-black uppercase tracking-widest hover:scale-105 transition-all shadow-[0_20px_60px_rgba(255,255,255,0.2)]">
-                Scan Team Chemistry
-              </Button>
+                <Button 
+                  onClick={() => toast.info("Team chemistry scanner starting...")}
+                  className="h-20 px-12 rounded-3xl bg-white text-black font-black uppercase tracking-widest hover:scale-105 transition-all shadow-[0_20px_60px_rgba(255,255,255,0.2)]"
+                >
+                  Scan Team Chemistry
+                </Button>
             </div>
           </section>
         </main>
