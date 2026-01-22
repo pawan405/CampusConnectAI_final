@@ -41,94 +41,17 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-
-// --- 3D Components ---
-
-function FloatingRings() {
-  const ringRef = useRef<THREE.Group>(null);
-
-  useFrame((state) => {
-    if (!ringRef.current) return;
-    ringRef.current.rotation.z += 0.005;
-    ringRef.current.rotation.y += 0.002;
-    ringRef.current.position.y = Math.sin(state.clock.elapsedTime) * 0.2;
-  });
-
-  return (
-    <group ref={ringRef}>
-      <mesh rotation={[Math.PI / 2, 0, 0]}>
-        <torusGeometry args={[3, 0.02, 16, 100]} />
-        <meshStandardMaterial
-          color="#00f2ff"
-          emissive="#00f2ff"
-          emissiveIntensity={2}
-          toneMapped={false}
-        />
-      </mesh>
-      <mesh rotation={[Math.PI / 2.5, 0.2, 0]}>
-        <torusGeometry args={[3.5, 0.015, 16, 100]} />
-        <meshStandardMaterial
-          color="#bc13fe"
-          emissive="#bc13fe"
-          emissiveIntensity={2}
-          toneMapped={false}
-        />
-      </mesh>
-      <mesh rotation={[Math.PI / 1.8, -0.2, 0]}>
-        <torusGeometry args={[4, 0.01, 16, 100]} />
-        <meshStandardMaterial
-          color="#00ff9f"
-          emissive="#00ff9f"
-          emissiveIntensity={2}
-          toneMapped={false}
-        />
-      </mesh>
-    </group>
-  );
-}
-
-function GridFloor() {
-  return (
-    <group position={[0, -5, 0]}>
-      <Grid
-        infiniteGrid
-        fadeDistance={50}
-        fadeStrength={5}
-        cellSize={1}
-        sectionSize={5}
-        sectionColor="#404040"
-        cellColor="#202020"
-      />
-    </group>
-  );
-}
-
-function HologramSphere() {
-  return (
-    <Float speed={4} rotationIntensity={1} floatIntensity={2}>
-      <Sphere args={[1, 64, 64]}>
-        <MeshDistortMaterial
-          color="#00f2ff"
-          speed={3}
-          distort={0.4}
-          radius={1}
-          emissive="#00f2ff"
-          emissiveIntensity={0.5}
-          roughness={0}
-          transparent
-          opacity={0.6}
-        />
-      </Sphere>
-      <pointLight
-        position={[0, 0, 0]}
-        color="#00f2ff"
-        intensity={5}
-        distance={10}
-      />
-    </Float>
-  );
-}
 
 // --- UI Components ---
 
@@ -154,165 +77,290 @@ const HackathonCard = ({ hack, index }: { hack: any; index: number }) => {
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 30 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      transition={{ delay: index * 0.1, duration: 0.8, ease: "easeOut" }}
-      viewport={{ once: true }}
-    >
-      <div
-        ref={cardRef}
-        onMouseMove={handleMouseMove}
-        onMouseLeave={handleMouseLeave}
-        className="relative group perspective-1000"
-        style={{
-          transform: `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`,
-          transition: "transform 0.1s ease-out",
-        }}
-      >
-        <div className="absolute -inset-0.5 bg-gradient-to-r from-cyan-500 via-purple-500 to-emerald-500 rounded-2xl blur opacity-20 group-hover:opacity-60 transition duration-500" />
-        <Card className="relative bg-black/40 backdrop-blur-xl border-white/10 border-t-white/20 h-full overflow-hidden">
-          <CardContent className="p-6">
-            <div className="flex justify-between items-start mb-6">
-              <div
-                className={`p-3 rounded-xl bg-white/5 border border-white/10 group-hover:scale-110 transition-transform duration-300`}
-              >
-                {hack.status === "Ongoing" ? (
-                  <Flame className="w-6 h-6 text-orange-500 animate-pulse" />
-                ) : (
-                  <Rocket className="w-6 h-6 text-cyan-400" />
-                )}
-              </div>
-              <Badge
-                variant="outline"
-                className={`${hack.status === "Ongoing" ? "bg-orange-500/10 text-orange-400 border-orange-500/20" : "bg-cyan-500/10 text-cyan-400 border-cyan-500/20"} px-3 py-1 font-bold tracking-wider`}
-              >
-                {hack.status.toUpperCase()}
-              </Badge>
+    <Dialog>
+      <DialogTrigger asChild>
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ delay: index * 0.1, duration: 0.8, ease: "easeOut" }}
+          viewport={{ once: true }}
+          className="cursor-pointer"
+        >
+          <div
+            ref={cardRef}
+            onMouseMove={handleMouseMove}
+            onMouseLeave={handleMouseLeave}
+            className="relative group perspective-1000"
+            style={{
+              transform: `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`,
+              transition: "transform 0.1s ease-out",
+            }}
+          >
+            <div className="absolute -inset-0.5 bg-gradient-to-r from-cyan-500 via-purple-500 to-emerald-500 rounded-2xl blur opacity-20 group-hover:opacity-60 transition duration-500" />
+            <Card className="relative bg-black/40 backdrop-blur-xl border-white/10 border-t-white/20 h-full overflow-hidden">
+              <CardContent className="p-6">
+                <div className="flex justify-between items-start mb-6">
+                  <div
+                    className={`p-3 rounded-xl bg-white/5 border border-white/10 group-hover:scale-110 transition-transform duration-300`}
+                  >
+                    {hack.status === "Ongoing" ? (
+                      <Flame className="w-6 h-6 text-orange-500 animate-pulse" />
+                    ) : (
+                      <Rocket className="w-6 h-6 text-cyan-400" />
+                    )}
+                  </div>
+                  <Badge
+                    variant="outline"
+                    className={`${hack.status === "Ongoing" ? "bg-orange-500/10 text-orange-400 border-orange-500/20" : "bg-cyan-500/10 text-cyan-400 border-cyan-500/20"} px-3 py-1 font-bold tracking-wider`}
+                  >
+                    {hack.status.toUpperCase()}
+                  </Badge>
+                </div>
+
+                <h3 className="text-xl font-black mb-2 text-white group-hover:text-cyan-400 transition-colors">
+                  {hack.name}
+                </h3>
+
+                <p className="text-white/40 text-sm mb-6 line-clamp-2">
+                  {hack.description}
+                </p>
+
+                <div className="space-y-3 mb-8">
+                  <div className="flex items-center gap-2 text-xs text-white/50">
+                    <Globe className="w-3.5 h-3.5 text-emerald-400" />
+                    <span>
+                      {hack.organizer} • {hack.mode}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2 text-xs text-white/50">
+                    <Clock className="w-3.5 h-3.5 text-purple-400" />
+                    <span>{hack.duration}</span>
+                  </div>
+                </div>
+
+                <Button
+                  className="w-full bg-white/5 hover:bg-white/10 border-white/10 text-white font-bold group/btn relative overflow-hidden"
+                >
+                  <span className="relative z-10 flex items-center gap-2">
+                    VIEW DETAILS{" "}
+                    <ChevronRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
+                  </span>
+                  <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/20 to-purple-500/20 translate-x-[-100%] group-hover/btn:translate-x-0 transition-transform duration-500" />
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+        </motion.div>
+      </DialogTrigger>
+      <DialogContent className="bg-[#0c0c12] border-white/10 text-white max-w-2xl rounded-[32px] backdrop-blur-3xl p-8">
+        <DialogHeader>
+          <div className="flex items-center gap-4 mb-4">
+            <div className="w-12 h-12 rounded-2xl bg-cyan-500/20 flex items-center justify-center border border-cyan-500/30">
+              <Trophy className="w-6 h-6 text-cyan-400" />
             </div>
-
-            <h3 className="text-xl font-black mb-2 text-white group-hover:text-cyan-400 transition-colors">
-              {hack.name}
-            </h3>
-
-            <p className="text-white/40 text-sm mb-6 line-clamp-2">
-              {hack.description}
-            </p>
-
-            <div className="space-y-3 mb-8">
-              <div className="flex items-center gap-2 text-xs text-white/50">
-                <Globe className="w-3.5 h-3.5 text-emerald-400" />
-                <span>
-                  {hack.organizer} • {hack.mode}
-                </span>
-              </div>
-              <div className="flex items-center gap-2 text-xs text-white/50">
-                <Clock className="w-3.5 h-3.5 text-purple-400" />
-                <span>{hack.duration}</span>
-              </div>
+            <div>
+              <DialogTitle className="text-3xl font-black uppercase tracking-tighter">{hack.name}</DialogTitle>
+              <DialogDescription className="text-white/40 font-bold uppercase tracking-widest text-[10px]">
+                {hack.organizer} • {hack.mode} • {hack.duration}
+              </DialogDescription>
             </div>
+          </div>
+        </DialogHeader>
+        <div className="space-y-8 mt-6">
+          <div className="space-y-4">
+            <h4 className="text-xs font-black text-white/40 uppercase tracking-[0.2em]">Abstract</h4>
+            <p className="text-white/70 leading-relaxed font-medium">{hack.description}</p>
+          </div>
+          
+          <div className="grid grid-cols-2 gap-4">
+            <div className="p-6 rounded-2xl bg-white/5 border border-white/10">
+              <h4 className="text-[10px] font-black text-cyan-400 uppercase tracking-widest mb-3">Prize Pool</h4>
+              <p className="text-2xl font-black">$25,000</p>
+            </div>
+            <div className="p-6 rounded-2xl bg-white/5 border border-white/10">
+              <h4 className="text-[10px] font-black text-purple-400 uppercase tracking-widest mb-3">Participants</h4>
+              <p className="text-2xl font-black">1.2K+</p>
+            </div>
+          </div>
 
-            <Button
-              className="w-full bg-white/5 hover:bg-white/10 border-white/10 text-white font-bold group/btn relative overflow-hidden"
-              onClick={() =>
-                toast.success(`Opening ${hack.name}`, {
-                  description: "Detailed hackathon pages will be added in the next version.",
-                })
-              }
-            >
-              <span className="relative z-10 flex items-center gap-2">
-                VIEW DETAILS{" "}
-                <ChevronRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
-              </span>
-              <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/20 to-purple-500/20 translate-x-[-100%] group-hover/btn:translate-x-0 transition-transform duration-500" />
+          <div className="p-6 rounded-2xl bg-gradient-to-br from-cyan-500/10 to-purple-500/10 border border-white/10">
+            <h4 className="text-xs font-black text-white/60 uppercase tracking-widest mb-4">Challenge Tracks</h4>
+            <div className="flex flex-wrap gap-2">
+              {["Core AI", "Infrastructure", "User Experience", "Security"].map(track => (
+                <Badge key={track} variant="secondary" className="bg-white/5 text-white/80 border-white/10">
+                  {track}
+                </Badge>
+              ))}
+            </div>
+          </div>
+
+          <div className="flex gap-4 pt-4">
+            <Button className="flex-1 h-16 rounded-2xl bg-cyan-500 hover:bg-cyan-400 text-black font-black uppercase tracking-widest" onClick={() => toast.success("Successfully registered!", { description: `You are now enrolled in ${hack.name}` })}>
+              REGISTER FOR EVENT
             </Button>
-          </CardContent>
-        </Card>
-      </div>
-    </motion.div>
+            <Button variant="outline" className="h-16 px-8 rounded-2xl border-white/10 hover:bg-white/5 text-white font-black uppercase tracking-widest" onClick={() => {
+               const el = document.getElementById('team-zone');
+               if(el) el.scrollIntoView({behavior: 'smooth'});
+            }}>
+              FIND TEAM
+            </Button>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 };
 
 const TeamCard = ({ type }: { type: "create" | "join" }) => {
   const isCreate = type === "create";
+  const [teamName, setTeamName] = useState("");
+  const [members, setMembers] = useState("");
+  const [open, setOpen] = useState(false);
 
-  const handleClick = () => {
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
     if (isCreate) {
-      toast.success("Team creation flow coming soon", {
-        description: "You'll be able to create and manage hackathon teams here.",
+      if (!teamName.trim()) {
+        toast.error("Vessel identification required", { description: "Please enter a team name." });
+        return;
+      }
+      toast.success("Team Broadcast Initiated", {
+        description: `Team "${teamName}" has been registered in the neural network.`,
       });
     } else {
-      toast.success("Team discovery coming soon", {
-        description: "Browse and join hackathon teams matching your skills.",
+      toast.success("Join Request Transmitted", {
+        description: "Your profile has been shared with the team leads.",
       });
     }
+    setOpen(false);
+    setTeamName("");
+    setMembers("");
   };
 
   return (
-    <motion.div
-      whileHover={{ y: -10, scale: 1.02 }}
-      whileTap={{ scale: 0.98 }}
-      onClick={handleClick}
-      className="relative group cursor-pointer"
-    >
-      <div
-        className={`absolute -inset-1 bg-gradient-to-r ${isCreate ? "from-cyan-500 to-blue-600" : "from-purple-500 to-pink-600"} rounded-2xl blur-lg opacity-25 group-hover:opacity-75 transition duration-500`}
-      />
-      <Card className="relative bg-[#0c0c12]/80 backdrop-blur-2xl border-white/10 border-t-white/20 p-8 h-full flex flex-col items-center text-center overflow-hidden">
-        {/* Animated Background Element */}
-        <div className="absolute -top-10 -right-10 w-32 h-32 bg-white/5 rounded-full blur-3xl group-hover:bg-white/10 transition-colors" />
-
-        <div
-          className={`w-20 h-20 rounded-2xl flex items-center justify-center mb-6 relative`}
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <motion.div
+          whileHover={{ y: -10, scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+          className="relative group cursor-pointer"
         >
           <div
-            className={`absolute inset-0 bg-gradient-to-br ${isCreate ? "from-cyan-500 to-blue-500" : "from-purple-500 to-pink-500"} blur-xl opacity-40 group-hover:opacity-80 transition-opacity`}
+            className={`absolute -inset-1 bg-gradient-to-r ${isCreate ? "from-cyan-500 to-blue-600" : "from-purple-500 to-pink-600"} rounded-2xl blur-lg opacity-25 group-hover:opacity-75 transition duration-500`}
           />
-          <div className="relative bg-black/40 w-full h-full rounded-2xl flex items-center justify-center border border-white/10">
-            {isCreate ? (
-              <Plus className="w-10 h-10 text-cyan-400 group-hover:rotate-90 transition-transform duration-500" />
-            ) : (
-              <Magnet className="w-10 h-10 text-purple-400 group-hover:scale-125 transition-transform" />
-            )}
-          </div>
-        </div>
+          <Card className="relative bg-[#0c0c12]/80 backdrop-blur-2xl border-white/10 border-t-white/20 p-8 h-full flex flex-col items-center text-center overflow-hidden">
+            {/* Animated Background Element */}
+            <div className="absolute -top-10 -right-10 w-32 h-32 bg-white/5 rounded-full blur-3xl group-hover:bg-white/10 transition-colors" />
 
-        <h3 className="text-2xl font-black mb-3 text-white">
-          {isCreate ? "CREATE TEAM" : "JOIN TEAM"}
-        </h3>
+            <div
+              className={`w-20 h-20 rounded-2xl flex items-center justify-center mb-6 relative`}
+            >
+              <div
+                className={`absolute inset-0 bg-gradient-to-br ${isCreate ? "from-cyan-500 to-blue-500" : "from-purple-500 to-pink-500"} blur-xl opacity-40 group-hover:opacity-80 transition-opacity`}
+              />
+              <div className="relative bg-black/40 w-full h-full rounded-2xl flex items-center justify-center border border-white/10">
+                {isCreate ? (
+                  <Plus className="w-10 h-10 text-cyan-400 group-hover:rotate-90 transition-transform duration-500" />
+                ) : (
+                  <Magnet className="w-10 h-10 text-purple-400 group-hover:scale-125 transition-transform" />
+                )}
+              </div>
+            </div>
 
-        <p className="text-white/40 text-sm leading-relaxed mb-6">
-          {isCreate
-            ? "Start your own squad, lead the project, and define the vision."
-            : "Find the perfect match for your skills and join a winning project."}
-        </p>
+            <h3 className="text-2xl font-black mb-3 text-white">
+              {isCreate ? "CREATE TEAM" : "JOIN TEAM"}
+            </h3>
 
-        <div className="flex gap-2 mt-auto">
-          {isCreate ? (
-            ["React", "AI", "Design"].map((s) => (
-              <Badge
-                key={s}
-                variant="secondary"
-                className="bg-white/5 text-cyan-400 border-none"
-              >
-                {s}
-              </Badge>
-            ))
-          ) : (
-            <div className="flex -space-x-2">
-              {[1, 2, 3, 4].map((i) => (
-                <div
-                  key={i}
-                  className="w-8 h-8 rounded-full border-2 border-[#0c0c12] bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-[10px] font-bold"
-                >
-                  U{i}
+            <p className="text-white/40 text-sm leading-relaxed mb-6">
+              {isCreate
+                ? "Start your own squad, lead the project, and define the vision."
+                : "Find the perfect match for your skills and join a winning project."}
+            </p>
+
+            <div className="flex gap-2 mt-auto">
+              {isCreate ? (
+                ["React", "AI", "Design"].map((s) => (
+                  <Badge
+                    key={s}
+                    variant="secondary"
+                    className="bg-white/5 text-cyan-400 border-none"
+                  >
+                    {s}
+                  </Badge>
+                ))
+              ) : (
+                <div className="flex -space-x-2">
+                  {[1, 2, 3, 4].map((i) => (
+                    <div
+                      key={i}
+                      className="w-8 h-8 rounded-full border-2 border-[#0c0c12] bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-[10px] font-bold"
+                    >
+                      U{i}
+                    </div>
+                  ))}
                 </div>
-              ))}
+              )}
+            </div>
+          </Card>
+        </motion.div>
+      </DialogTrigger>
+      <DialogContent className="bg-[#0c0c12] border-white/10 text-white max-w-md rounded-[32px] backdrop-blur-3xl p-8">
+        <DialogHeader>
+          <DialogTitle className="text-3xl font-black uppercase tracking-tighter">
+            {isCreate ? "Initialize Team" : "Find Your Squad"}
+          </DialogTitle>
+          <DialogDescription className="text-white/40 font-bold uppercase tracking-widest text-[10px]">
+            {isCreate ? "Define your vision and recruit innovators" : "Connect with ongoing projects"}
+          </DialogDescription>
+        </DialogHeader>
+        <form onSubmit={handleSubmit} className="space-y-6 mt-8">
+          {isCreate ? (
+            <>
+              <div className="space-y-2">
+                <Label htmlFor="teamName" className="text-xs font-black text-white/40 uppercase tracking-widest">Team Identity</Label>
+                <Input
+                  id="teamName"
+                  placeholder="E.G. NEURAL NEXUS"
+                  value={teamName}
+                  onChange={(e) => setTeamName(e.target.value)}
+                  className="h-14 bg-white/5 border-white/10 rounded-2xl focus:border-cyan-500/50 uppercase font-bold"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="members" className="text-xs font-black text-white/40 uppercase tracking-widest">Target Members (Optional)</Label>
+                <Input
+                  id="members"
+                  placeholder="E.G. DESIGNER, AI ENGINEER"
+                  value={members}
+                  onChange={(e) => setMembers(e.target.value)}
+                  className="h-14 bg-white/5 border-white/10 rounded-2xl focus:border-cyan-500/50 uppercase font-bold"
+                />
+              </div>
+            </>
+          ) : (
+            <div className="space-y-4">
+               <div className="p-4 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-between">
+                  <div>
+                    <p className="font-bold text-sm">CYBER STRIKE</p>
+                    <p className="text-[10px] text-white/40 font-black tracking-widest">3/4 MEMBERS</p>
+                  </div>
+                  <Button variant="ghost" size="sm" className="text-purple-400 hover:text-purple-300 hover:bg-purple-500/10">JOIN</Button>
+               </div>
+               <div className="p-4 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-between">
+                  <div>
+                    <p className="font-bold text-sm">VOID RUNNERS</p>
+                    <p className="text-[10px] text-white/40 font-black tracking-widest">1/4 MEMBERS</p>
+                  </div>
+                  <Button variant="ghost" size="sm" className="text-purple-400 hover:text-purple-300 hover:bg-purple-500/10">JOIN</Button>
+               </div>
             </div>
           )}
-        </div>
-      </Card>
-    </motion.div>
+          <Button type="submit" className={`w-full h-16 rounded-2xl font-black uppercase tracking-widest ${isCreate ? "bg-cyan-500 hover:bg-cyan-400 text-black" : "bg-purple-600 hover:bg-purple-500 text-white"}`}>
+            {isCreate ? "CREATE TEAM" : "REQUEST TO JOIN"}
+          </Button>
+        </form>
+      </DialogContent>
+    </Dialog>
   );
 };
 

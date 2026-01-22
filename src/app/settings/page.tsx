@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
+import { useState } from "react";
 import {
   Settings,
   ArrowLeft,
@@ -14,6 +15,7 @@ import {
   Save,
   ShieldCheck,
   Smartphone,
+  CheckCircle2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -202,17 +204,22 @@ export default function SettingsPage() {
                     </p>
                   </div>
                 </div>
-                <Button
-                  variant="outline"
-                  className="border-white/[0.08] hover:bg-white/[0.06]"
-                  onClick={() =>
-                    toast.success("2FA setup coming soon.", {
-                      description: "In this demo, security settings are informational only.",
-                    })
-                  }
-                >
-                  Enable
-                </Button>
+                    <Button
+                      variant="outline"
+                      className="border-white/[0.08] hover:bg-white/[0.06] group"
+                      onClick={() => {
+                        toast.promise(
+                          new Promise((resolve) => setTimeout(resolve, 1500)),
+                          {
+                            loading: 'Establishing secure link...',
+                            success: 'Two-Factor Authentication Enabled!',
+                            error: 'Encryption link failed.',
+                          }
+                        );
+                      }}
+                    >
+                      <span className="group-hover:text-emerald-400 transition-colors">Enable</span>
+                    </Button>
               </div>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">

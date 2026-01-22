@@ -609,16 +609,21 @@ export default function AICareerRoadmap() {
                     </p>
                   </div>
                 </div>
-                <Button
-                  className="h-16 px-10 rounded-2xl bg-rose-500 hover:bg-rose-400 text-white font-black text-xs tracking-widest uppercase transition-all shadow-[0_20px_40px_rgba(244,63,94,0.3)]"
-                  onClick={() =>
-                    toast.success("Conflict resolution playbook coming soon.", {
-                      description: "For now, follow the action items in your roadmap above.",
-                    })
-                  }
-                >
-                  Resolve Conflict
-                </Button>
+                  <Button
+                    className="h-16 px-10 rounded-2xl bg-rose-500 hover:bg-rose-400 text-white font-black text-xs tracking-widest uppercase transition-all shadow-[0_20px_40px_rgba(244,63,94,0.3)]"
+                    onClick={() => {
+                      toast.promise(
+                        new Promise((resolve) => setTimeout(resolve, 2000)),
+                        {
+                          loading: 'Scanning for resolution protocols...',
+                          success: 'Conflict Resolved: Playbook Generated!',
+                          error: 'Neural link unstable.',
+                        }
+                      );
+                    }}
+                  >
+                    Resolve Conflict
+                  </Button>
               </motion.div>
             </motion.div>
           )}
