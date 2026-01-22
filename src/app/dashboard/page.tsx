@@ -77,7 +77,7 @@ const stats = [
     color: "blue",
     desc: "3 upcoming events",
     rgb: "59, 130, 246",
-    href: "/hackathons"
+    href: "/hackathon-portfolio"
   },
 ];
 
@@ -148,7 +148,6 @@ function CountUp({ value, suffix = "" }: { value: number; suffix?: string }) {
 export default function DashboardPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
-  const [isHackathonViewOpen, setIsHackathonViewOpen] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -371,9 +370,9 @@ export default function DashboardPage() {
 
                 if (isHackathonCard) {
                   return (
-                    <button key={i} onClick={() => setIsHackathonViewOpen(true)} className="group text-left p-0 border-none bg-transparent">
+                    <Link key={i} href={stat.href} className="group">
                       {CardContent}
-                    </button>
+                    </Link>
                   );
                 }
 
