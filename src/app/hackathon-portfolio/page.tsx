@@ -16,11 +16,12 @@ import {
   Activity,
   Code,
   ArrowLeft,
-  ExternalLink,
-  Github,
-  Globe,
-  Cpu,
-} from "lucide-react";
+    ExternalLink,
+    Github,
+    Globe,
+    Cpu,
+    TrendingUp,
+  } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
