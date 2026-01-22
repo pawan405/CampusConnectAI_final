@@ -742,6 +742,7 @@ export default function AICareerRoadmap() {
                           <p className="text-sm text-white/40 font-medium">Identifying vulnerabilities in your neural career path.</p>
                         </div>
                       </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                           {[
                             { title: "Strengths", items: ["Analytical Thinking", "Base Tech Stack", "Logic"], icon: ShieldCheck, color: "emerald" },
                             { title: "Neural Risks", items: ["Market Saturation", "Legacy Tech Bind", "Soft Skills"], icon: AlertTriangle, color: "rose" },
@@ -795,6 +796,7 @@ export default function AICareerRoadmap() {
                               </div>
                             </div>
                           ))}
+                        </div>
 
                       <motion.div animate={{ boxShadow: ["0 0 0px rgba(244,63,94,0)", "0 0 40px rgba(244,63,94,0.1)", "0 0 0px rgba(244,63,94,0)"] }} transition={{ repeat: Infinity, duration: 4 }} className="bg-rose-500/5 backdrop-blur-xl border border-rose-500/20 rounded-[40px] p-12 flex flex-col md:flex-row items-center justify-between gap-8 relative overflow-hidden">
                         <div className="absolute top-0 left-0 w-1 h-full bg-rose-500/50" />

@@ -398,7 +398,7 @@ export default function CareerProgressPage() {
         <p className="text-[10px] font-black text-white/40 uppercase tracking-[1em]">
           CampusConnect Analytics Engine // Analysis Stable
         </p>
-      </div>
+      </footer>
     </div>
   );
 }
@@ -408,4 +408,5 @@ function Badge({ children, className }: { children: React.ReactNode; className?:
     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${className}`}>
       {children}
     </span>
+  );
 }
