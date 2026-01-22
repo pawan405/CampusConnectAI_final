@@ -75,7 +75,6 @@ export default function ErrorReporter({ error, reset }: ReporterProps) {
   /* ─ extra postMessage when on the global-error route ─ */
   useEffect(() => {
     if (!error) return;
-    console.error("Global error captured by ErrorReporter:", error);
     window.parent.postMessage(
       {
         type: "global-error-reset",
