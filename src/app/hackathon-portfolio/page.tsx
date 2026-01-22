@@ -234,24 +234,24 @@ export default function HackathonPortfolioPage() {
             </div>
           </motion.div>
 
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="flex items-center gap-4"
-            >
-              <Button 
-                onClick={handleDownloadCV}
-                className="h-14 px-8 rounded-2xl bg-white/10 border border-white/20 hover:bg-white/20 text-white font-black uppercase tracking-[0.2em] text-[10px] backdrop-blur-md transition-all"
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="flex items-center gap-4"
               >
-                Download CV
-              </Button>
-              <Button 
-                onClick={handleSharePortfolio}
-                className="h-14 px-8 rounded-2xl bg-cyan-500 hover:bg-cyan-400 text-black font-black uppercase tracking-[0.2em] text-[10px] shadow-[0_0_30px_rgba(6,182,212,0.4)] transition-all"
-              >
-                Share Portfolio
-              </Button>
-            </motion.div>
+                <Button 
+                  onClick={handleDownloadCV}
+                  className="h-14 px-8 rounded-2xl bg-zinc-900 border border-white/20 hover:bg-zinc-800 text-white font-black uppercase tracking-[0.2em] text-[10px] backdrop-blur-md transition-all"
+                >
+                  Download CV
+                </Button>
+                <Button 
+                  onClick={handleSharePortfolio}
+                  className="h-14 px-8 rounded-2xl bg-cyan-500 hover:bg-cyan-400 text-black font-black uppercase tracking-[0.2em] text-[10px] shadow-[0_0_30px_rgba(6,182,212,0.4)] transition-all"
+                >
+                  Share Portfolio
+                </Button>
+              </motion.div>
         </section>
 
         {/* Summary Stats Grid */}
@@ -367,24 +367,26 @@ export default function HackathonPortfolioPage() {
                         )}
                       </div>
                     </div>
-                    <div className="flex items-center gap-3">
-                      <a 
-                        href={item.links.github} 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="p-4 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 hover:text-cyan-400 transition-all group/link"
-                      >
-                        <Github className="w-5 h-5" />
-                      </a>
-                      <a 
-                        href={item.links.live} 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-3 px-6 py-4 rounded-2xl bg-cyan-500 hover:bg-cyan-400 text-black font-black uppercase tracking-widest text-[10px] transition-all group/link"
-                      >
-                        Live Project <ExternalLink className="w-4 h-4 group-hover/link:translate-x-1 group-hover/link:-translate-y-1 transition-transform" />
-                      </a>
-                    </div>
+                      <div className="flex items-center gap-3">
+                        <a 
+                          href={item.links.github} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          onClick={() => toast.info("Opening GitHub Repository", { description: "Decrypting source code access..." })}
+                          className="p-4 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 hover:text-cyan-400 transition-all group/link"
+                        >
+                          <Github className="w-5 h-5" />
+                        </a>
+                        <a 
+                          href={item.links.live} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          onClick={() => toast.info("Accessing Live Deployment", { description: "Establishing secure neural connection..." })}
+                          className="flex items-center gap-3 px-6 py-4 rounded-2xl bg-cyan-500 hover:bg-cyan-400 text-black font-black uppercase tracking-widest text-[10px] transition-all group/link"
+                        >
+                          Live Project <ExternalLink className="w-4 h-4 group-hover/link:translate-x-1 group-hover/link:-translate-y-1 transition-transform" />
+                        </a>
+                      </div>
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
