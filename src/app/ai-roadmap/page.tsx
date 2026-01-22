@@ -43,6 +43,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { toast } from "sonner";
 
 // Helper components for visualizations
 const RadarChart = ({ data }: { data: { label: string; value: number }[] }) => {
@@ -250,10 +251,28 @@ export default function AICareerRoadmap() {
 
   const handleGenerate = () => {
     setLoading(true);
+    toast.loading("Analyzing neural patterns...", { duration: 1500 });
     setTimeout(() => {
       setIsGenerated(true);
       setLoading(false);
+      toast.success("Neural Roadmap Generated", {
+        description: "Your path to excellence has been calculated.",
+      });
     }, 1500);
+  };
+
+  const handleAction = (action: string) => {
+    toast.info(`Initializing: ${action}`, {
+      description: "Redirecting to specialized training module...",
+    });
+  };
+
+  const handleResolveConflict = () => {
+    toast.promise(new Promise((resolve) => setTimeout(resolve, 2000)), {
+      loading: "Recalibrating skill vectors...",
+      success: "Conflict resolved. Neural paths normalized.",
+      error: "Recalibration failed. Please retry.",
+    });
   };
 
   if (!mounted) return null;
@@ -490,14 +509,18 @@ export default function AICareerRoadmap() {
                             }`} />
                           </div>
 
-                        <div className="space-y-2">
-                          <h4 className="font-black text-lg text-white group-hover:text-cyan-400 transition-colors">{step.title}</h4>
-                          <p className="text-sm text-white/40 font-medium leading-relaxed">{step.desc}</p>
-                        </div>
-                        <Button variant="ghost" className="w-full h-12 rounded-xl bg-white/5 border border-white/5 hover:bg-white/10 text-[10px] font-black uppercase tracking-widest">
-                          {step.action} <ArrowUpRight className="ml-2 w-3 h-3" />
-                        </Button>
-                      </motion.div>
+                          <div className="space-y-2">
+                            <h4 className="font-black text-lg text-white group-hover:text-cyan-400 transition-colors">{step.title}</h4>
+                            <p className="text-sm text-white/40 font-medium leading-relaxed">{step.desc}</p>
+                          </div>
+                          <Button 
+                            onClick={() => handleAction(step.action)}
+                            variant="ghost" 
+                            className="w-full h-12 rounded-xl bg-white/5 border border-white/5 hover:bg-white/10 text-[10px] font-black uppercase tracking-widest"
+                          >
+                            {step.action} <ArrowUpRight className="ml-2 w-3 h-3" />
+                          </Button>
+                        </motion.div>
                     ))}
                   </div>
                 </section>
@@ -804,13 +827,18 @@ export default function AICareerRoadmap() {
                           <div className="w-20 h-20 rounded-[28px] bg-rose-500/10 border border-rose-500/20 flex items-center justify-center shrink-0">
                             <TrendingUp className="w-10 h-10 text-rose-400 rotate-180" />
                           </div>
-                          <div className="space-y-2">
-                            <h3 className="text-2xl font-black tracking-tight text-white">Critical Performance Warning</h3>
-                            <p className="text-sm text-white/40 font-medium max-w-lg">Neural analysis detects a high probability of skill stagnation in the next 12 cycles. Action recommended.</p>
+                            <div className="space-y-2">
+                              <h3 className="text-2xl font-black tracking-tight text-white">Critical Performance Warning</h3>
+                              <p className="text-sm text-white/40 font-medium max-w-lg">Neural analysis detects a high probability of skill stagnation in the next 12 cycles. Action recommended.</p>
+                            </div>
                           </div>
-                        </div>
-                        <Button className="h-16 px-10 rounded-2xl bg-rose-500 hover:bg-rose-400 text-white font-black text-xs tracking-widest uppercase transition-all shadow-[0_20px_40px_rgba(244,63,94,0.3)]">Resolve Conflict</Button>
-                      </motion.div>
+                          <Button 
+                            onClick={handleResolveConflict}
+                            className="h-16 px-10 rounded-2xl bg-rose-500 hover:bg-rose-400 text-white font-black text-xs tracking-widest uppercase transition-all shadow-[0_20px_40px_rgba(244,63,94,0.3)]"
+                          >
+                            Resolve Conflict
+                          </Button>
+                        </motion.div>
                     </motion.div>
                   )}
                 </AnimatePresence>

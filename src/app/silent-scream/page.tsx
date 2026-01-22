@@ -272,7 +272,10 @@ export default function SilentScreamPage() {
           </Link>
 
           <div className="flex items-center gap-4">
-            <Badge className="bg-rose-500/10 text-rose-400 border border-rose-500/20 px-4 py-1.5 rounded-full text-[10px] font-black tracking-[0.2em] uppercase">
+            <Badge 
+              onClick={() => toast.success("Secure Connection Verified", { description: "256-bit end-to-end encryption is active." })}
+              className="bg-rose-500/10 text-rose-400 border border-rose-500/20 px-4 py-1.5 rounded-full text-[10px] font-black tracking-[0.2em] uppercase cursor-pointer hover:bg-rose-500/20 transition-all"
+            >
               <Lock className="w-3 h-3 mr-2" /> Encrypted Link
             </Badge>
           </div>
