@@ -207,6 +207,11 @@ export default function HackathonPortfolioPage() {
                   <div className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_10px_#10b981] animate-pulse" />
                   Neural Performance & Contributions // ACTIVE_SYNC
                 </p>
+                <p className="text-white/60 text-sm max-w-xl mt-6 leading-relaxed font-medium">
+                  Welcome to your neural portfolio. This dedicated interface showcases your competitive engineering journey, 
+                  highlighting specific technical contributions, product impact, and AI-synthesized performance metrics 
+                  from every hackathon you've conquered.
+                </p>
               </div>
             </div>
           </motion.div>

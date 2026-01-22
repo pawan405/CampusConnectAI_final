@@ -38,7 +38,6 @@ import { useState, useEffect } from "react";
 import ThreeDBackground from "@/components/ThreeDBackground";
 import TiltCard from "@/components/TiltCard";
 import { toast } from "sonner";
-import { HackathonParticipationView } from "@/components/HackathonParticipationView";
 
 const navItems = [
   { icon: Activity, label: "System Core", href: "/dashboard", active: true },
@@ -552,11 +551,6 @@ export default function DashboardPage() {
           animation: gradient-x 10s ease infinite;
         }
       `}</style>
-
-      <HackathonParticipationView 
-        isOpen={isHackathonViewOpen} 
-        onClose={() => setIsHackathonViewOpen(false)} 
-      />
     </div>
   );
 }
