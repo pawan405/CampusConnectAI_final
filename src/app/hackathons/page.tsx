@@ -41,8 +41,20 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { toast } from "sonner";
 
 // --- 3D Components ---
+
 
 function FloatingRings() {
   const ringRef = useRef<THREE.Group>(null);
@@ -236,116 +248,153 @@ function HologramSphere() {
 
     const TeamCard = ({ type }: { type: "create" | "join" }) => {
       const isCreate = type === "create";
+      const [open, setOpen] = useState(false);
 
-      const handleClick = () => {
-        if (isCreate) {
-          toast.success("Initializing Team Creation", {
-            description: "Opening secure workspace for team configuration...",
-          });
-          // In a real app, this would open a modal. For demo, we simulate it with a toast.
-          setTimeout(() => {
-            toast("Team Workspace Ready", {
-              description: "Specify team name, required skills, and hackathon type to begin recruitment.",
-              action: {
-                label: "Open Form",
-                onClick: () => toast.info("Demo: Team creation form would open here."),
-              },
-            });
-          }, 1500);
-        } else {
-          toast.success("Opening Team Finder", {
-            description: "Scanning for compatible team signatures and open slots...",
-          });
-          setTimeout(() => {
-            toast("Teams Discovered", {
-              description: "Found 12 teams matching your profile. Filter by skill to narrow results.",
-              action: {
-                label: "View List",
-                onClick: () => toast.info("Demo: Matching teams list would appear."),
-              },
-            });
-          }, 1500);
-        }
+      const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        setOpen(false);
+        toast.success(isCreate ? "Team Created Successfully" : "Application Sent", {
+          description: isCreate 
+            ? "Your team workspace has been initialized. Start recruiting now!"
+            : "Your application has been encrypted and sent to the team lead.",
+        });
       };
 
       return (
-        <motion.div
-          whileHover={{ y: -10, scale: 1.02 }}
-          onClick={handleClick}
-          className="relative group cursor-pointer"
-        >
-        <div
-          className={`absolute -inset-1 bg-gradient-to-r ${isCreate ? "from-cyan-500 to-blue-600" : "from-purple-500 to-pink-600"} rounded-2xl blur-lg opacity-25 group-hover:opacity-75 transition duration-500`}
-        />
-        <Card className="relative bg-[#0c0c12]/80 backdrop-blur-2xl border-white/10 border-t-white/20 p-8 h-full flex flex-col items-center text-center overflow-hidden">
-          {/* Animated Background Element */}
-          <div className="absolute -top-10 -right-10 w-32 h-32 bg-white/5 rounded-full blur-3xl group-hover:bg-white/10 transition-colors" />
+        <Dialog open={open} onOpenChange={setOpen}>
+          <DialogTrigger asChild>
+            <motion.div
+              whileHover={{ y: -10, scale: 1.02 }}
+              className="relative group cursor-pointer"
+            >
+              <div
+                className={`absolute -inset-1 bg-gradient-to-r ${isCreate ? "from-cyan-500 to-blue-600" : "from-purple-500 to-pink-600"} rounded-2xl blur-lg opacity-25 group-hover:opacity-75 transition duration-500`}
+              />
+              <Card className="relative bg-[#0c0c12]/80 backdrop-blur-2xl border-white/10 border-t-white/20 p-8 h-full flex flex-col items-center text-center overflow-hidden">
+                {/* Animated Background Element */}
+                <div className="absolute -top-10 -right-10 w-32 h-32 bg-white/5 rounded-full blur-3xl group-hover:bg-white/10 transition-colors" />
 
-          <div
-            className={`w-20 h-20 rounded-2xl flex items-center justify-center mb-6 relative`}
-          >
-            <div
-              className={`absolute inset-0 bg-gradient-to-br ${isCreate ? "from-cyan-500 to-blue-500" : "from-purple-500 to-pink-500"} blur-xl opacity-40 group-hover:opacity-80 transition-opacity`}
-            />
-            <div className="relative bg-black/40 w-full h-full rounded-2xl flex items-center justify-center border border-white/10">
-              {isCreate ? (
-                <Plus className="w-10 h-10 text-cyan-400 group-hover:rotate-90 transition-transform duration-500" />
-              ) : (
-                <Magnet className="w-10 h-10 text-purple-400 group-hover:scale-125 transition-transform" />
-              )}
-            </div>
-          </div>
-
-          <h3 className="text-2xl font-black mb-3 text-white">
-            {isCreate ? "CREATE TEAM" : "JOIN TEAM"}
-          </h3>
-
-          <p className="text-white/40 text-sm leading-relaxed mb-6">
-            {isCreate
-              ? "Start your own squad, lead the project, and define the vision."
-              : "Find the perfect match for your skills and join a winning project."}
-          </p>
-
-          <div className="flex gap-2 mt-auto">
-            {isCreate ? (
-              ["React", "AI", "Design"].map((s) => (
-                <Badge
-                  key={s}
-                  variant="secondary"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    toast.info(`Filtering by ${s}`, {
-                      description: `Showing teams that require ${s} expertise.`,
-                    });
-                  }}
-                  className="bg-white/5 text-cyan-400 border-none cursor-pointer hover:bg-cyan-400 hover:text-black transition-colors"
+                <div
+                  className={`w-20 h-20 rounded-2xl flex items-center justify-center mb-6 relative`}
                 >
-                  {s}
-                </Badge>
-              ))
-            ) : (
-              <div className="flex -space-x-2">
-                {[1, 2, 3, 4].map((i) => (
                   <div
-                    key={i}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      toast.info(`User ${i}`, {
-                        description: `Viewing profile of potential teammate ${i}.`,
-                      });
-                    }}
-                    className="w-8 h-8 rounded-full border-2 border-[#0c0c12] bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-[10px] font-bold cursor-pointer hover:scale-110 transition-transform"
-                  >
-                    U{i}
+                    className={`absolute inset-0 bg-gradient-to-br ${isCreate ? "from-cyan-500 to-blue-500" : "from-purple-500 to-pink-500"} blur-xl opacity-40 group-hover:opacity-80 transition-opacity`}
+                  />
+                  <div className="relative bg-black/40 w-full h-full rounded-2xl flex items-center justify-center border border-white/10">
+                    {isCreate ? (
+                      <Plus className="w-10 h-10 text-cyan-400 group-hover:rotate-90 transition-transform duration-500" />
+                    ) : (
+                      <Magnet className="w-10 h-10 text-purple-400 group-hover:scale-125 transition-transform" />
+                    )}
                   </div>
-                ))}
+                </div>
+
+                <h3 className="text-2xl font-black mb-3 text-white">
+                  {isCreate ? "CREATE TEAM" : "JOIN TEAM"}
+                </h3>
+
+                <p className="text-white/40 text-sm leading-relaxed mb-6">
+                  {isCreate
+                    ? "Start your own squad, lead the project, and define the vision."
+                    : "Find the perfect match for your skills and join a winning project."}
+                </p>
+
+                <div className="flex gap-2 mt-auto">
+                  {isCreate ? (
+                    ["React", "AI", "Design"].map((s) => (
+                      <Badge
+                        key={s}
+                        variant="secondary"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toast.info(`Requirement: ${s}`, {
+                            description: `Teams seeking ${s} experts will be highlighted.`,
+                          });
+                        }}
+                        className="bg-white/5 text-cyan-400 border-none cursor-pointer hover:bg-cyan-400 hover:text-black transition-colors"
+                      >
+                        {s}
+                      </Badge>
+                    ))
+                  ) : (
+                    <div className="flex -space-x-2">
+                      {[1, 2, 3, 4].map((i) => (
+                        <div
+                          key={i}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            toast.info(`Potential Teammate ${i}`, {
+                              description: `Scanning skills: React, TypeScript, Neural Networks.`,
+                            });
+                          }}
+                          className="w-8 h-8 rounded-full border-2 border-[#0c0c12] bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-[10px] font-bold cursor-pointer hover:scale-110 transition-transform"
+                        >
+                          U{i}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </Card>
+            </motion.div>
+          </DialogTrigger>
+          <DialogContent className="bg-[#0c0c12]/95 border-white/10 backdrop-blur-2xl text-white sm:max-w-[500px] rounded-[32px]">
+            <DialogHeader>
+              <DialogTitle className="text-3xl font-black uppercase tracking-tighter">
+                {isCreate ? "Initialize Squad" : "Neural Recruitment"}
+              </DialogTitle>
+              <DialogDescription className="text-white/50 font-medium">
+                {isCreate 
+                  ? "Configure your team parameters and begin recruitment."
+                  : "Scanning for compatible team signatures... 12 matches found."}
+              </DialogDescription>
+            </DialogHeader>
+            <form onSubmit={handleSubmit} className="space-y-6 pt-4">
+              {isCreate ? (
+                <>
+                  <div className="space-y-2">
+                    <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40">Team Name</Label>
+                    <Input placeholder="E.G. NEURAL NEXUS" className="bg-white/5 border-white/10 h-14 rounded-2xl focus:border-cyan-500/50 uppercase font-bold" required />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40">Hackathon Selection</Label>
+                    <Input placeholder="CYBERPUNK HACK 2077" className="bg-white/5 border-white/10 h-14 rounded-2xl focus:border-cyan-500/50 uppercase font-bold" required />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40">Required Skills</Label>
+                    <div className="flex gap-2">
+                      {["React", "AI", "Solidity"].map(skill => (
+                        <Badge key={skill} variant="outline" className="bg-cyan-500/10 text-cyan-400 border-cyan-500/20">{skill}</Badge>
+                      ))}
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <div className="space-y-4">
+                  {[
+                    { name: "Team Cyber", match: "98%", lead: "Alpha" },
+                    { name: "Quantum Squad", match: "85%", lead: "Beta" },
+                  ].map((team, i) => (
+                    <div key={i} className="p-4 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-between group hover:border-purple-500/50 transition-all">
+                      <div>
+                        <h4 className="font-black text-white">{team.name}</h4>
+                        <p className="text-[10px] text-white/40 font-bold uppercase tracking-widest">Lead: {team.lead} // {team.match} Match</p>
+                      </div>
+                      <Button type="button" size="sm" className="bg-purple-500 hover:bg-purple-400 text-black font-black uppercase text-[10px]">Apply</Button>
+                    </div>
+                  ))}
+                </div>
+              )}
+              <div className="pt-4">
+                <Button className={`w-full h-14 rounded-2xl font-black uppercase tracking-[0.2em] text-xs ${isCreate ? "bg-cyan-500 hover:bg-cyan-400" : "bg-purple-500 hover:bg-purple-400"} text-black transition-all shadow-xl`}>
+                  {isCreate ? "Deploy Workspace" : "Sync Application"}
+                </Button>
               </div>
-            )}
-          </div>
-        </Card>
-      </motion.div>
-    );
-  };
+            </form>
+          </DialogContent>
+        </Dialog>
+      );
+    };
 
 // --- Main Page ---
 
@@ -393,8 +442,18 @@ const mockHackathons = [
 ];
 
 export default function CrackHackPage() {
-  const [mounted, setMounted] = useState(false);
-  const containerRef = useRef<HTMLDivElement>(null);
+    const [mounted, setMounted] = useState(false);
+    const [filter, setFilter] = useState("");
+    const containerRef = useRef<HTMLDivElement>(null);
+
+    const filteredHackathons = useMemo(() => {
+      if (!filter) return mockHackathons;
+      return mockHackathons.filter(h => 
+        h.name.toLowerCase().includes(filter.toLowerCase()) ||
+        h.description.toLowerCase().includes(filter.toLowerCase())
+      );
+    }, [filter]);
+
 
   // Initialize useScroll with the ref
   const { scrollYProgress } = useScroll({
