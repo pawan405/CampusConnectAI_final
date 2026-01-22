@@ -131,12 +131,18 @@ function HologramSphere() {
 
 // --- UI Components ---
 
-const HackathonCard = ({ hack, index }: { hack: any; index: number }) => {
-  const cardRef = useRef<HTMLDivElement>(null);
-  const [rotateX, setRotateX] = useState(0);
-  const [rotateY, setRotateY] = useState(0);
+  const HackathonCard = ({ hack, index }: { hack: any; index: number }) => {
+    const cardRef = useRef<HTMLDivElement>(null);
+    const [rotateX, setRotateX] = useState(0);
+    const [rotateY, setRotateY] = useState(0);
 
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const handleViewDetails = () => {
+      toast.info(`Opening ${hack.name}`, {
+        description: "Decrypting challenge specifications and rewards...",
+      });
+    };
+
+    const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!cardRef.current) return;
     const rect = cardRef.current.getBoundingClientRect();
     const x = e.clientX - rect.left;
@@ -211,7 +217,10 @@ const HackathonCard = ({ hack, index }: { hack: any; index: number }) => {
               </div>
             </div>
 
-            <Button className="w-full bg-white/5 hover:bg-white/10 border-white/10 text-white font-bold group/btn relative overflow-hidden">
+            <Button 
+              onClick={handleViewDetails}
+              className="w-full bg-white/5 hover:bg-white/10 border-white/10 text-white font-bold group/btn relative overflow-hidden"
+            >
               <span className="relative z-10 flex items-center gap-2">
                 VIEW DETAILS{" "}
                 <ChevronRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
@@ -225,14 +234,23 @@ const HackathonCard = ({ hack, index }: { hack: any; index: number }) => {
   );
 };
 
-const TeamCard = ({ type }: { type: "create" | "join" }) => {
-  const isCreate = type === "create";
+  const TeamCard = ({ type }: { type: "create" | "join" }) => {
+    const isCreate = type === "create";
 
-  return (
-    <motion.div
-      whileHover={{ y: -10, scale: 1.02 }}
-      className="relative group cursor-pointer"
-    >
+    const handleClick = () => {
+      toast.success(isCreate ? "Initializing Team Creation" : "Opening Team Finder", {
+        description: isCreate 
+          ? "Configuring leadership parameters and project workspace..." 
+          : "Scanning for compatible team signatures and open slots...",
+      });
+    };
+
+    return (
+      <motion.div
+        whileHover={{ y: -10, scale: 1.02 }}
+        onClick={handleClick}
+        className="relative group cursor-pointer"
+      >
       <div
         className={`absolute -inset-1 bg-gradient-to-r ${isCreate ? "from-cyan-500 to-blue-600" : "from-purple-500 to-pink-600"} rounded-2xl blur-lg opacity-25 group-hover:opacity-75 transition duration-500`}
       />
@@ -443,12 +461,18 @@ export default function CrackHackPage() {
                 transition={{ duration: 0.8, delay: 0.6 }}
                 className="flex gap-4 justify-center pt-8"
               >
-                <Button
-                  size="lg"
-                  className="h-16 px-8 rounded-full bg-cyan-500 hover:bg-cyan-400 text-black font-black text-lg shadow-[0_0_30px_rgba(6,182,212,0.5)]"
-                >
-                  EXPLORE NOW <ArrowRight className="ml-2 w-5 h-5" />
-                </Button>
+                  <Button
+                    size="lg"
+                    onClick={() => {
+                      document.getElementById("ongoing-hacks")?.scrollIntoView({ behavior: "smooth" });
+                      toast.info("Navigating to Ongoing Challenges", {
+                        description: "Decrypting live event streams...",
+                      });
+                    }}
+                    className="h-16 px-8 rounded-full bg-cyan-500 hover:bg-cyan-400 text-black font-black text-lg shadow-[0_0_30px_rgba(6,182,212,0.5)]"
+                  >
+                    EXPLORE NOW <ArrowRight className="ml-2 w-5 h-5" />
+                  </Button>
               </motion.div>
             </motion.div>
 
@@ -468,7 +492,7 @@ export default function CrackHackPage() {
           {/* Content Wrapper */}
           <div className="relative z-10 max-w-7xl mx-auto px-6 space-y-32 pb-32">
             {/* Hackathon Discovery */}
-            <section className="space-y-16">
+            <section id="ongoing-hacks" className="space-y-16">
               <div className="flex flex-col md:flex-row justify-between items-end gap-6">
                 <div className="space-y-4">
                   <Badge className="bg-orange-500/10 text-orange-400 border-orange-500/20 px-4 py-1.5 text-xs font-bold tracking-widest uppercase">
@@ -478,15 +502,20 @@ export default function CrackHackPage() {
                     ONGOING <span className="text-orange-500">HACKS</span>
                   </h2>
                 </div>
-                <div className="flex gap-4">
-                  <div className="relative">
-                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
-                    <input
-                      placeholder="FILTER BY SKILL..."
-                      className="bg-white/5 border border-white/10 rounded-full py-3 pl-12 pr-6 text-sm focus:outline-none focus:border-cyan-500/50 transition-colors w-64 uppercase font-bold tracking-wider"
-                    />
+                  <div className="flex gap-4">
+                    <div className="relative">
+                      <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
+                      <input
+                        placeholder="FILTER BY SKILL..."
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            toast.loading("Filtering challenges...", { duration: 1000 });
+                          }
+                        }}
+                        className="bg-white/5 border border-white/10 rounded-full py-3 pl-12 pr-6 text-sm focus:outline-none focus:border-cyan-500/50 transition-colors w-64 uppercase font-bold tracking-wider"
+                      />
+                    </div>
                   </div>
-                </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
