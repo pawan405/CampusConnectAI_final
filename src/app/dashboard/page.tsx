@@ -24,6 +24,9 @@ import {
   Zap,
   Globe,
   Cpu,
+  CheckCircle2,
+  Clock,
+  AlertTriangle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -34,6 +37,14 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import { useState, useEffect } from "react";
 import ThreeDBackground from "@/components/ThreeDBackground";
 import TiltCard from "@/components/TiltCard";
@@ -147,23 +158,44 @@ function CountUp({ value, suffix = "" }: { value: number; suffix?: string }) {
 export default function DashboardPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  const handleNotification = () => {
-    const notifications = [
-      "New hackathon matches found for your profile!",
-      "Your Neuro-Report has been successfully synced.",
-      "Career Roadmap updated based on your recent activity.",
-      "New internship opportunities in your preferred domain.",
-    ];
-    const random = notifications[Math.floor(Math.random() * notifications.length)];
-    toast.info("Neural Notification", {
-      description: random,
-    });
-  };
+  const [notifications, setNotifications] = useState([
+    {
+      id: 1,
+      title: "Hackathon Match",
+      desc: "New matches found for Cyberpunk Hack 2077!",
+      time: "2m ago",
+      icon: Trophy,
+      color: "text-amber-400",
+      isNew: true,
+    },
+    {
+      id: 2,
+      title: "System Update",
+      desc: "Neural Network core successfully upgraded to v5.0.",
+      time: "1h ago",
+      icon: Cpu,
+      color: "text-cyan-400",
+      isNew: false,
+    },
+    {
+      id: 3,
+      title: "Security Alert",
+      desc: "Anonymous signal detected from Silent Scream.",
+      time: "3h ago",
+      icon: Shield,
+      color: "text-rose-400",
+      isNew: false,
+    },
+    {
+      id: 4,
+      title: "Career Growth",
+      desc: "Your skill gap analysis report is ready for review.",
+      time: "5h ago",
+      icon: TrendingUp,
+      color: "text-purple-400",
+      isNew: false,
+    },
+  ]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -252,16 +284,70 @@ export default function DashboardPage() {
                 </div>
               </div>
 
-              <div className="flex items-center gap-4">
-                <Button 
-                  onClick={handleNotification}
-                  variant="ghost" 
-                  size="icon" 
-                  className="w-11 h-11 rounded-2xl border border-white/5 hover:bg-white/5 relative group"
-                >
-                  <Bell className="w-5 h-5 text-white/60 group-hover:text-cyan-400 transition-colors" />
-                  <span className="absolute top-3 right-3 w-2 h-2 bg-cyan-500 rounded-full shadow-[0_0_10px_#06b6d4] animate-pulse" />
-                </Button>
+                <div className="flex items-center gap-4">
+                  <Sheet>
+                    <SheetTrigger asChild>
+                      <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        className="w-11 h-11 rounded-2xl border border-white/5 hover:bg-white/5 relative group"
+                      >
+                        <Bell className="w-5 h-5 text-white/60 group-hover:text-cyan-400 transition-colors" />
+                        <span className="absolute top-3 right-3 w-2 h-2 bg-cyan-500 rounded-full shadow-[0_0_10px_#06b6d4] animate-pulse" />
+                      </Button>
+                    </SheetTrigger>
+                    <SheetContent className="w-full sm:max-w-md bg-black/95 border-l border-white/10 backdrop-blur-2xl p-0">
+                      <div className="h-full flex flex-col">
+                        <SheetHeader className="p-8 border-b border-white/5">
+                          <div className="flex items-center justify-between">
+                            <SheetTitle className="text-3xl font-black tracking-tighter text-white uppercase">Neural Feed</SheetTitle>
+                            <Badge variant="outline" className="bg-cyan-500/10 text-cyan-400 border-cyan-500/20 font-black tracking-widest uppercase">4 New</Badge>
+                          </div>
+                          <SheetDescription className="text-white/40 font-medium mt-2">
+                            Real-time system updates and peer interactions.
+                          </SheetDescription>
+                        </SheetHeader>
+                        
+                        <div className="flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar">
+                          {notifications.map((notif) => (
+                            <motion.div
+                              key={notif.id}
+                              whileHover={{ scale: 1.02, x: 5 }}
+                              className={`p-5 rounded-[32px] border ${notif.isNew ? "bg-white/5 border-white/20" : "bg-transparent border-white/5"} group cursor-pointer transition-all hover:bg-white/10`}
+                            >
+                              <div className="flex gap-4">
+                                <div className={`w-12 h-12 rounded-2xl bg-black flex items-center justify-center border border-white/10 ${notif.color}`}>
+                                  <notif.icon className="w-6 h-6" />
+                                </div>
+                                <div className="flex-1">
+                                  <div className="flex items-center justify-between mb-1">
+                                    <h4 className="font-black text-white group-hover:text-cyan-400 transition-colors">{notif.title}</h4>
+                                    <span className="text-[10px] font-black text-white/20 uppercase tracking-widest">{notif.time}</span>
+                                  </div>
+                                  <p className="text-sm text-white/50 leading-relaxed font-medium">
+                                    {notif.desc}
+                                  </p>
+                                </div>
+                              </div>
+                            </motion.div>
+                          ))}
+                        </div>
+                        
+                        <div className="p-8 border-t border-white/5 bg-black/50">
+                          <Button 
+                            className="w-full h-14 rounded-2xl bg-white text-black font-black uppercase tracking-[0.2em] text-xs hover:bg-cyan-400 transition-all shadow-[0_10px_30px_rgba(0,0,0,0.5)]"
+                            onClick={() => {
+                              setNotifications(notifications.map(n => ({...n, isNew: false})));
+                              toast.success("Feed Synchronized", { description: "All notifications marked as read." });
+                            }}
+                          >
+                            Sync All Clear
+                          </Button>
+                        </div>
+                      </div>
+                    </SheetContent>
+                  </Sheet>
+
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <button className="flex items-center gap-3 p-1 rounded-2xl border border-white/5 bg-white/5 hover:bg-white/10 transition-all hover:scale-105 duration-300">
