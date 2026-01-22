@@ -392,72 +392,81 @@ export default function AICareerRoadmap() {
                   </div>
                 </section>
 
-                {/* Visualizations Grid */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                  {/* Skill Radar */}
-                  <div className="bg-white/[0.03] backdrop-blur-3xl border border-white/10 rounded-[40px] p-10 space-y-8">
-                    <div className="flex justify-between items-center">
-                      <div className="space-y-1">
-                        <h3 className="text-xl font-black tracking-tight uppercase flex items-center gap-3">
-                          <Radar className="w-5 h-5 text-cyan-400" /> Skill Matrix
-                        </h3>
-                        <p className="text-[10px] font-black text-white/20 uppercase tracking-widest">Multi-dimensional competence</p>
-                      </div>
-                    </div>
-                    <RadarChart data={skillData} />
-                    <p className="text-xs text-white/40 leading-relaxed font-medium">
-                      This radar chart visualizes your current skill distribution across key domains. Your 
-                      <span className="text-cyan-400"> AI/ML</span> proficiency is currently your strongest vector.
-                    </p>
-                  </div>
-
-                  {/* Growth & Overall Progress */}
-                  <div className="space-y-8">
-                    <div className="bg-white/[0.03] backdrop-blur-3xl border border-white/10 rounded-[40px] p-10 space-y-8">
+                  {/* Visualizations Grid */}
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    {/* Skill Radar */}
+                    <div 
+                      onClick={() => toast.info("Neural Skill Matrix", { description: "Viewing real-time distribution of your engineering competencies." })}
+                      className="bg-white/[0.03] backdrop-blur-3xl border border-white/10 rounded-[40px] p-10 space-y-8 cursor-pointer group hover:bg-white/[0.05] transition-all"
+                    >
                       <div className="flex justify-between items-center">
                         <div className="space-y-1">
                           <h3 className="text-xl font-black tracking-tight uppercase flex items-center gap-3">
-                            <TrendingUp className="w-5 h-5 text-purple-400" /> Growth Velocity
+                            <Radar className="w-5 h-5 text-cyan-400" /> Skill Matrix
                           </h3>
-                          <p className="text-[10px] font-black text-white/20 uppercase tracking-widest">6-Month trajectory</p>
-                        </div>
-                        <div className="text-right">
-                          <span className="text-3xl font-black text-white">84%</span>
-                          <p className="text-[9px] font-black text-purple-400 uppercase tracking-widest">Total Progress</p>
+                          <p className="text-[10px] font-black text-white/20 uppercase tracking-widest">Multi-dimensional competence</p>
                         </div>
                       </div>
-                      <GrowthLineChart />
+                      <RadarChart data={skillData} />
                       <p className="text-xs text-white/40 leading-relaxed font-medium">
-                        Your growth velocity has increased by <span className="text-purple-400">12.5%</span> this month. 
-                        The trend indicates you are on track to reach Level 5 within 45 days.
+                        This radar chart visualizes your current skill distribution across key domains. Your 
+                        <span className="text-cyan-400"> AI/ML</span> proficiency is currently your strongest vector.
                       </p>
                     </div>
 
-                    <div className="bg-white/[0.03] backdrop-blur-3xl border border-white/10 rounded-[40px] p-10">
-                      <div className="flex items-center gap-6">
-                        <div className="relative w-20 h-20 shrink-0">
-                          <svg className="w-full h-full -rotate-90">
-                            <circle cx="40" cy="40" r="35" stroke="rgba(255,255,255,0.05)" strokeWidth="8" fill="transparent" />
-                            <motion.circle
-                              initial={{ strokeDashoffset: 219.9 }}
-                              animate={{ strokeDashoffset: 219.9 * (1 - 0.84) }}
-                              transition={{ duration: 2 }}
-                              cx="40" cy="40" r="35" stroke="#a855f7" strokeWidth="8" fill="transparent"
-                              strokeDasharray={219.9}
-                              strokeLinecap="round"
-                              className="drop-shadow-[0_0_10px_#a855f7]"
-                            />
-                          </svg>
-                          <span className="absolute inset-0 flex items-center justify-center text-lg font-black tracking-tighter">84</span>
+                    {/* Growth & Overall Progress */}
+                    <div className="space-y-8">
+                      <div 
+                        onClick={() => toast.info("Growth Velocity", { description: "Analyzing your learning trajectory over the last 6 cycles." })}
+                        className="bg-white/[0.03] backdrop-blur-3xl border border-white/10 rounded-[40px] p-10 space-y-8 cursor-pointer group hover:bg-white/[0.05] transition-all"
+                      >
+                        <div className="flex justify-between items-center">
+                          <div className="space-y-1">
+                            <h3 className="text-xl font-black tracking-tight uppercase flex items-center gap-3">
+                              <TrendingUp className="w-5 h-5 text-purple-400" /> Growth Velocity
+                            </h3>
+                            <p className="text-[10px] font-black text-white/20 uppercase tracking-widest">6-Month trajectory</p>
+                          </div>
+                          <div className="text-right">
+                            <span className="text-3xl font-black text-white">84%</span>
+                            <p className="text-[9px] font-black text-purple-400 uppercase tracking-widest">Total Progress</p>
+                          </div>
                         </div>
-                        <div className="space-y-1">
-                          <h4 className="font-black text-white uppercase tracking-tight">Career Readiness Score</h4>
-                          <p className="text-xs text-white/40 font-medium">Based on 142 distinct neural data points including project quality and networking.</p>
+                        <GrowthLineChart />
+                        <p className="text-xs text-white/40 leading-relaxed font-medium">
+                          Your growth velocity has increased by <span className="text-purple-400">12.5%</span> this month. 
+                          The trend indicates you are on track to reach Level 5 within 45 days.
+                        </p>
+                      </div>
+
+                      <div 
+                        onClick={() => toast.info("Career Readiness", { description: "Your readiness score is calculated from 142 distinct neural data points." })}
+                        className="bg-white/[0.03] backdrop-blur-3xl border border-white/10 rounded-[40px] p-10 cursor-pointer group hover:bg-white/[0.05] transition-all"
+                      >
+                        <div className="flex items-center gap-6">
+                          <div className="relative w-20 h-20 shrink-0">
+                            <svg className="w-full h-full -rotate-90">
+                              <circle cx="40" cy="40" r="35" stroke="rgba(255,255,255,0.05)" strokeWidth="8" fill="transparent" />
+                              <motion.circle
+                                initial={{ strokeDashoffset: 219.9 }}
+                                animate={{ strokeDashoffset: 219.9 * (1 - 0.84) }}
+                                transition={{ duration: 2 }}
+                                cx="40" cy="40" r="35" stroke="#a855f7" strokeWidth="8" fill="transparent"
+                                strokeDasharray={219.9}
+                                strokeLinecap="round"
+                                className="drop-shadow-[0_0_10px_#a855f7]"
+                              />
+                            </svg>
+                            <span className="absolute inset-0 flex items-center justify-center text-lg font-black tracking-tighter">84</span>
+                          </div>
+                          <div className="space-y-1">
+                            <h4 className="font-black text-white uppercase tracking-tight">Career Readiness Score</h4>
+                            <p className="text-xs text-white/40 font-medium">Based on 142 distinct neural data points including project quality and networking.</p>
+                          </div>
                         </div>
                       </div>
                     </div>
                   </div>
-                </div>
 
                 {/* Future Growth Suggestions */}
                 <section className="space-y-8">

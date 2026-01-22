@@ -234,83 +234,118 @@ function HologramSphere() {
   );
 };
 
-  const TeamCard = ({ type }: { type: "create" | "join" }) => {
-    const isCreate = type === "create";
+    const TeamCard = ({ type }: { type: "create" | "join" }) => {
+      const isCreate = type === "create";
 
-    const handleClick = () => {
-      toast.success(isCreate ? "Initializing Team Creation" : "Opening Team Finder", {
-        description: isCreate 
-          ? "Configuring leadership parameters and project workspace..." 
-          : "Scanning for compatible team signatures and open slots...",
-      });
-    };
+      const handleClick = () => {
+        if (isCreate) {
+          toast.success("Initializing Team Creation", {
+            description: "Opening secure workspace for team configuration...",
+          });
+          // In a real app, this would open a modal. For demo, we simulate it with a toast.
+          setTimeout(() => {
+            toast("Team Workspace Ready", {
+              description: "Specify team name, required skills, and hackathon type to begin recruitment.",
+              action: {
+                label: "Open Form",
+                onClick: () => toast.info("Demo: Team creation form would open here."),
+              },
+            });
+          }, 1500);
+        } else {
+          toast.success("Opening Team Finder", {
+            description: "Scanning for compatible team signatures and open slots...",
+          });
+          setTimeout(() => {
+            toast("Teams Discovered", {
+              description: "Found 12 teams matching your profile. Filter by skill to narrow results.",
+              action: {
+                label: "View List",
+                onClick: () => toast.info("Demo: Matching teams list would appear."),
+              },
+            });
+          }, 1500);
+        }
+      };
 
-    return (
-      <motion.div
-        whileHover={{ y: -10, scale: 1.02 }}
-        onClick={handleClick}
-        className="relative group cursor-pointer"
-      >
-      <div
-        className={`absolute -inset-1 bg-gradient-to-r ${isCreate ? "from-cyan-500 to-blue-600" : "from-purple-500 to-pink-600"} rounded-2xl blur-lg opacity-25 group-hover:opacity-75 transition duration-500`}
-      />
-      <Card className="relative bg-[#0c0c12]/80 backdrop-blur-2xl border-white/10 border-t-white/20 p-8 h-full flex flex-col items-center text-center overflow-hidden">
-        {/* Animated Background Element */}
-        <div className="absolute -top-10 -right-10 w-32 h-32 bg-white/5 rounded-full blur-3xl group-hover:bg-white/10 transition-colors" />
-
-        <div
-          className={`w-20 h-20 rounded-2xl flex items-center justify-center mb-6 relative`}
+      return (
+        <motion.div
+          whileHover={{ y: -10, scale: 1.02 }}
+          onClick={handleClick}
+          className="relative group cursor-pointer"
         >
+        <div
+          className={`absolute -inset-1 bg-gradient-to-r ${isCreate ? "from-cyan-500 to-blue-600" : "from-purple-500 to-pink-600"} rounded-2xl blur-lg opacity-25 group-hover:opacity-75 transition duration-500`}
+        />
+        <Card className="relative bg-[#0c0c12]/80 backdrop-blur-2xl border-white/10 border-t-white/20 p-8 h-full flex flex-col items-center text-center overflow-hidden">
+          {/* Animated Background Element */}
+          <div className="absolute -top-10 -right-10 w-32 h-32 bg-white/5 rounded-full blur-3xl group-hover:bg-white/10 transition-colors" />
+
           <div
-            className={`absolute inset-0 bg-gradient-to-br ${isCreate ? "from-cyan-500 to-blue-500" : "from-purple-500 to-pink-500"} blur-xl opacity-40 group-hover:opacity-80 transition-opacity`}
-          />
-          <div className="relative bg-black/40 w-full h-full rounded-2xl flex items-center justify-center border border-white/10">
+            className={`w-20 h-20 rounded-2xl flex items-center justify-center mb-6 relative`}
+          >
+            <div
+              className={`absolute inset-0 bg-gradient-to-br ${isCreate ? "from-cyan-500 to-blue-500" : "from-purple-500 to-pink-500"} blur-xl opacity-40 group-hover:opacity-80 transition-opacity`}
+            />
+            <div className="relative bg-black/40 w-full h-full rounded-2xl flex items-center justify-center border border-white/10">
+              {isCreate ? (
+                <Plus className="w-10 h-10 text-cyan-400 group-hover:rotate-90 transition-transform duration-500" />
+              ) : (
+                <Magnet className="w-10 h-10 text-purple-400 group-hover:scale-125 transition-transform" />
+              )}
+            </div>
+          </div>
+
+          <h3 className="text-2xl font-black mb-3 text-white">
+            {isCreate ? "CREATE TEAM" : "JOIN TEAM"}
+          </h3>
+
+          <p className="text-white/40 text-sm leading-relaxed mb-6">
+            {isCreate
+              ? "Start your own squad, lead the project, and define the vision."
+              : "Find the perfect match for your skills and join a winning project."}
+          </p>
+
+          <div className="flex gap-2 mt-auto">
             {isCreate ? (
-              <Plus className="w-10 h-10 text-cyan-400 group-hover:rotate-90 transition-transform duration-500" />
+              ["React", "AI", "Design"].map((s) => (
+                <Badge
+                  key={s}
+                  variant="secondary"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toast.info(`Filtering by ${s}`, {
+                      description: `Showing teams that require ${s} expertise.`,
+                    });
+                  }}
+                  className="bg-white/5 text-cyan-400 border-none cursor-pointer hover:bg-cyan-400 hover:text-black transition-colors"
+                >
+                  {s}
+                </Badge>
+              ))
             ) : (
-              <Magnet className="w-10 h-10 text-purple-400 group-hover:scale-125 transition-transform" />
+              <div className="flex -space-x-2">
+                {[1, 2, 3, 4].map((i) => (
+                  <div
+                    key={i}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toast.info(`User ${i}`, {
+                        description: `Viewing profile of potential teammate ${i}.`,
+                      });
+                    }}
+                    className="w-8 h-8 rounded-full border-2 border-[#0c0c12] bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-[10px] font-bold cursor-pointer hover:scale-110 transition-transform"
+                  >
+                    U{i}
+                  </div>
+                ))}
+              </div>
             )}
           </div>
-        </div>
-
-        <h3 className="text-2xl font-black mb-3 text-white">
-          {isCreate ? "CREATE TEAM" : "JOIN TEAM"}
-        </h3>
-
-        <p className="text-white/40 text-sm leading-relaxed mb-6">
-          {isCreate
-            ? "Start your own squad, lead the project, and define the vision."
-            : "Find the perfect match for your skills and join a winning project."}
-        </p>
-
-        <div className="flex gap-2 mt-auto">
-          {isCreate ? (
-            ["React", "AI", "Design"].map((s) => (
-              <Badge
-                key={s}
-                variant="secondary"
-                className="bg-white/5 text-cyan-400 border-none"
-              >
-                {s}
-              </Badge>
-            ))
-          ) : (
-            <div className="flex -space-x-2">
-              {[1, 2, 3, 4].map((i) => (
-                <div
-                  key={i}
-                  className="w-8 h-8 rounded-full border-2 border-[#0c0c12] bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-[10px] font-bold"
-                >
-                  U{i}
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      </Card>
-    </motion.div>
-  );
-};
+        </Card>
+      </motion.div>
+    );
+  };
 
 // --- Main Page ---
 
@@ -581,34 +616,42 @@ export default function CrackHackPage() {
                     value: "128+",
                     icon: Trophy,
                     color: "text-amber-400",
+                    action: () => toast.info("System Analytics", { description: "128 total hackathons indexed across all neural nodes." }),
                   },
                   {
                     label: "ACTIVE TEAMS",
                     value: "450+",
                     icon: Users,
                     color: "text-cyan-400",
+                    action: () => toast.info("Active Formations", { description: "450+ squads currently in active development phase." }),
                   },
                   {
                     label: "TOTAL PRIZES",
                     value: "$500K",
                     icon: Star,
                     color: "text-purple-400",
+                    action: () => toast.info("Reward Pool", { description: "Cumulative bounty across all listed challenges." }),
                   },
                   {
                     label: "PARTNERS",
                     value: "50+",
                     icon: Globe,
                     color: "text-emerald-400",
+                    action: () => toast.info("Collaborator Network", { description: "50+ industry partners and academic institutions." }),
                   },
                 ].map((stat, i) => (
-                  <div key={i} className="text-center space-y-2">
+                  <div 
+                    key={i} 
+                    onClick={stat.action}
+                    className="text-center space-y-2 cursor-pointer group/stat transition-all hover:scale-105"
+                  >
                     <stat.icon
-                      className={`w-6 h-6 mx-auto ${stat.color} mb-3`}
+                      className={`w-6 h-6 mx-auto ${stat.color} mb-3 group-hover/stat:scale-110 transition-transform`}
                     />
-                    <div className="text-3xl font-black text-white">
+                    <div className="text-3xl font-black text-white group-hover/stat:text-cyan-400 transition-colors">
                       {stat.value}
                     </div>
-                    <div className="text-[10px] font-bold text-white/30 tracking-widest uppercase">
+                    <div className="text-[10px] font-bold text-white/30 tracking-widest uppercase group-hover/stat:text-white/60 transition-colors">
                       {stat.label}
                     </div>
                   </div>

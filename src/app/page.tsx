@@ -45,30 +45,34 @@ const FeatureCard = ({
   title,
   description,
   delay,
+  href,
 }: {
   icon: React.ElementType;
   title: string;
   description: string;
   delay: number;
+  href: string;
 }) => (
   <FadeIn delay={delay}>
-    <Card className="group relative overflow-hidden bg-zinc-900/50 backdrop-blur-xl border-zinc-800/50 hover:border-blue-500/50 transition-all duration-500 cursor-pointer h-full border shadow-2xl">
-      <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-      <CardContent className="p-8 relative z-10">
-        <div className="w-14 h-14 rounded-2xl bg-zinc-800 flex items-center justify-center mb-6 group-hover:bg-blue-600 group-hover:scale-110 transition-all duration-300 shadow-xl">
-          <Icon className="w-7 h-7 text-blue-400 group-hover:text-white transition-colors" />
-        </div>
-        <h3 className="text-2xl font-bold text-white mb-3 tracking-tight">
-          {title}
-        </h3>
-        <p className="text-zinc-400 text-sm leading-relaxed mb-6">
-          {description}
-        </p>
-        <div className="flex items-center text-blue-400 font-bold text-sm group-hover:gap-3 transition-all">
-          Learn more <ArrowRight className="w-4 h-4 ml-2" />
-        </div>
-      </CardContent>
-    </Card>
+    <Link href={href}>
+      <Card className="group relative overflow-hidden bg-zinc-900/50 backdrop-blur-xl border-zinc-800/50 hover:border-blue-500/50 transition-all duration-500 cursor-pointer h-full border shadow-2xl">
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+        <CardContent className="p-8 relative z-10">
+          <div className="w-14 h-14 rounded-2xl bg-zinc-800 flex items-center justify-center mb-6 group-hover:bg-blue-600 group-hover:scale-110 transition-all duration-300 shadow-xl">
+            <Icon className="w-7 h-7 text-blue-400 group-hover:text-white transition-colors" />
+          </div>
+          <h3 className="text-2xl font-bold text-white mb-3 tracking-tight">
+            {title}
+          </h3>
+          <p className="text-zinc-400 text-sm leading-relaxed mb-6">
+            {description}
+          </p>
+          <div className="flex items-center text-blue-400 font-bold text-sm group-hover:gap-3 transition-all">
+            Learn more <ArrowRight className="w-4 h-4 ml-2" />
+          </div>
+        </CardContent>
+      </Card>
+    </Link>
   </FadeIn>
 );
 
@@ -274,18 +278,21 @@ export default function HomePage() {
                 title="Silent Scream"
                 description="Anonymous voice-based reporting. AI-powered transcription and summary while keeping your identity 100% secure."
                 delay={0.1}
+                href="/silent-scream"
               />
               <FeatureCard
                 icon={Rocket}
                 title="AI Career Roadmap"
                 description="Personalized career paths and skill gap analysis tailored specifically to your goals and interests."
                 delay={0.2}
+                href="/ai-roadmap"
               />
               <FeatureCard
                 icon={Code}
                 title="CrackHack"
                 description="The ultimate hub to discover top-tier hackathons, build elite teams, and showcase your engineering prowess."
                 delay={0.3}
+                href="/hackathons"
               />
             </div>
           </div>
