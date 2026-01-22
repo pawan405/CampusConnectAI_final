@@ -10,22 +10,20 @@ import {
   TrendingUp,
   Bell,
   Search,
-Trophy,
-Rocket,
-ArrowRight,
-Activity,
-LogOut,
-User,
-Shield,
-Target,
-Menu,
-X,
-Sparkles,
-Zap,
-Globe,
-Cpu,
-Calendar,
-ChevronRight,
+  Trophy,
+  Rocket,
+  ArrowRight,
+  Activity,
+  LogOut,
+  User,
+  Shield,
+  Target,
+  Menu,
+  X,
+  Sparkles,
+  Zap,
+  Globe,
+  Cpu,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -36,25 +34,10 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Badge } from "@/components/ui/badge";
 import { useState, useEffect } from "react";
 import ThreeDBackground from "@/components/ThreeDBackground";
 import TiltCard from "@/components/TiltCard";
 import { toast } from "sonner";
-
-const hackathonsJoined = [
-  { id: 1, name: "Cyberpunk Hack 2077", status: "Completed", date: "Dec 2025", role: "Lead Developer" },
-  { id: 2, name: "Neural Network Jam", status: "Joined", date: "Jan 2026", role: "AI Researcher" },
-  { id: 3, name: "Global AI Summit", status: "Upcoming", date: "Feb 2026", role: "Participant" },
-];
 
 const navItems = [
   { icon: Activity, label: "System Core", href: "/dashboard", active: true },
@@ -159,31 +142,12 @@ function CountUp({ value, suffix = "" }: { value: number; suffix?: string }) {
 }
 
 export default function DashboardPage() {
-  const router = useRouter();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     setMounted(true);
   }, []);
-
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      toast.success(`Search Results for "${searchQuery}"`, {
-        description: `Neural index found 12 matches across modules.`,
-      });
-      // In a real app, this would filter or navigate
-      setSearchQuery("");
-    }
-  };
-
-  const handleActivityClick = (activity: typeof activities[0]) => {
-    toast.info(activity.title, {
-      description: `Viewing details for ${activity.title.toLowerCase()}.`,
-    });
-  };
 
   if (!mounted) return null;
 
@@ -254,15 +218,13 @@ export default function DashboardPage() {
               <button onClick={() => setSidebarOpen(true)} className="lg:hidden p-2 hover:bg-white/5 rounded-xl transition-colors">
                 <Menu className="w-6 h-6 text-white/60" />
               </button>
-              <form onSubmit={handleSearch} className="relative group hidden md:block">
+              <div className="relative group hidden md:block">
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/20 group-focus-within:text-cyan-400 transition-colors" />
                 <Input
                   placeholder="Query Neural Network..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
                   className="w-[300px] h-11 pl-12 bg-white/5 border-white/10 rounded-2xl text-sm focus:border-cyan-500/30 transition-all placeholder:text-white/20 focus:w-[400px] duration-300"
                 />
-              </form>
+              </div>
             </div>
 
             <div className="flex items-center gap-4">
@@ -270,112 +232,30 @@ export default function DashboardPage() {
                 <div className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_#10b981]" />
                 <span className="text-[10px] font-black uppercase tracking-wider text-white/60">Node-01: Active</span>
               </div>
-                <Dialog>
-                  <DialogTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="w-11 h-11 rounded-2xl border border-white/5 hover:bg-white/5 relative group"
-                    >
-                      <Bell className="w-5 h-5 text-white/60 group-hover:text-cyan-400 transition-colors" />
-                      <span className="absolute top-3 right-3 w-2 h-2 bg-cyan-500 rounded-full shadow-[0_0_10px_#06b6d4] animate-pulse" />
-                    </Button>
-                  </DialogTrigger>
-                    <DialogContent className="bg-black/90 border-white/10 text-white max-w-md rounded-[32px] backdrop-blur-3xl">
-                      <DialogHeader>
-                        <DialogTitle className="text-2xl font-black uppercase">Recent Transmissions</DialogTitle>
-                      </DialogHeader>
-                      <div className="space-y-4 mt-4">
-                        <div className="p-4 rounded-2xl bg-white/5 border border-white/10 flex gap-4">
-                          <div className="w-10 h-10 rounded-xl bg-cyan-500/20 flex items-center justify-center shrink-0">
-                            <Zap className="w-5 h-5 text-cyan-400" />
-                          </div>
-                          <div>
-                            <p className="font-bold text-sm">New Match Found</p>
-                            <p className="text-xs text-white/40">Neural Nexus team looking for AI Lead.</p>
-                          </div>
-                        </div>
-                        <div className="p-4 rounded-2xl bg-white/5 border border-white/10 flex gap-4">
-                          <div className="w-10 h-10 rounded-xl bg-purple-500/20 flex items-center justify-center shrink-0">
-                            <Brain className="w-5 h-5 text-purple-400" />
-                          </div>
-                          <div>
-                            <p className="font-bold text-sm">Roadmap Updated</p>
-                            <p className="text-xs text-white/40">New technical skills detected in profile.</p>
-                          </div>
-                        </div>
-                        <Button variant="ghost" className="w-full text-xs font-black uppercase tracking-widest text-white/40 hover:text-white transition-colors">
-                          MARK ALL AS READ
-                        </Button>
+              <Button variant="ghost" size="icon" className="w-11 h-11 rounded-2xl border border-white/5 hover:bg-white/5 relative group">
+                <Bell className="w-5 h-5 text-white/60 group-hover:text-cyan-400 transition-colors" />
+                <span className="absolute top-3 right-3 w-2 h-2 bg-cyan-500 rounded-full shadow-[0_0_10px_#06b6d4] animate-pulse" />
+              </Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button className="flex items-center gap-3 p-1 rounded-2xl border border-white/5 bg-white/5 hover:bg-white/10 transition-all hover:scale-105 duration-300">
+                    <div className="w-8 h-8 rounded-xl overflow-hidden bg-gradient-to-br from-cyan-500 to-purple-500 p-[1px]">
+                      <div className="w-full h-full rounded-[11px] overflow-hidden bg-black">
+                        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Sentinel" alt="avatar" />
                       </div>
-                    </DialogContent>
-                </Dialog>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <button className="flex items-center gap-3 p-1 rounded-2xl border border-white/5 bg-white/5 hover:bg-white/10 transition-all hover:scale-105 duration-300">
-                      <div className="w-8 h-8 rounded-xl overflow-hidden bg-gradient-to-br from-cyan-500 to-purple-500 p-[1px]">
-                        <div className="w-full h-full rounded-[11px] overflow-hidden bg-black">
-                          <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Sentinel" alt="avatar" />
-                        </div>
-                      </div>
-                    </button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-56 bg-black/90 backdrop-blur-2xl border-white/10 rounded-[24px] p-2 mt-4 shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
-                    <Dialog>
-                      <DialogTrigger asChild>
-                        <DropdownMenuItem 
-                          onSelect={(e) => e.preventDefault()}
-                          className="rounded-xl focus:bg-white/5 focus:text-cyan-400 cursor-pointer p-3 gap-3"
-                        >
-                          <User className="w-4 h-4" /> <span className="text-sm font-bold">Profile Interface</span>
-                        </DropdownMenuItem>
-                      </DialogTrigger>
-                      <DialogContent className="bg-black/90 border-white/10 text-white max-w-md rounded-[32px] backdrop-blur-3xl">
-                        <DialogHeader>
-                          <DialogTitle className="text-2xl font-black uppercase">Profile Core</DialogTitle>
-                        </DialogHeader>
-                        <div className="space-y-6 mt-4">
-                          <div className="flex items-center gap-4 p-4 rounded-2xl bg-white/5 border border-white/10">
-                            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-cyan-500 to-purple-500 p-[1px]">
-                              <div className="w-full h-full rounded-[15px] bg-black overflow-hidden">
-                                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Sentinel" alt="avatar" />
-                              </div>
-                            </div>
-                            <div>
-                              <h4 className="font-black text-xl">SENTINEL-01</h4>
-                              <p className="text-[10px] font-black text-cyan-400 uppercase tracking-widest">Master Engineer</p>
-                            </div>
-                          </div>
-                          <div className="grid grid-cols-2 gap-4">
-                            <div className="p-4 rounded-2xl bg-white/5 border border-white/10 text-center">
-                              <p className="text-[10px] font-black text-white/40 uppercase mb-1">Rank</p>
-                              <p className="text-lg font-black">TOP 1%</p>
-                            </div>
-                            <div className="p-4 rounded-2xl bg-white/5 border border-white/10 text-center">
-                              <p className="text-[10px] font-black text-white/40 uppercase mb-1">XP</p>
-                              <p className="text-lg font-black">12.4K</p>
-                            </div>
-                          </div>
-                          <Button className="w-full h-14 rounded-2xl bg-white text-black font-black uppercase tracking-widest text-xs" onClick={() => router.push('/settings')}>
-                            EDIT SETTINGS
-                          </Button>
-                        </div>
-                      </DialogContent>
-                    </Dialog>
-                    <DropdownMenuSeparator className="bg-white/10" />
-                    <DropdownMenuItem 
-                      className="rounded-xl focus:bg-rose-500/20 focus:text-rose-400 cursor-pointer p-3 gap-3"
-                      onClick={() => {
-                        toast.success("Logged out successfully", {
-                          description: "Redirecting to home page...",
-                        });
-                        setTimeout(() => router.push("/"), 1000);
-                      }}
-                    >
-                      <LogOut className="w-4 h-4" /> <span className="text-sm font-bold">Disconnect</span>
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                    </div>
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56 bg-black/90 backdrop-blur-2xl border-white/10 rounded-[24px] p-2 mt-4 shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
+                  <DropdownMenuItem className="rounded-xl focus:bg-white/5 focus:text-cyan-400 cursor-pointer p-3 gap-3">
+                    <User className="w-4 h-4" /> <span className="text-sm font-bold">Profile Interface</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator className="bg-white/10" />
+                  <DropdownMenuItem className="rounded-xl focus:bg-rose-500/20 focus:text-rose-400 cursor-pointer p-3 gap-3">
+                    <LogOut className="w-4 h-4" /> <span className="text-sm font-bold">Disconnect</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           </div>
         </header>
@@ -412,10 +292,7 @@ export default function DashboardPage() {
                 Your future, calculated in real-time.
               </p>
               <div className="flex flex-wrap gap-4 pt-4">
-                  <Button
-                    className="h-16 px-10 rounded-2xl bg-cyan-500 hover:bg-cyan-400 text-black font-black uppercase tracking-[0.2em] text-xs transition-all hover:shadow-[0_0_40px_#06b6d4] group overflow-hidden relative"
-                    onClick={() => router.push("/match-analysis")}
-                  >
+                <Button className="h-16 px-10 rounded-2xl bg-cyan-500 hover:bg-cyan-400 text-black font-black uppercase tracking-[0.2em] text-xs transition-all hover:shadow-[0_0_40px_#06b6d4] group overflow-hidden relative">
                   <span className="relative z-10 flex items-center">
                     Analyze Matches <ArrowRight className="ml-3 w-4 h-4 group-hover:translate-x-2 transition-transform duration-500" />
                   </span>
@@ -423,10 +300,7 @@ export default function DashboardPage() {
                     className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300"
                   />
                 </Button>
-                <Button
-                  className="h-16 px-10 rounded-2xl bg-white/10 border border-white/20 hover:bg-white/20 text-white font-black uppercase tracking-[0.2em] text-xs transition-all backdrop-blur-md hover:border-white/40"
-                  onClick={() => router.push("/analytics")}
-                >
+                <Button className="h-16 px-10 rounded-2xl bg-white/10 border border-white/20 hover:bg-white/20 text-white font-black uppercase tracking-[0.2em] text-xs transition-all backdrop-blur-md hover:border-white/40">
                   View Network
                 </Button>
               </div>
@@ -435,146 +309,54 @@ export default function DashboardPage() {
 
           {/* Stats Grid */}
           <section className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {stats.map((stat, i) => {
-              const StatCard = (
-                <TiltCard className="h-48 group cursor-pointer">
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ 
-                      opacity: 1, 
-                      y: [0, -8, 0],
-                    }}
-                    transition={{ 
-                      initial: { duration: 0.5, delay: i * 0.2 },
-                      y: { duration: 4, repeat: Infinity, ease: "easeInOut", delay: i * 0.3 }
-                    }}
-                    className="w-full h-full bg-black/60 backdrop-blur-3xl border border-white/20 rounded-[40px] p-8 flex flex-col justify-between relative overflow-hidden transition-all duration-500 group-hover:border-cyan-500/50 group-hover:bg-black/80 group-hover:shadow-[0_20px_80px_rgba(6,182,212,0.3)]"
-                  >
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-cyan-500/20 to-transparent blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-                    
-                    <div className="flex justify-between items-start">
-                      <div className="w-14 h-14 rounded-2xl flex items-center justify-center border border-white/20 bg-white/10 shadow-[inset_0_0_15px_rgba(255,255,255,0.05)] group-hover:scale-110 group-hover:rotate-6 transition-all duration-500">
-                        <stat.icon className="w-7 h-7" style={{ color: stat.rgb && `rgb(${stat.rgb})`, filter: `drop-shadow(0 0 12px rgb(${stat.rgb}))` }} />
-                      </div>
-                      {stat.isCircular && (
-                        <div className="relative w-14 h-14 group-hover:rotate-12 transition-all duration-500">
-                          <svg className="w-full h-full -rotate-90">
-                            <circle cx="28" cy="28" r="24" stroke="rgba(255,255,255,0.1)" strokeWidth="4" fill="transparent" />
-                            <motion.circle
-                              initial={{ strokeDashoffset: 150.8 }}
-                              animate={{ strokeDashoffset: 150.8 * (1 - 0.84) }}
-                              transition={{ duration: 2, delay: 1 }}
-                              cx="28" cy="28" r="24" stroke="currentColor" strokeWidth="4" fill="transparent"
-                              strokeDasharray={150.8}
-                              className="text-purple-400 drop-shadow-[0_0_15px_#a855f7]"
-                            />
-                          </svg>
-                          <span className="absolute inset-0 flex items-center justify-center text-xs font-black">84</span>
-                        </div>
-                      )}
+            {stats.map((stat, i) => (
+              <TiltCard key={i} className="h-48 group">
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ 
+                    opacity: 1, 
+                    y: [0, -8, 0],
+                  }}
+                  transition={{ 
+                    initial: { duration: 0.5, delay: i * 0.2 },
+                    y: { duration: 4, repeat: Infinity, ease: "easeInOut", delay: i * 0.3 }
+                  }}
+                  className="w-full h-full bg-black/60 backdrop-blur-3xl border border-white/20 rounded-[40px] p-8 flex flex-col justify-between relative overflow-hidden transition-all duration-500 group-hover:border-cyan-500/50 group-hover:bg-black/80 group-hover:shadow-[0_20px_80px_rgba(6,182,212,0.3)]"
+                >
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-cyan-500/20 to-transparent blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+                  
+                  <div className="flex justify-between items-start">
+                    <div className="w-14 h-14 rounded-2xl flex items-center justify-center border border-white/20 bg-white/10 shadow-[inset_0_0_15px_rgba(255,255,255,0.05)] group-hover:scale-110 group-hover:rotate-6 transition-all duration-500">
+                      <stat.icon className="w-7 h-7" style={{ color: stat.rgb && `rgb(${stat.rgb})`, filter: `drop-shadow(0 0 12px rgb(${stat.rgb}))` }} />
                     </div>
-                    <div>
-                      <h3 className="text-5xl font-black tracking-tighter text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.3)]">
-                        <CountUp value={stat.value} suffix={stat.suffix} />
-                      </h3>
-                      <p className="text-[10px] font-black text-white/50 uppercase tracking-[0.3em] mt-2 group-hover:text-white/80 transition-colors">
-                        {stat.label}
-                      </p>
-                    </div>
-                  </motion.div>
-                </TiltCard>
-              );
-
-              return (
-                <Dialog key={i}>
-                  <DialogTrigger asChild>
-                    {StatCard}
-                  </DialogTrigger>
-                  <DialogContent className="bg-black/90 border-white/10 text-white max-w-2xl rounded-[32px] backdrop-blur-3xl">
-                    <DialogHeader>
-                      <DialogTitle className="text-3xl font-black uppercase tracking-tighter">{stat.label}</DialogTitle>
-                      <DialogDescription className="text-white/40">
-                        Detailed analysis and real-time updates for your {stat.label.toLowerCase()}.
-                      </DialogDescription>
-                    </DialogHeader>
-                    
-                    {stat.label === "Hackathons Joined" ? (
-                      <div className="space-y-4 mt-6">
-                        {hackathonsJoined.map((hack) => (
-                          <div key={hack.id} className="p-6 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-between hover:border-cyan-500/30 transition-all group">
-                            <div className="space-y-1">
-                              <h4 className="font-bold text-lg">{hack.name}</h4>
-                              <div className="flex items-center gap-3 text-xs text-white/40">
-                                <span className="flex items-center gap-1"><Calendar className="w-3 h-3" /> {hack.date}</span>
-                                <span className="flex items-center gap-1"><User className="w-3 h-3" /> {hack.role}</span>
-                              </div>
-                            </div>
-                            <div className="flex items-center gap-4">
-                              <Badge variant="outline" className={`${hack.status === 'Joined' ? 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20' : 'bg-white/5 text-white/40 border-white/10'} font-black text-[10px]`}>
-                                {hack.status.toUpperCase()}
-                              </Badge>
-                              <Button variant="ghost" size="icon" className="rounded-xl hover:bg-cyan-500/20 hover:text-cyan-400" onClick={() => router.push('/hackathons')}>
-                                <ChevronRight className="w-5 h-5" />
-                              </Button>
-                            </div>
-                          </div>
-                        ))}
-                        <div className="grid grid-cols-2 gap-4 mt-8">
-                          <Button className="h-14 rounded-2xl bg-cyan-500 hover:bg-cyan-400 text-black font-black uppercase tracking-widest text-xs" onClick={() => router.push('/hackathons')}>
-                            CREATE TEAM
-                          </Button>
-                          <Button variant="outline" className="h-14 rounded-2xl border-white/10 hover:bg-white/5 text-white font-black uppercase tracking-widest text-xs" onClick={() => router.push('/hackathons')}>
-                            JOIN TEAM
-                          </Button>
-                        </div>
-                      </div>
-                    ) : stat.label === "Active Reports" ? (
-                      <div className="space-y-4 mt-6">
-                        <div className="p-6 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-between">
-                          <div>
-                            <h4 className="font-bold">Campus Infrastructure Issue</h4>
-                            <p className="text-xs text-white/40">Reported 2h ago • Status: Under Review</p>
-                          </div>
-                          <Badge className="bg-cyan-500/20 text-cyan-400 border-cyan-500/30">PENDING</Badge>
-                        </div>
-                        <div className="p-6 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-between">
-                          <div>
-                            <h4 className="font-bold">Peer Misconduct Anonymity</h4>
-                            <p className="text-xs text-white/40">Reported 1d ago • Status: Resolved</p>
-                          </div>
-                          <Badge className="bg-emerald-500/20 text-emerald-400 border-emerald-500/30">RESOLVED</Badge>
-                        </div>
-                        <Button className="w-full h-14 rounded-2xl bg-white text-black font-black uppercase tracking-widest text-xs" onClick={() => router.push('/silent-scream')}>
-                          FILE NEW REPORT
-                        </Button>
-                      </div>
-                    ) : (
-                      <div className="space-y-6 mt-6">
-                        <div className="grid grid-cols-2 gap-4">
-                          <div className="p-6 rounded-2xl bg-white/5 border border-white/10">
-                            <p className="text-[10px] font-black text-white/40 uppercase mb-2">Technical Proficiency</p>
-                            <p className="text-2xl font-black text-cyan-400">92/100</p>
-                          </div>
-                          <div className="p-6 rounded-2xl bg-white/5 border border-white/10">
-                            <p className="text-[10px] font-black text-white/40 uppercase mb-2">Soft Skills</p>
-                            <p className="text-2xl font-black text-purple-400">78/100</p>
-                          </div>
-                        </div>
-                        <div className="p-6 rounded-2xl bg-cyan-500/10 border border-cyan-500/30">
-                          <p className="text-sm font-medium mb-4">You have reached <span className="text-cyan-400 font-bold">Level 4</span>. Complete 2 more hackathons to unlock elite mentorship.</p>
-                          <div className="h-2 bg-white/5 rounded-full overflow-hidden">
-                            <div className="h-full bg-cyan-500 w-[84%]" />
-                          </div>
-                        </div>
-                        <Button className="w-full h-14 rounded-2xl bg-white text-black font-black uppercase tracking-widest text-xs" onClick={() => router.push('/ai-roadmap')}>
-                          VIEW CAREER ROADMAP
-                        </Button>
+                    {stat.isCircular && (
+                      <div className="relative w-14 h-14 group-hover:rotate-12 transition-all duration-500">
+                        <svg className="w-full h-full -rotate-90">
+                          <circle cx="28" cy="28" r="24" stroke="rgba(255,255,255,0.1)" strokeWidth="4" fill="transparent" />
+                          <motion.circle
+                            initial={{ strokeDashoffset: 150.8 }}
+                            animate={{ strokeDashoffset: 150.8 * (1 - 0.84) }}
+                            transition={{ duration: 2, delay: 1 }}
+                            cx="28" cy="28" r="24" stroke="currentColor" strokeWidth="4" fill="transparent"
+                            strokeDasharray={150.8}
+                            className="text-purple-400 drop-shadow-[0_0_15px_#a855f7]"
+                          />
+                        </svg>
+                        <span className="absolute inset-0 flex items-center justify-center text-xs font-black">84</span>
                       </div>
                     )}
-                  </DialogContent>
-                </Dialog>
-              );
-            })}
+                  </div>
+                  <div>
+                    <h3 className="text-5xl font-black tracking-tighter text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.3)]">
+                      <CountUp value={stat.value} suffix={stat.suffix} />
+                    </h3>
+                    <p className="text-[10px] font-black text-white/50 uppercase tracking-[0.3em] mt-2 group-hover:text-white/80 transition-colors">
+                      {stat.label}
+                    </p>
+                  </div>
+                </motion.div>
+              </TiltCard>
+            ))}
           </section>
 
           {/* Feature Modules */}
@@ -661,8 +443,7 @@ export default function DashboardPage() {
                     <motion.div 
                       key={i} 
                       whileHover={{ x: 10, backgroundColor: "rgba(255,255,255,0.1)" }}
-                      onClick={() => handleActivityClick(item)}
-                      className="flex items-center gap-6 p-6 rounded-[32px] bg-white/5 border border-white/10 group/item transition-all duration-300 hover:border-white/30 cursor-pointer"
+                      className="flex items-center gap-6 p-6 rounded-[32px] bg-white/5 border border-white/10 group/item transition-all duration-300 hover:border-white/30"
                     >
                       <div className="w-14 h-14 rounded-2xl bg-black flex items-center justify-center border border-white/20 group-hover/item:border-cyan-500/50 transition-colors">
                         <item.icon className="w-6 h-6 text-white/60 group-hover/item:text-cyan-400 transition-colors" />
@@ -706,10 +487,7 @@ export default function DashboardPage() {
                     Your career vector has been updated with 14 new high-affinity opportunities.
                   </p>
                 </div>
-                <Button
-                  className="mt-12 h-20 w-full rounded-[32px] bg-gradient-to-r from-cyan-500 to-purple-600 text-white font-black uppercase tracking-[0.3em] text-xs hover:scale-[1.02] transition-all duration-500 shadow-[0_20px_60px_rgba(6,182,212,0.4)] group border-none"
-                  onClick={() => router.push("/ai-roadmap")}
-                >
+                <Button className="mt-12 h-20 w-full rounded-[32px] bg-gradient-to-r from-cyan-500 to-purple-600 text-white font-black uppercase tracking-[0.3em] text-xs hover:scale-[1.02] transition-all duration-500 shadow-[0_20px_60px_rgba(6,182,212,0.4)] group border-none">
                   Access Intelligence <ArrowRight className="ml-3 w-4 h-4 group-hover:translate-x-2 transition-transform" />
                 </Button>
               </motion.div>

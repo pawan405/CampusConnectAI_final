@@ -29,10 +29,10 @@ export default function MatchAnalysisPage() {
   }, []);
 
   const analysisMetrics = [
-    { label: "Skill Affinity", value: "94%", color: "cyan", icon: Brain },
-    { label: "Team Compatibility", value: "88%", color: "purple", icon: Users },
-    { label: "Market Relevance", value: "92%", color: "blue", icon: Target },
-    { label: "Success Probability", value: "76%", color: "emerald", icon: Rocket },
+    { label: "Technical Skill Fit", value: "94%", color: "cyan", icon: Brain },
+    { label: "Team Dynamic Match", value: "88%", color: "purple", icon: Users },
+    { label: "Industry Alignment", value: "92%", color: "blue", icon: Target },
+    { label: "Winning Probability", value: "76%", color: "emerald", icon: Rocket },
   ];
 
   const matchedHackathons = [
@@ -41,18 +41,21 @@ export default function MatchAnalysisPage() {
       matchScore: 98,
       tags: ["Machine Learning", "Python"],
       difficulty: "Advanced",
+      reason: "Matches your expertise in PyTorch and recent sentiment analysis projects.",
     },
     {
       name: "FinTech Innovation Summit",
       matchScore: 85,
       tags: ["Blockchain", "Security"],
       difficulty: "Intermediate",
+      reason: "Aligns with your 'SecureChain' repository and interest in smart contract security.",
     },
     {
       name: "Eco-Tech Hackathon",
       matchScore: 72,
       tags: ["IoT", "Sustainability"],
       difficulty: "Beginner",
+      reason: "Ideal for applying your hardware skills to environmental challenges.",
     },
   ];
 
@@ -78,112 +81,122 @@ export default function MatchAnalysisPage() {
         </div>
       </nav>
 
-      <main className="max-w-7xl mx-auto px-6 py-12 space-y-16">
-        {/* Header */}
-        <section className="space-y-6">
-          <Badge className="bg-cyan-500/10 text-cyan-400 border-cyan-500/30 px-4 py-1">
-            Neural Analysis Active
-          </Badge>
-          <h1 className="text-6xl md:text-8xl font-black tracking-tighter leading-none">
-            ANALYZE <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-500">
-              YOUR MATCHES.
-            </span>
-          </h1>
-          <p className="text-white/40 text-xl max-w-2xl font-medium">
-            Our AI engine has scanned 500+ hackathons to find your perfect technical and team matches.
-          </p>
-        </section>
+        <main className="max-w-7xl mx-auto px-6 py-12 space-y-16">
+          {/* Header */}
+          <section className="space-y-6">
+            <Badge className="bg-cyan-500/10 text-cyan-400 border-cyan-500/30 px-4 py-1">
+              Analysis Results Generated
+            </Badge>
+            <h1 className="text-6xl md:text-8xl font-black tracking-tighter leading-none">
+              MATCH <br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-500">
+                VERDICT.
+              </span>
+            </h1>
+            <p className="text-white/80 text-xl max-w-2xl font-medium leading-relaxed">
+              We analyzed your <span className="text-cyan-400">GitHub repositories</span>, <span className="text-purple-400">project history</span>, and <span className="text-emerald-400">skill endorsements</span>. 
+              These recommendations prioritize hackathons where your technical stack guarantees a competitive edge.
+            </p>
+          </section>
 
-        {/* Metrics Grid */}
-        <section className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          {analysisMetrics.map((metric, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.1 }}
-            >
-              <Card className="bg-black/60 backdrop-blur-3xl border-white/10 p-8 rounded-[32px] hover:border-cyan-500/50 transition-all group">
-                <div className="flex justify-between items-start mb-6">
-                  <div className="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center border border-white/10 group-hover:scale-110 transition-transform">
-                    <metric.icon className="w-6 h-6 text-cyan-400" />
-                  </div>
-                  <Badge variant="outline" className="border-cyan-500/20 text-cyan-400">Live</Badge>
-                </div>
-                <p className="text-[10px] font-black text-white/40 uppercase tracking-widest mb-1">{metric.label}</p>
-                <h3 className="text-4xl font-black text-white">{metric.value}</h3>
-              </Card>
-            </motion.div>
-          ))}
-        </section>
-
-        {/* Recommendations */}
-        <section className="space-y-8">
-          <div className="flex items-center gap-6">
-            <h2 className="text-3xl font-black tracking-tighter uppercase">High Affinity Matches</h2>
-            <div className="flex-1 h-[1px] bg-white/10" />
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {matchedHackathons.map((hack, i) => (
+          {/* Metrics Grid */}
+          <section className="grid grid-cols-1 md:grid-cols-4 gap-6">
+            {analysisMetrics.map((metric, i) => (
               <motion.div
                 key={i}
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.4 + i * 0.1 }}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.1 }}
               >
-                <Card className="bg-white/5 border-white/10 rounded-[40px] p-8 h-full flex flex-col hover:bg-white/10 transition-all">
-                  <div className="flex justify-between items-start mb-8">
-                    <div className="w-12 h-12 rounded-2xl bg-cyan-500/20 flex items-center justify-center">
-                      <Trophy className="w-6 h-6 text-cyan-400" />
+                <Card className="bg-black/60 backdrop-blur-3xl border-white/10 p-8 rounded-[32px] hover:border-cyan-500/50 transition-all group">
+                  <div className="flex justify-between items-start mb-6">
+                    <div className="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center border border-white/10 group-hover:scale-110 transition-transform">
+                      <metric.icon className="w-6 h-6 text-cyan-400" />
                     </div>
-                    <div className="text-right">
-                      <p className="text-[10px] font-black text-cyan-400 uppercase">Match Score</p>
-                      <p className="text-2xl font-black">{hack.matchScore}%</p>
-                    </div>
+                    <Badge variant="outline" className="border-cyan-500/40 text-cyan-300">Verified</Badge>
                   </div>
-                  <h3 className="text-2xl font-black mb-4">{hack.name}</h3>
-                  <div className="flex flex-wrap gap-2 mb-8">
-                    {hack.tags.map((tag) => (
-                      <Badge key={tag} variant="secondary" className="bg-white/5 text-white/60">
-                        {tag}
-                      </Badge>
-                    ))}
-                  </div>
-                  <div className="mt-auto pt-6 border-t border-white/10 flex items-center justify-between">
-                    <span className="text-xs font-bold text-white/40 uppercase">{hack.difficulty}</span>
-                    <Button variant="ghost" className="p-0 h-auto text-cyan-400 hover:text-cyan-300 gap-2 font-black text-xs uppercase tracking-widest">
-                      Details <ChevronRight className="w-4 h-4" />
-                    </Button>
-                  </div>
+                  <p className="text-[10px] font-black text-white/70 uppercase tracking-widest mb-1">{metric.label}</p>
+                  <h3 className="text-4xl font-black text-white">{metric.value}</h3>
                 </Card>
               </motion.div>
             ))}
-          </div>
-        </section>
+          </section>
 
-        {/* Team Analysis CTA */}
-        <section>
-          <div className="bg-gradient-to-r from-cyan-900/40 to-purple-900/40 border border-white/20 rounded-[48px] p-12 flex flex-col md:flex-row items-center justify-between gap-12">
-            <div className="space-y-4">
-              <h3 className="text-4xl font-black tracking-tighter uppercase">Deep Team Analysis</h3>
-              <p className="text-white/60 max-w-md font-medium">
-                Want to know how your current team stacks up? Our neural engine can predict team synergy and potential bottlenecks.
-              </p>
+          {/* Recommendations */}
+          <section className="space-y-8">
+            <div className="flex items-center gap-6">
+              <h2 className="text-3xl font-black tracking-tighter uppercase">Recommended Opportunities</h2>
+              <div className="flex-1 h-[1px] bg-white/10" />
             </div>
-            <Button className="h-20 px-12 rounded-3xl bg-white text-black font-black uppercase tracking-widest hover:scale-105 transition-all shadow-[0_20px_60px_rgba(255,255,255,0.2)]">
-              Start Team Scan
-            </Button>
-          </div>
-        </section>
-      </main>
 
-      <footer className="py-24 text-center border-t border-white/5">
-        <p className="text-[10px] font-black text-white/20 uppercase tracking-[1em]">
-          CampusConnect Match Analysis // v2.1
-        </p>
-      </footer>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {matchedHackathons.map((hack, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.4 + i * 0.1 }}
+                >
+                  <Card className="bg-white/5 border-white/10 rounded-[40px] p-8 h-full flex flex-col hover:bg-white/10 transition-all border-l-4 border-l-cyan-500/50">
+                    <div className="flex justify-between items-start mb-8">
+                      <div className="w-12 h-12 rounded-2xl bg-cyan-500/20 flex items-center justify-center">
+                        <Trophy className="w-6 h-6 text-cyan-400" />
+                      </div>
+                      <div className="text-right">
+                        <p className="text-[10px] font-black text-cyan-400 uppercase">Match Score</p>
+                        <p className="text-3xl font-black text-white">{hack.matchScore}%</p>
+                      </div>
+                    </div>
+                    <h3 className="text-2xl font-black mb-4 text-white leading-tight">{hack.name}</h3>
+                    
+                    <p className="text-white/90 text-sm mb-6 font-medium leading-relaxed">
+                      {hack.reason}
+                    </p>
+
+                    <div className="flex flex-wrap gap-2 mb-8">
+                      {hack.tags.map((tag) => (
+                        <Badge key={tag} variant="secondary" className="bg-cyan-500/10 text-cyan-200 border border-cyan-500/20">
+                          {tag}
+                        </Badge>
+                      ))}
+                    </div>
+                    <div className="mt-auto pt-6 border-t border-white/10 flex items-center justify-between">
+                      <div className="flex flex-col">
+                        <span className="text-[10px] font-black text-white/50 uppercase tracking-tighter">Difficulty</span>
+                        <span className="text-sm font-bold text-white uppercase">{hack.difficulty}</span>
+                      </div>
+                      <Button variant="ghost" className="p-0 h-auto text-cyan-400 hover:text-cyan-300 gap-2 font-black text-xs uppercase tracking-widest">
+                        Join Event <ChevronRight className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </Card>
+                </motion.div>
+              ))}
+            </div>
+          </section>
+
+          {/* Team Analysis CTA */}
+          <section>
+            <div className="bg-gradient-to-r from-cyan-900/40 to-purple-900/40 border border-white/20 rounded-[48px] p-12 flex flex-col md:flex-row items-center justify-between gap-12">
+              <div className="space-y-4">
+                <h3 className="text-4xl font-black tracking-tighter uppercase">Optimize Your Team</h3>
+                <p className="text-white/80 max-w-md font-medium leading-relaxed">
+                  Already have a squad? Let's check your skill balance and predict project compatibility before you sign up.
+                </p>
+              </div>
+              <Button className="h-20 px-12 rounded-3xl bg-white text-black font-black uppercase tracking-widest hover:scale-105 transition-all shadow-[0_20px_60px_rgba(255,255,255,0.2)]">
+                Scan Team Chemistry
+              </Button>
+            </div>
+          </section>
+        </main>
+
+        <footer className="py-24 text-center border-t border-white/5">
+          <p className="text-[10px] font-black text-white/40 uppercase tracking-[1em]">
+            CampusConnect Insight Engine // Analysis Stable
+          </p>
+        </footer>
+
     </div>
   );
 }

@@ -43,15 +43,6 @@ export function CampusConnectChatbot() {
     setMessages((prev) => [...prev, { role: "user", content: userMessage }]);
     setIsLoading(true);
 
-    // Timeout protection - max 30 seconds
-    const timeoutId = setTimeout(() => {
-      setIsLoading(false);
-      setMessages((prev) => [
-        ...prev,
-        { role: "bot", content: "I'm taking longer than usual to respond. Please try again or check your connection." },
-      ]);
-    }, 30000);
-
     try {
       const response = await fetch("/api/chat", {
         method: "POST",
@@ -64,21 +55,14 @@ export function CampusConnectChatbot() {
         }),
       });
 
-      clearTimeout(timeoutId);
-
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}`);
-      }
-
       const data = await response.json();
 
       if (data.error) {
         throw new Error(data.error);
       }
 
-      setMessages((prev) => [...prev, { role: "bot", content: data.content || "I received your message but couldn't generate a response. Please try again." }]);
+        setMessages((prev) => [...prev, { role: "bot", content: data.content }]);
     } catch (error) {
-      clearTimeout(timeoutId);
       console.error("Chat error:", error);
       setMessages((prev) => [
         ...prev,

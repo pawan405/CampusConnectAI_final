@@ -2,7 +2,6 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { useState } from "react";
 import {
   Settings,
   ArrowLeft,
@@ -15,7 +14,6 @@ import {
   Save,
   ShieldCheck,
   Smartphone,
-  CheckCircle2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -31,16 +29,8 @@ import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 
 export default function SettingsPage() {
-  const [fullName, setFullName] = useState("");
-  const [email, setEmail] = useState("");
-  const [bio, setBio] = useState("");
-  const [proactiveSuggestions, setProactiveSuggestions] = useState(true);
-  const [anonymousTranscription, setAnonymousTranscription] = useState(true);
-
   const handleSave = () => {
-    toast.success("Settings saved successfully!", {
-      description: "Your preferences have been updated.",
-    });
+    toast.success("Settings saved successfully!");
   };
 
   return (
@@ -103,8 +93,6 @@ export default function SettingsPage() {
                   </label>
                   <Input
                     placeholder="Student Name"
-                    value={fullName}
-                    onChange={(e) => setFullName(e.target.value)}
                     className="bg-white/[0.03] border-white/[0.08]"
                   />
                 </div>
@@ -114,9 +102,6 @@ export default function SettingsPage() {
                   </label>
                   <Input
                     placeholder="student@campus.edu"
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
                     className="bg-white/[0.03] border-white/[0.08]"
                   />
                 </div>
@@ -127,8 +112,6 @@ export default function SettingsPage() {
                 </label>
                 <Input
                   placeholder="Tell us about your career goals..."
-                  value={bio}
-                  onChange={(e) => setBio(e.target.value)}
                   className="bg-white/[0.03] border-white/[0.08]"
                 />
               </div>
@@ -158,10 +141,7 @@ export default function SettingsPage() {
                     Receive AI suggestions based on your recent activity.
                   </p>
                 </div>
-                <Switch 
-                  checked={proactiveSuggestions}
-                  onCheckedChange={setProactiveSuggestions}
-                />
+                <Switch defaultChecked />
               </div>
               <div className="flex items-center justify-between p-4 rounded-xl bg-white/[0.03] border border-white/[0.06]">
                 <div className="space-y-1">
@@ -171,10 +151,7 @@ export default function SettingsPage() {
                     privacy AI.
                   </p>
                 </div>
-                <Switch 
-                  checked={anonymousTranscription}
-                  onCheckedChange={setAnonymousTranscription}
-                />
+                <Switch defaultChecked />
               </div>
             </CardContent>
           </Card>
@@ -204,22 +181,12 @@ export default function SettingsPage() {
                     </p>
                   </div>
                 </div>
-                    <Button
-                      variant="outline"
-                      className="border-white/[0.08] hover:bg-white/[0.06] group"
-                      onClick={() => {
-                        toast.promise(
-                          new Promise((resolve) => setTimeout(resolve, 1500)),
-                          {
-                            loading: 'Establishing secure link...',
-                            success: 'Two-Factor Authentication Enabled!',
-                            error: 'Encryption link failed.',
-                          }
-                        );
-                      }}
-                    >
-                      <span className="group-hover:text-emerald-400 transition-colors">Enable</span>
-                    </Button>
+                <Button
+                  variant="outline"
+                  className="border-white/[0.08] hover:bg-white/[0.06]"
+                >
+                  Enable
+                </Button>
               </div>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
@@ -236,11 +203,6 @@ export default function SettingsPage() {
                 <Button
                   variant="ghost"
                   className="text-rose-400 hover:bg-rose-500/10"
-                  onClick={() =>
-                    toast.error("Account deletion flow is not wired yet.", {
-                      description: "Reach out to support if you actually want your data removed.",
-                    })
-                  }
                 >
                   Delete Account
                 </Button>

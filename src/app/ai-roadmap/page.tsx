@@ -39,7 +39,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { toast } from "sonner";
 
 // Particles Component for the cinematic vibe
 const Particles = () => {
@@ -73,31 +72,16 @@ export default function AICareerRoadmap() {
   const [mounted, setMounted] = useState(false);
   const [isGenerated, setIsGenerated] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [targetYear, setTargetYear] = useState<string>("");
-  const [discipline, setDiscipline] = useState<string>("");
-  const [neuralIntent, setNeuralIntent] = useState<string>("");
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
   const handleGenerate = () => {
-    if (!targetYear || !discipline || !neuralIntent) {
-      toast.error("Please fill all fields", {
-        description: "Select Target Year, Discipline, and Neural Intent to generate your roadmap.",
-      });
-      return;
-    }
     setLoading(true);
-    toast.info("Generating your personalized roadmap...", {
-      description: "Analyzing your profile and career goals.",
-    });
     setTimeout(() => {
       setIsGenerated(true);
       setLoading(false);
-      toast.success("Roadmap generated successfully!", {
-        description: `Your ${discipline} career path is ready.`,
-      });
     }, 1500);
   };
 
@@ -221,7 +205,7 @@ export default function AICareerRoadmap() {
                     <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest pl-1">
                       Target Year
                     </Label>
-                    <Select value={targetYear} onValueChange={setTargetYear}>
+                    <Select>
                       <SelectTrigger className="h-14 bg-white/[0.02] border-white/5 rounded-2xl focus:ring-cyan-500/20 hover:bg-white/[0.04] transition-all">
                         <SelectValue placeholder="Current Stage" />
                       </SelectTrigger>
@@ -258,7 +242,7 @@ export default function AICareerRoadmap() {
                     <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest pl-1">
                       Discipline
                     </Label>
-                    <Select value={discipline} onValueChange={setDiscipline}>
+                    <Select>
                       <SelectTrigger className="h-14 bg-white/[0.02] border-white/5 rounded-2xl focus:ring-cyan-500/20 hover:bg-white/[0.04] transition-all">
                         <SelectValue placeholder="Branch" />
                       </SelectTrigger>
@@ -289,7 +273,7 @@ export default function AICareerRoadmap() {
                     <Label className="text-[10px] font-black text-white/20 uppercase tracking-widest pl-1">
                       Neural Intent
                     </Label>
-                    <Select value={neuralIntent} onValueChange={setNeuralIntent}>
+                    <Select>
                       <SelectTrigger className="h-14 bg-white/[0.02] border-white/5 rounded-2xl focus:ring-cyan-500/20 hover:bg-white/[0.04] transition-all">
                         <SelectValue placeholder="Interests" />
                       </SelectTrigger>
@@ -609,21 +593,9 @@ export default function AICareerRoadmap() {
                     </p>
                   </div>
                 </div>
-                  <Button
-                    className="h-16 px-10 rounded-2xl bg-rose-500 hover:bg-rose-400 text-white font-black text-xs tracking-widest uppercase transition-all shadow-[0_20px_40px_rgba(244,63,94,0.3)]"
-                    onClick={() => {
-                      toast.promise(
-                        new Promise((resolve) => setTimeout(resolve, 2000)),
-                        {
-                          loading: 'Scanning for resolution protocols...',
-                          success: 'Conflict Resolved: Playbook Generated!',
-                          error: 'Neural link unstable.',
-                        }
-                      );
-                    }}
-                  >
-                    Resolve Conflict
-                  </Button>
+                <Button className="h-16 px-10 rounded-2xl bg-rose-500 hover:bg-rose-400 text-white font-black text-xs tracking-widest uppercase transition-all shadow-[0_20px_40px_rgba(244,63,94,0.3)]">
+                  Resolve Conflict
+                </Button>
               </motion.div>
             </motion.div>
           )}
