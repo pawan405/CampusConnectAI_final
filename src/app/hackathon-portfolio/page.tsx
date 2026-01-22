@@ -365,23 +365,32 @@ export default function HackathonPortfolioPage() {
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
                     <div className="space-y-6">
-                      <div>
-                        <p className="text-[10px] font-black text-white/40 uppercase tracking-widest mb-3 flex items-center gap-2">
-                          <Target className="w-3 h-3 text-white/20" /> Mission & Built
-                        </p>
-                        <p className="text-lg text-white/90 leading-relaxed font-medium">
-                          {item.built} <span className="text-white/60 italic">{item.contribution}</span>
-                        </p>
-                      </div>
-                      
-                      <div className="p-6 rounded-3xl bg-white/5 border border-white/5 group-hover:border-white/10 transition-all">
-                        <p className="text-[9px] font-black text-white/30 uppercase tracking-widest mb-2 flex items-center gap-2">
-                          <Zap className="w-3 h-3 text-amber-500" /> Impact Outcome
-                        </p>
-                        <p className="text-sm text-emerald-400 font-black italic">
-                          "{item.impact}"
-                        </p>
-                      </div>
+                        <div>
+                          <p className="text-[10px] font-black text-white/40 uppercase tracking-widest mb-3 flex items-center gap-2">
+                            <Target className="w-3 h-3 text-white/20" /> What We Built
+                          </p>
+                          <p className="text-lg text-white/90 leading-relaxed font-medium">
+                            {item.built}
+                          </p>
+                        </div>
+
+                        <div>
+                          <p className="text-[10px] font-black text-white/40 uppercase tracking-widest mb-3 flex items-center gap-2">
+                            <Zap className="w-3 h-3 text-white/20" /> What I Did
+                          </p>
+                          <p className="text-sm text-white/60 leading-relaxed font-medium italic">
+                            {item.contribution}
+                          </p>
+                        </div>
+                        
+                        <div className="p-6 rounded-3xl bg-white/5 border border-white/5 group-hover:border-white/10 transition-all">
+                          <p className="text-[9px] font-black text-white/30 uppercase tracking-widest mb-2 flex items-center gap-2">
+                            <TrendingUp className="w-3 h-3 text-emerald-500" /> Impact / Outcome
+                          </p>
+                          <p className="text-sm text-emerald-400 font-black italic">
+                            "{item.impact}"
+                          </p>
+                        </div>
                     </div>
 
                     <div className="space-y-6">
