@@ -67,8 +67,8 @@ const stats = [
     desc: "Level 4 reached",
     isCircular: true,
     rgb: "168, 85, 247",
-    href: "/ai-roadmap"
-  },
+      href: "/analytics"
+    },
   {
     label: "Hackathons Joined",
     value: 12,

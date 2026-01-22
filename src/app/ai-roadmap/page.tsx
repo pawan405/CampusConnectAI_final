@@ -33,6 +33,16 @@ import {
   CircleDot,
   ArrowUpRight,
 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 // Helper components for visualizations
 const RadarChart = ({ data }: { data: { label: string; value: number }[] }) => {
@@ -211,7 +221,7 @@ export default function AICareerRoadmap() {
   const [mounted, setMounted] = useState(false);
   const [isGenerated, setIsGenerated] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [activeTab, setActiveTab] = useState<"overview" | "roadmap">("overview");
+  const [activeTab, setActiveTab] = useState<"overview" | "roadmap">("roadmap");
   const [discipline, setDiscipline] = useState("cse");
   const [intent, setIntent] = useState("ai");
 
@@ -468,9 +478,18 @@ export default function AICareerRoadmap() {
                         whileHover={{ y: -10 }}
                         className="bg-white/[0.02] border border-white/10 rounded-[32px] p-8 space-y-6 hover:bg-white/[0.05] hover:border-white/20 transition-all group"
                       >
-                        <div className={`w-12 h-12 rounded-2xl bg-${step.color === 'cyan' ? 'cyan-500/10' : step.color === 'purple' ? 'purple-500/10' : 'emerald-500/10'} border border-${step.color === 'cyan' ? 'cyan-500/20' : step.color === 'purple' ? 'purple-500/20' : 'emerald-500/20'} flex items-center justify-center group-hover:scale-110 transition-transform`}>
-                          <step.icon className={`w-6 h-6 ${step.color === 'cyan' ? 'text-cyan-400' : step.color === 'purple' ? 'text-purple-400' : 'text-emerald-400'}`} />
-                        </div>
+                          <div className={`w-12 h-12 rounded-2xl flex items-center justify-center border transition-all group-hover:scale-110 ${
+                            step.color === 'cyan' ? 'bg-cyan-500/10 border-cyan-500/20' : 
+                            step.color === 'purple' ? 'bg-purple-500/10 border-purple-500/20' : 
+                            'bg-emerald-500/10 border-emerald-500/20'
+                          }`}>
+                            <step.icon className={`w-6 h-6 ${
+                              step.color === 'cyan' ? 'text-cyan-400' : 
+                              step.color === 'purple' ? 'text-purple-400' : 
+                              'text-emerald-400'
+                            }`} />
+                          </div>
+
                         <div className="space-y-2">
                           <h4 className="font-black text-lg text-white group-hover:text-cyan-400 transition-colors">{step.title}</h4>
                           <p className="text-sm text-white/40 font-medium leading-relaxed">{step.desc}</p>
@@ -657,9 +676,22 @@ export default function AICareerRoadmap() {
                             {roadmapSteps.map((step, i) => (
                               <motion.div key={i} initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.2 }} className="relative">
                                 <div className="absolute -left-[54px] top-0 w-11 h-11 flex items-center justify-center">
-                                  <div className={`w-4 h-4 rounded-full bg-[#050508] border-2 border-${step.color === "cyan" ? "cyan" : step.color === "purple" ? "purple" : "emerald"}-400 shadow-[0_0_15px_rgba(6,182,212,0.5)] z-10 relative`}>
-                                    <motion.div animate={{ scale: [1, 1.5, 1], opacity: [0.5, 1, 0.5] }} transition={{ repeat: Infinity, duration: 2 }} className={`absolute inset-0 rounded-full bg-${step.color === "cyan" ? "cyan" : step.color === "purple" ? "purple" : "emerald"}-400/50`} />
-                                  </div>
+                                    <div className={`w-4 h-4 rounded-full bg-[#050508] border-2 z-10 relative ${
+                                      step.color === 'cyan' ? 'border-cyan-400 shadow-[0_0_15px_rgba(6,182,212,0.5)]' :
+                                      step.color === 'purple' ? 'border-purple-400 shadow-[0_0_15px_rgba(168,85,247,0.5)]' :
+                                      'border-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.5)]'
+                                    }`}>
+                                      <motion.div 
+                                        animate={{ scale: [1, 1.5, 1], opacity: [0.5, 1, 0.5] }} 
+                                        transition={{ repeat: Infinity, duration: 2 }} 
+                                        className={`absolute inset-0 rounded-full ${
+                                          step.color === 'cyan' ? 'bg-cyan-400/50' :
+                                          step.color === 'purple' ? 'bg-purple-400/50' :
+                                          'bg-emerald-400/50'
+                                        }`} 
+                                      />
+                                    </div>
+
                                 </div>
                                 <div className="bg-white/[0.03] backdrop-blur-xl border border-white/10 rounded-[32px] p-8 hover:bg-white/[0.05] transition-all duration-500 group relative overflow-hidden">
                                   <div className="flex flex-col md:flex-row md:items-start justify-between gap-6 relative z-10">
@@ -710,32 +742,60 @@ export default function AICareerRoadmap() {
                           <p className="text-sm text-white/40 font-medium">Identifying vulnerabilities in your neural career path.</p>
                         </div>
                       </div>
-                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                        {[
-                          { title: "Strengths", items: ["Analytical Thinking", "Base Tech Stack", "Logic"], icon: ShieldCheck, color: "emerald" },
-                          { title: "Neural Risks", items: ["Market Saturation", "Legacy Tech Bind", "Soft Skills"], icon: AlertTriangle, color: "rose" },
-                          { title: "Skill Gaps", items: ["System Architecture", "Edge Deployment", "Security"], icon: Target, color: "orange" },
-                          { title: "Direct Actions", items: ["Forge 2 Projects", "Link with Mentors", "Cert Sync"], icon: Zap, color: "cyan" },
-                        ].map((card, i) => (
-                          <div key={i} className="group relative bg-white/[0.02] backdrop-blur-2xl border border-white/10 rounded-[32px] p-8 hover:bg-white/[0.04] transition-all duration-700 overflow-hidden">
-                            <motion.div animate={{ opacity: [0.1, 0.3, 0.1] }} transition={{ repeat: Infinity, duration: 4 }} className={`absolute -top-10 -right-10 w-32 h-32 bg-${card.color}-500/20 blur-[60px] rounded-full`} />
-                            <div className="relative z-10 space-y-6">
-                              <div className={`w-12 h-12 rounded-2xl bg-${card.color}-500/10 flex items-center justify-center border border-${card.color}-500/20 group-hover:rotate-[12deg] transition-all`}>
-                                <card.icon className={`w-6 h-6 text-${card.color}-400`} />
-                              </div>
-                              <h4 className={`text-xl font-black tracking-tight text-${card.color}-400`}>{card.title}</h4>
-                              <div className="space-y-3">
-                                {card.items.map((item, idx) => (
-                                  <div key={idx} className="flex items-center gap-3">
-                                    {card.title === "Direct Actions" ? <CheckCircle className="w-3.5 h-3.5 text-cyan-400" /> : <div className={`w-1.5 h-1.5 rounded-full bg-${card.color}-500/40`} />}
-                                    <span className="text-[11px] font-bold text-white/50">{item}</span>
-                                  </div>
-                                ))}
+                          {[
+                            { title: "Strengths", items: ["Analytical Thinking", "Base Tech Stack", "Logic"], icon: ShieldCheck, color: "emerald" },
+                            { title: "Neural Risks", items: ["Market Saturation", "Legacy Tech Bind", "Soft Skills"], icon: AlertTriangle, color: "rose" },
+                            { title: "Skill Gaps", items: ["System Architecture", "Edge Deployment", "Security"], icon: Target, color: "orange" },
+                            { title: "Direct Actions", items: ["Forge 2 Projects", "Link with Mentors", "Cert Sync"], icon: Zap, color: "cyan" },
+                          ].map((card, i) => (
+                            <div key={i} className="group relative bg-white/[0.02] backdrop-blur-2xl border border-white/10 rounded-[32px] p-8 hover:bg-white/[0.04] transition-all duration-700 overflow-hidden">
+                              <motion.div 
+                                animate={{ opacity: [0.1, 0.3, 0.1] }} 
+                                transition={{ repeat: Infinity, duration: 4 }} 
+                                className={`absolute -top-10 -right-10 w-32 h-32 blur-[60px] rounded-full ${
+                                  card.color === 'emerald' ? 'bg-emerald-500/20' :
+                                  card.color === 'rose' ? 'bg-rose-500/20' :
+                                  card.color === 'orange' ? 'bg-orange-500/20' :
+                                  'bg-cyan-500/20'
+                                }`} 
+                              />
+                              <div className="relative z-10 space-y-6">
+                                <div className={`w-12 h-12 rounded-2xl flex items-center justify-center border group-hover:rotate-[12deg] transition-all ${
+                                  card.color === 'emerald' ? 'bg-emerald-500/10 border-emerald-500/20' :
+                                  card.color === 'rose' ? 'bg-rose-500/10 border-rose-500/20' :
+                                  card.color === 'orange' ? 'bg-orange-500/10 border-orange-500/20' :
+                                  'bg-cyan-500/10 border-cyan-500/20'
+                                }`}>
+                                  <card.icon className={`w-6 h-6 ${
+                                    card.color === 'emerald' ? 'text-emerald-400' :
+                                    card.color === 'rose' ? 'text-rose-400' :
+                                    card.color === 'orange' ? 'text-orange-400' :
+                                    'text-cyan-400'
+                                  }`} />
+                                </div>
+                                <h4 className={`text-xl font-black tracking-tight ${
+                                  card.color === 'emerald' ? 'text-emerald-400' :
+                                  card.color === 'rose' ? 'text-rose-400' :
+                                  card.color === 'orange' ? 'text-orange-400' :
+                                  'text-cyan-400'
+                                }`}>{card.title}</h4>
+                                <div className="space-y-3">
+                                  {card.items.map((item, idx) => (
+                                    <div key={idx} className="flex items-center gap-3">
+                                      {card.title === "Direct Actions" ? <CheckCircle className="w-3.5 h-3.5 text-cyan-400" /> : <div className={`w-1.5 h-1.5 rounded-full ${
+                                        card.color === 'emerald' ? 'bg-emerald-500/40' :
+                                        card.color === 'rose' ? 'bg-rose-500/40' :
+                                        card.color === 'orange' ? 'bg-orange-500/40' :
+                                        'bg-cyan-500/40'
+                                      }`} />}
+                                      <span className="text-[11px] font-bold text-white/50">{item}</span>
+                                    </div>
+                                  ))}
+                                </div>
                               </div>
                             </div>
-                          </div>
-                        ))}
-                      </div>
+                          ))}
+
                       <motion.div animate={{ boxShadow: ["0 0 0px rgba(244,63,94,0)", "0 0 40px rgba(244,63,94,0.1)", "0 0 0px rgba(244,63,94,0)"] }} transition={{ repeat: Infinity, duration: 4 }} className="bg-rose-500/5 backdrop-blur-xl border border-rose-500/20 rounded-[40px] p-12 flex flex-col md:flex-row items-center justify-between gap-8 relative overflow-hidden">
                         <div className="absolute top-0 left-0 w-1 h-full bg-rose-500/50" />
                         <div className="flex items-center gap-8 relative z-10 text-center md:text-left">
