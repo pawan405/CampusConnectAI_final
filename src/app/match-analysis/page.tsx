@@ -100,103 +100,140 @@ export default function MatchAnalysisPage() {
             </p>
           </section>
 
-          {/* Metrics Grid */}
-          <section className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            {analysisMetrics.map((metric, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.1 }}
-              >
-                <Card className="bg-black/60 backdrop-blur-3xl border-white/10 p-8 rounded-[32px] hover:border-cyan-500/50 transition-all group">
-                  <div className="flex justify-between items-start mb-6">
-                    <div className="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center border border-white/10 group-hover:scale-110 transition-transform">
-                      <metric.icon className="w-6 h-6 text-cyan-400" />
-                    </div>
-                    <Badge variant="outline" className="border-cyan-500/40 text-cyan-300">Verified</Badge>
-                  </div>
-                  <p className="text-[10px] font-black text-white/70 uppercase tracking-widest mb-1">{metric.label}</p>
-                  <h3 className="text-4xl font-black text-white">{metric.value}</h3>
-                </Card>
-              </motion.div>
-            ))}
-          </section>
-
-          {/* Recommendations */}
-          <section className="space-y-8">
-            <div className="flex items-center gap-6">
-              <h2 className="text-3xl font-black tracking-tighter uppercase">Recommended Opportunities</h2>
-              <div className="flex-1 h-[1px] bg-white/10" />
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {matchedHackathons.map((hack, i) => (
+            {/* Metrics Grid */}
+            <section className="grid grid-cols-1 md:grid-cols-4 gap-6">
+              {analysisMetrics.map((metric, i) => (
                 <motion.div
                   key={i}
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.4 + i * 0.1 }}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  whileHover={{ y: -8, transition: { duration: 0.2 } }}
+                  transition={{ delay: i * 0.1 }}
                 >
-                  <Card className="bg-white/5 border-white/10 rounded-[40px] p-8 h-full flex flex-col hover:bg-white/10 transition-all border-l-4 border-l-cyan-500/50">
-                    <div className="flex justify-between items-start mb-8">
-                      <div className="w-12 h-12 rounded-2xl bg-cyan-500/20 flex items-center justify-center">
-                        <Trophy className="w-6 h-6 text-cyan-400" />
+                  <Card className="bg-gradient-to-br from-white/[0.08] to-transparent backdrop-blur-3xl border-white/20 p-8 rounded-[32px] hover:border-cyan-500/50 transition-all group relative overflow-hidden">
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-cyan-500/5 rounded-full blur-3xl -mr-16 -mt-16 group-hover:bg-cyan-500/10 transition-colors" />
+                    <div className="flex justify-between items-start mb-6">
+                      <div className="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center border border-white/10 group-hover:scale-110 group-hover:bg-cyan-500/10 group-hover:border-cyan-500/30 transition-all duration-300 shadow-inner">
+                        <metric.icon className="w-7 h-7 text-cyan-400 group-hover:drop-shadow-[0_0_8px_rgba(34,211,238,0.8)]" />
                       </div>
-                      <div className="text-right">
-                        <p className="text-[10px] font-black text-cyan-400 uppercase">Match Score</p>
-                        <p className="text-3xl font-black text-white">{hack.matchScore}%</p>
-                      </div>
+                      <Badge variant="outline" className="border-cyan-500/40 text-cyan-300 bg-cyan-500/5 font-bold uppercase tracking-wider text-[10px]">Verified</Badge>
                     </div>
-                    <h3 className="text-2xl font-black mb-4 text-white leading-tight">{hack.name}</h3>
-                    
-                    <p className="text-white/90 text-sm mb-6 font-medium leading-relaxed">
-                      {hack.reason}
-                    </p>
-
-                    <div className="flex flex-wrap gap-2 mb-8">
-                      {hack.tags.map((tag) => (
-                        <Badge key={tag} variant="secondary" className="bg-cyan-500/10 text-cyan-200 border border-cyan-500/20">
-                          {tag}
-                        </Badge>
-                      ))}
-                    </div>
-                    <div className="mt-auto pt-6 border-t border-white/10 flex items-center justify-between">
-                      <div className="flex flex-col">
-                        <span className="text-[10px] font-black text-white/50 uppercase tracking-tighter">Difficulty</span>
-                        <span className="text-sm font-bold text-white uppercase">{hack.difficulty}</span>
-                      </div>
-                        <Button 
-                          onClick={() => toast.success("Request sent to event organizers!")}
-                          variant="ghost" 
-                          className="p-0 h-auto text-cyan-400 hover:text-cyan-300 gap-2 font-black text-xs uppercase tracking-widest"
-                        >
-                          Join Event <ChevronRight className="w-4 h-4" />
-                        </Button>
+                    <div className="space-y-1">
+                      <p className="text-[10px] font-black text-white/50 uppercase tracking-[0.2em]">{metric.label}</p>
+                      <h3 className="text-5xl font-black text-white tracking-tighter group-hover:text-cyan-400 transition-colors">{metric.value}</h3>
                     </div>
                   </Card>
                 </motion.div>
               ))}
-            </div>
-          </section>
+            </section>
+
+            {/* Recommendations */}
+            <section className="space-y-8">
+              <div className="flex items-center gap-6">
+                <h2 className="text-4xl font-black tracking-tighter uppercase italic">Recommended <span className="text-cyan-400">Wins</span></h2>
+                <div className="flex-1 h-[1px] bg-gradient-to-r from-white/20 to-transparent" />
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                {matchedHackathons.map((hack, i) => (
+                  <motion.div
+                    key={i}
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    whileHover={{ y: -12, scale: 1.02 }}
+                    transition={{ 
+                      delay: 0.4 + i * 0.1,
+                      type: "spring",
+                      stiffness: 260,
+                      damping: 20 
+                    }}
+                    className="group"
+                  >
+                    <Card className="bg-gradient-to-br from-white/[0.12] to-white/[0.02] backdrop-blur-2xl border-white/10 rounded-[40px] p-8 h-full flex flex-col transition-all duration-500 hover:border-cyan-500/40 hover:shadow-[0_30px_60px_-15px_rgba(0,255,255,0.15)] border-l-4 border-l-cyan-500/50 relative overflow-hidden">
+                      <div className="absolute top-0 right-0 w-48 h-48 bg-purple-500/5 rounded-full blur-[80px] -mr-24 -mt-24 group-hover:bg-purple-500/10 transition-colors" />
+                      
+                      <div className="flex justify-between items-start mb-8 relative z-10">
+                        <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-cyan-500/30 to-purple-500/10 flex items-center justify-center border border-cyan-500/20 shadow-lg group-hover:scale-110 transition-transform duration-500">
+                          <Trophy className="w-7 h-7 text-cyan-400" />
+                        </div>
+                        <div className="text-right">
+                          <p className="text-[10px] font-black text-cyan-400 uppercase tracking-widest mb-1">Match Score</p>
+                          <div className="flex items-baseline justify-end gap-1">
+                            <span className="text-5xl font-black text-white group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-white group-hover:to-cyan-400 transition-all duration-500">{hack.matchScore}</span>
+                            <span className="text-xl font-black text-cyan-500/60">%</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <h3 className="text-3xl font-black mb-4 text-white leading-none tracking-tighter group-hover:translate-x-1 transition-transform duration-300">
+                        {hack.name}
+                      </h3>
+                      
+                      <div className="relative mb-6">
+                        <div className="absolute left-0 top-0 w-1 h-full bg-cyan-500/20 rounded-full" />
+                        <p className="text-white/80 text-sm font-medium leading-relaxed pl-4">
+                          {hack.reason}
+                        </p>
+                      </div>
+  
+                      <div className="flex flex-wrap gap-2 mb-10">
+                        {hack.tags.map((tag) => (
+                          <Badge key={tag} variant="secondary" className="bg-white/5 text-white/90 border border-white/10 backdrop-blur-md px-3 py-1 font-bold text-[10px] uppercase tracking-wider group-hover:border-cyan-500/30 transition-colors">
+                            {tag}
+                          </Badge>
+                        ))}
+                      </div>
+
+                      <div className="mt-auto pt-8 border-t border-white/10 flex items-center justify-between relative z-10">
+                        <div className="flex flex-col">
+                          <span className="text-[10px] font-black text-white/40 uppercase tracking-[0.2em] mb-1">Difficulty</span>
+                          <span className="text-lg font-black text-white uppercase tracking-tighter italic">{hack.difficulty}</span>
+                        </div>
+                          <Button 
+                            onClick={() => toast.success("Request sent to event organizers!")}
+                            className="bg-white/5 hover:bg-cyan-500 text-cyan-400 hover:text-black border border-cyan-500/20 hover:border-cyan-500 px-6 h-12 rounded-2xl gap-2 font-black text-xs uppercase tracking-widest transition-all duration-300 group/btn"
+                          >
+                            Join Event <ChevronRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
+                          </Button>
+                      </div>
+                    </Card>
+                  </motion.div>
+                ))}
+              </div>
+            </section>
 
           {/* Team Analysis CTA */}
-          <section>
-            <div className="bg-gradient-to-r from-cyan-900/40 to-purple-900/40 border border-white/20 rounded-[48px] p-12 flex flex-col md:flex-row items-center justify-between gap-12">
-              <div className="space-y-4">
-                <h3 className="text-4xl font-black tracking-tighter uppercase">Optimize Your Team</h3>
-                <p className="text-white/80 max-w-md font-medium leading-relaxed">
-                  Already have a squad? Let's check your skill balance and predict project compatibility before you sign up.
-                </p>
+          <motion.section
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+          >
+            <div className="relative group overflow-hidden rounded-[48px]">
+              <div className="absolute inset-0 bg-gradient-to-br from-cyan-600/20 via-transparent to-purple-600/20 blur-3xl opacity-50 group-hover:opacity-80 transition-opacity duration-1000" />
+              <div className="relative bg-black/40 backdrop-blur-3xl border border-white/10 p-12 md:p-16 flex flex-col md:flex-row items-center justify-between gap-12 group-hover:border-white/20 transition-all duration-500">
+                <div className="space-y-6 relative z-10">
+                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-cyan-500 to-purple-600 flex items-center justify-center shadow-2xl mb-4 group-hover:scale-110 transition-transform duration-500">
+                    <Users className="w-8 h-8 text-white" />
+                  </div>
+                  <h3 className="text-4xl md:text-5xl font-black tracking-tighter uppercase italic leading-none">
+                    Optimize Your <span className="text-cyan-400">Squad.</span>
+                  </h3>
+                  <p className="text-white/70 max-w-md text-lg font-medium leading-relaxed">
+                    Already have a team? Let&apos;s check your skill balance and predict project compatibility before you sign up.
+                  </p>
+                </div>
+                <div className="relative z-10">
+                  <Button 
+                    onClick={() => toast.info("Team chemistry scanner starting...")}
+                    className="h-24 px-16 rounded-[32px] bg-white text-black font-black uppercase tracking-[0.2em] text-sm hover:bg-cyan-400 hover:text-black hover:shadow-[0_0_50px_rgba(34,211,238,0.4)] transition-all duration-500 hover:scale-[1.02] active:scale-95 shadow-2xl"
+                  >
+                    Scan Team Chemistry
+                  </Button>
+                </div>
               </div>
-                <Button 
-                  onClick={() => toast.info("Team chemistry scanner starting...")}
-                  className="h-20 px-12 rounded-3xl bg-white text-black font-black uppercase tracking-widest hover:scale-105 transition-all shadow-[0_20px_60px_rgba(255,255,255,0.2)]"
-                >
-                  Scan Team Chemistry
-                </Button>
             </div>
-          </section>
+          </motion.section>
         </main>
 
         <footer className="py-24 text-center border-t border-white/5">
