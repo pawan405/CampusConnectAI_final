@@ -3,12 +3,12 @@
 import React, { useRef, useState } from "react";
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 
-interface TiltCardProps {
+interface TiltCardProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
   className?: string;
 }
 
-export default function TiltCard({ children, className = "" }: TiltCardProps) {
+export default function TiltCard({ children, className = "", ...props }: TiltCardProps) {
   const ref = useRef<HTMLDivElement>(null);
 
   const x = useMotionValue(0);
@@ -36,22 +36,30 @@ export default function TiltCard({ children, className = "" }: TiltCardProps) {
 
     x.set(xPct);
     y.set(yPct);
+
+    // Call original onMouseMove if exists
+    if (props.onMouseMove) props.onMouseMove(e);
   };
 
-  const handleMouseLeave = () => {
+  const handleMouseLeave = (e: React.MouseEvent<HTMLDivElement>) => {
     x.set(0);
     y.set(0);
+    
+    // Call original onMouseLeave if exists
+    if (props.onMouseLeave) props.onMouseLeave(e);
   };
 
   return (
     <motion.div
       ref={ref}
+      {...props}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
       style={{
         rotateY,
         rotateX,
         transformStyle: "preserve-3d",
+        ...props.style
       }}
       className={`relative rounded-3xl transition-all duration-500 ease-out ${className}`}
     >
