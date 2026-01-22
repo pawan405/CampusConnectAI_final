@@ -19,6 +19,7 @@ import {
   ArrowRight,
   Shield,
   Activity,
+  Code,
   BarChart as BarChartIcon,
   PieChart as PieChartIcon,
 } from "lucide-react";
@@ -90,11 +91,51 @@ const pieData = [
 
 const domains = ["AI", "Web3", "EdTech", "FinTech", "HealthTech", "Blockchain", "IoT"];
 
-const achievements = [
-  { title: "Winner at Global AI Hackathon", desc: "Built a neural network for sentiment analysis on edge devices.", icon: Trophy, color: "amber" as const },
-  { title: "Top 10% in Ethereum Global", desc: "Developed a gas-optimized voting protocol.", icon: Star, color: "blue" as const },
-  { title: "Collaborated with International Team", desc: "Worked with developers from 4 different countries.", icon: Users, color: "purple" as const },
-  { title: "Real-world Prototype Deployed", desc: "Campus safety app used by 500+ students.", icon: Rocket, color: "emerald" as const },
+const hackathonEntries = [
+  {
+    title: "Global AI Hackathon",
+    result: "1st Place Winner",
+    role: "ML Engineer",
+    built: "Neural sentiment analysis engine for edge devices.",
+    contribution: "I architected the model compression pipeline and optimized inference speed by 40% using quantization.",
+    responsibilities: ["Model Architecture", "Edge Deployment", "Performance Optimization"],
+    impact: "Resulted in a winning solution for real-world IoT use cases.",
+    icon: Trophy,
+    color: "amber" as const
+  },
+  {
+    title: "Ethereum Global London",
+    result: "Top 10 Finalist",
+    role: "Smart Contract Dev",
+    built: "Gas-optimized quadratic voting protocol for DAOs.",
+    contribution: "I implemented the core voting logic in Solidity and reduced gas costs by 25% through storage packing.",
+    responsibilities: ["Solidity Development", "Gas Profiling", "Unit Testing"],
+    impact: "Demonstrated significant efficiency gains for decentralized governance.",
+    icon: Star,
+    color: "blue" as const
+  },
+  {
+    title: "EcoTech Innovate",
+    result: "Shortlisted / Finalist",
+    role: "Full Stack Developer",
+    built: "IoT-based waste management tracker for smart cities.",
+    contribution: "I developed the real-time dashboard and integrated the sensor API with a Node.js backend.",
+    responsibilities: ["Real-time Dashboard", "API Integration", "Cloud Architecture"],
+    impact: "Helped the team reach the finalist round with a working prototype.",
+    icon: Users,
+    color: "purple" as const
+  },
+  {
+    title: "Campus Safety Jam",
+    result: "Participant / Deployment",
+    role: "Team Lead & UI/UX",
+    built: "Campus-wide emergency response and alert system.",
+    contribution: "I led the product vision, designed the mobile interface, and managed the 48-hour sprint.",
+    responsibilities: ["Product Leadership", "UI/UX Design", "Project Management"],
+    impact: "Improved system usability and resulted in a pilot deployment for 500+ students.",
+    icon: Rocket,
+    color: "emerald" as const
+  },
 ];
 
 const skills = [
@@ -114,8 +155,8 @@ export function HackathonParticipationView({ isOpen, onClose }: HackathonPartici
               <Trophy className="w-6 h-6 text-blue-400" />
             </div>
             <div>
-              <DialogTitle className="text-3xl font-black tracking-tighter text-white uppercase">Hackathon Participation</DialogTitle>
-              <DialogDescription className="text-white/40 font-black text-[10px] uppercase tracking-[0.3em]">Neural Performance Analytics</DialogDescription>
+              <DialogTitle className="text-3xl font-black tracking-tighter text-white uppercase">Hackathon Portfolio</DialogTitle>
+              <DialogDescription className="text-white/40 font-black text-[10px] uppercase tracking-[0.3em]">Neural Performance & Contributions</DialogDescription>
             </div>
           </div>
         </DialogHeader>
@@ -157,96 +198,81 @@ export function HackathonParticipationView({ isOpen, onClose }: HackathonPartici
               </div>
             </section>
 
-            {/* Visual Insights */}
-            <section className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <div className="p-6 rounded-[24px] bg-white/5 border border-white/10">
-                <div className="flex items-center gap-3 mb-6">
-                  <BarChartIcon className="w-5 h-5 text-cyan-400" />
-                  <h3 className="text-sm font-black text-white uppercase tracking-widest">Velocity per Semester</h3>
-                </div>
-                <div className="h-[200px] w-full">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={barData}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
-                      <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 10 }} />
-                      <YAxis axisLine={false} tickLine={false} tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 10 }} />
-                      <Tooltip 
-                        contentStyle={{ backgroundColor: '#000', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px' }}
-                        itemStyle={{ color: '#fff' }}
-                      />
-                      <Bar dataKey="count" fill="#3b82f6" radius={[4, 4, 0, 0]} />
-                    </BarChart>
-                  </ResponsiveContainer>
-                </div>
-              </div>
-
-              <div className="p-6 rounded-[24px] bg-white/5 border border-white/10 flex flex-col">
-                <div className="flex items-center gap-3 mb-6">
-                  <PieChartIcon className="w-5 h-5 text-amber-400" />
-                  <h3 className="text-sm font-black text-white uppercase tracking-widest">Win Distribution</h3>
-                </div>
-                <div className="flex-1 flex items-center justify-center">
-                  <div className="h-[180px] w-[180px] relative">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <PieChart>
-                        <Pie
-                          data={pieData}
-                          innerRadius={60}
-                          outerRadius={80}
-                          paddingAngle={5}
-                          dataKey="value"
-                        >
-                          {pieData.map((entry, index) => (
-                            <Cell key={`cell-${index}`} fill={entry.color} />
-                          ))}
-                        </Pie>
-                      </PieChart>
-                    </ResponsiveContainer>
-                    <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                      <span className="text-2xl font-black text-white">25%</span>
-                      <span className="text-[8px] font-black text-white/40 uppercase tracking-widest">Win Rate</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </section>
-
-            {/* Tag Clusters */}
-            <section>
-              <div className="flex items-center gap-3 mb-6">
-                <Zap className="w-5 h-5 text-blue-400" />
-                <h3 className="text-sm font-black text-white uppercase tracking-widest">Domain Exposure</h3>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {domains.map((domain, i) => (
-                  <Badge 
-                    key={i} 
-                    variant="outline" 
-                    className="px-4 py-2 rounded-full border-white/10 bg-white/5 text-white/70 hover:bg-blue-500/20 hover:text-blue-400 hover:border-blue-500/30 transition-all cursor-default"
-                  >
-                    {domain}
-                  </Badge>
-                ))}
-              </div>
-            </section>
-
-            {/* Highlighted Achievements */}
-            <section className="space-y-6">
+            {/* Detailed Participation History */}
+            <section className="space-y-8">
               <div className="flex items-center gap-3">
                 <Star className="w-5 h-5 text-amber-400" />
-                <h3 className="text-sm font-black text-white uppercase tracking-widest">Key Highlights</h3>
+                <h3 className="text-sm font-black text-white uppercase tracking-widest">Experience & Contributions</h3>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {achievements.map((item, i) => (
-                  <div key={i} className="p-5 rounded-2xl bg-white/5 border border-white/10 flex gap-4 group hover:bg-white/10 transition-all">
-                    <div className={`w-12 h-12 shrink-0 rounded-xl ${bgMap[item.color]} flex items-center justify-center`}>
-                      <item.icon className={`w-6 h-6 ${iconColorMap[item.color]}`} />
+              <div className="grid grid-cols-1 gap-6">
+                {hackathonEntries.map((item, i) => (
+                  <motion.div 
+                    key={i} 
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: i * 0.1 }}
+                    className="p-8 rounded-[32px] bg-white/5 border border-white/10 flex flex-col md:flex-row gap-8 group hover:bg-white/10 hover:border-white/20 transition-all"
+                  >
+                    <div className="flex flex-col items-center gap-4 shrink-0">
+                      <div className={`w-16 h-16 rounded-2xl ${bgMap[item.color]} flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform`}>
+                        <item.icon className={`w-8 h-8 ${iconColorMap[item.color]}`} />
+                      </div>
+                      <Badge variant="outline" className={`px-3 py-1 rounded-full border-none font-black text-[9px] uppercase tracking-widest ${bgMap[item.color]} ${iconColorMap[item.color]}`}>
+                        {item.result}
+                      </Badge>
                     </div>
-                    <div>
-                      <h4 className="font-bold text-white mb-1">{item.title}</h4>
-                      <p className="text-xs text-white/60 leading-relaxed">{item.desc}</p>
+
+                    <div className="flex-1 space-y-6">
+                      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                        <div>
+                          <h4 className="text-2xl font-black text-white tracking-tight uppercase italic">{item.title}</h4>
+                          <div className="flex items-center gap-2 mt-1">
+                            <span className="text-[10px] font-black text-white/40 uppercase tracking-widest">Role:</span>
+                            <span className="text-[10px] font-black text-cyan-400 uppercase tracking-widest bg-cyan-400/10 px-2 py-0.5 rounded-md border border-cyan-400/20">
+                              {item.role}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="space-y-4">
+                        <div>
+                          <p className="text-[10px] font-black text-white/40 uppercase tracking-widest mb-1.5 flex items-center gap-2">
+                            <Target className="w-3 h-3 text-white/20" /> Our Contribution
+                          </p>
+                          <p className="text-sm text-white/80 leading-relaxed">
+                            {item.built} {item.contribution}
+                          </p>
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                          <div>
+                            <p className="text-[10px] font-black text-white/40 uppercase tracking-widest mb-2 flex items-center gap-2">
+                              <Code className="w-3 h-3 text-white/20" /> Technical Responsibilities
+                            </p>
+                            <ul className="space-y-1.5">
+                              {item.responsibilities.map((resp, idx) => (
+                                <li key={idx} className="flex items-center gap-2 text-xs text-white/60">
+                                  <div className="w-1 h-1 rounded-full bg-white/20" />
+                                  {resp}
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                          <div className="flex flex-col justify-end">
+                            <div className="p-4 rounded-2xl bg-white/5 border border-white/5 group-hover:border-white/10 transition-all">
+                              <p className="text-[9px] font-black text-white/30 uppercase tracking-widest mb-1 flex items-center gap-2">
+                                <Zap className="w-3 h-3" /> Impact Line
+                              </p>
+                              <p className="text-xs text-emerald-400 font-medium italic">
+                                "{item.impact}"
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
                     </div>
-                  </div>
+                  </motion.div>
                 ))}
               </div>
             </section>
