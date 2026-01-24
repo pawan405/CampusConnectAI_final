@@ -14,6 +14,7 @@ import {
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { signIn } from "next-auth/react";
 
 const FadeIn = ({
   children,
@@ -36,9 +37,27 @@ const FadeIn = ({
 export default function LoginPage() {
   const router = useRouter();
 
-  const handleGoogleLogin = () => {
-    // Simulated Google Login - direct redirect to dashboard
-    router.push("/dashboard");
+  const handleGoogleLogin = async () => {
+    try {
+      const hasRealCredentials = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID &&
+        process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID !== "YOUR_ACTUAL_GOOGLE_CLIENT_ID" &&
+        process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID !== "your-google-client-id";
+
+      if (hasRealCredentials) {
+        await signIn("google", { callbackUrl: "/dashboard" });
+      } else {
+        // Demo mode
+        await signIn("credentials", {
+          username: "demo",
+          password: "demo",
+          callbackUrl: "/dashboard",
+        });
+      }
+    } catch (error) {
+      console.error("Sign in error:", error);
+      // Fallback
+      router.push("/dashboard");
+    }
   };
 
   return (
