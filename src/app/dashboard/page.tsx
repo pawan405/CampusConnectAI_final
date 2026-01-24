@@ -134,6 +134,7 @@ const features = [
 ];
 
 const activities = [
+<<<<<<< HEAD
   {
     title: "Neuro-Report Synced",
     time: "12m ago",
@@ -158,6 +159,11 @@ const activities = [
     status: "new",
     href: "/hackathons",
   },
+=======
+  { title: "Neuro-Report Synced", time: "12m ago", icon: Shield, color: "cyan", status: "online", href: "/silent-scream" },
+  { title: "Career Path Updated", time: "4h ago", icon: Target, color: "purple", status: "syncing", href: "/ai-roadmap" },
+  { title: "Hackathon Match Found", time: "1h ago", icon: Zap, color: "blue", status: "new", href: "/hackathons" },
+>>>>>>> origin/main
 ];
 
 function CountUp({ value, suffix = "" }: { value: number; suffix?: string }) {
@@ -195,9 +201,57 @@ export default function DashboardPage() {
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
+<<<<<<< HEAD
   useEffect(() => {
     setMounted(true);
   }, []);
+=======
+  const [notifications, setNotifications] = useState([
+    {
+      id: 1,
+      title: "Hackathon Match",
+      desc: "New matches found for Cyberpunk Hack 2077!",
+      time: "2m ago",
+      icon: Trophy,
+      color: "text-amber-400",
+      isNew: true,
+    },
+    {
+      id: 2,
+      title: "System Update",
+      desc: "Neural Network core successfully upgraded to v5.0.",
+      time: "1h ago",
+      icon: Cpu,
+      color: "text-cyan-400",
+      isNew: false,
+    },
+    {
+      id: 3,
+      title: "Security Alert",
+      desc: "Anonymous signal detected from Silent Scream.",
+      time: "3h ago",
+      icon: Shield,
+      color: "text-rose-400",
+      isNew: false,
+    },
+    {
+      id: 4,
+      title: "Career Growth",
+      desc: "Your skill gap analysis report is ready for review.",
+      time: "5h ago",
+      icon: TrendingUp,
+      color: "text-purple-400",
+      isNew: false,
+    },
+  ]);
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    toast.loading("Querying Neural Network...", {
+      duration: 2000,
+    });
+  };
+>>>>>>> origin/main
 
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -331,6 +385,7 @@ export default function DashboardPage() {
               >
                 <Menu className="w-6 h-6 text-white/60" />
               </button>
+<<<<<<< HEAD
               <div className="relative group hidden md:block">
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/20 group-focus-within:text-cyan-400 transition-colors" />
                 <form onSubmit={handleSearch}>
@@ -339,9 +394,20 @@ export default function DashboardPage() {
                     className="w-[300px] h-11 pl-12 bg-white/5 border-white/10 rounded-2xl text-sm focus:border-cyan-500/30 transition-all placeholder:text-white/20 focus:w-[400px] duration-300"
                   />
                 </form>
+=======
+                <div className="relative group hidden md:block">
+                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/20 group-focus-within:text-cyan-400 transition-colors" />
+                  <form onSubmit={handleSearch}>
+                    <Input
+                      placeholder="Query Neural Network..."
+                      className="w-[300px] h-11 pl-12 bg-white/5 border-white/10 rounded-2xl text-sm focus:border-cyan-500/30 transition-all placeholder:text-white/20 focus:w-[400px] duration-300"
+                    />
+                  </form>
+                </div>
+>>>>>>> origin/main
               </div>
-            </div>
 
+<<<<<<< HEAD
             <div className="flex items-center gap-4">
               <Sheet>
                 <SheetTrigger asChild>
@@ -422,6 +488,71 @@ export default function DashboardPage() {
                   </div>
                 </SheetContent>
               </Sheet>
+=======
+                <div className="flex items-center gap-4">
+                  <Sheet>
+                    <SheetTrigger asChild>
+                      <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        className="w-11 h-11 rounded-2xl border border-white/5 hover:bg-white/5 relative group"
+                      >
+                        <Bell className="w-5 h-5 text-white/60 group-hover:text-cyan-400 transition-colors" />
+                        <span className="absolute top-3 right-3 w-2 h-2 bg-cyan-500 rounded-full shadow-[0_0_10px_#06b6d4] animate-pulse" />
+                      </Button>
+                    </SheetTrigger>
+                    <SheetContent className="w-full sm:max-w-md bg-black/95 border-l border-white/10 backdrop-blur-2xl p-0">
+                      <div className="h-full flex flex-col">
+                        <SheetHeader className="p-8 border-b border-white/5">
+                          <div className="flex items-center justify-between">
+                            <SheetTitle className="text-3xl font-black tracking-tighter text-white uppercase">Neural Feed</SheetTitle>
+                            <Badge variant="outline" className="bg-cyan-500/10 text-cyan-400 border-cyan-500/20 font-black tracking-widest uppercase">4 New</Badge>
+                          </div>
+                          <SheetDescription className="text-white/40 font-medium mt-2">
+                            Real-time system updates and peer interactions.
+                          </SheetDescription>
+                        </SheetHeader>
+                        
+                        <div className="flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar">
+                          {notifications.map((notif) => (
+                            <motion.div
+                              key={notif.id}
+                              whileHover={{ scale: 1.02, x: 5 }}
+                              className={`p-5 rounded-[32px] border ${notif.isNew ? "bg-white/5 border-white/20" : "bg-transparent border-white/5"} group cursor-pointer transition-all hover:bg-white/10`}
+                            >
+                              <div className="flex gap-4">
+                                <div className={`w-12 h-12 rounded-2xl bg-black flex items-center justify-center border border-white/10 ${notif.color}`}>
+                                  <notif.icon className="w-6 h-6" />
+                                </div>
+                                <div className="flex-1">
+                                  <div className="flex items-center justify-between mb-1">
+                                    <h4 className="font-black text-white group-hover:text-cyan-400 transition-colors">{notif.title}</h4>
+                                    <span className="text-[10px] font-black text-white/20 uppercase tracking-widest">{notif.time}</span>
+                                  </div>
+                                  <p className="text-sm text-white/50 leading-relaxed font-medium">
+                                    {notif.desc}
+                                  </p>
+                                </div>
+                              </div>
+                            </motion.div>
+                          ))}
+                        </div>
+                        
+                        <div className="p-8 border-t border-white/5 bg-black/50">
+                          <Button 
+                            className="w-full h-14 rounded-2xl bg-white text-black font-black uppercase tracking-[0.2em] text-xs hover:bg-cyan-400 transition-all shadow-[0_10px_30px_rgba(0,0,0,0.5)]"
+                            onClick={() => {
+                              setNotifications(notifications.map(n => ({...n, isNew: false})));
+                              toast.success("Feed Synchronized", { description: "All notifications marked as read." });
+                            }}
+                          >
+                            Sync All Clear
+                          </Button>
+                        </div>
+                      </div>
+                    </SheetContent>
+                  </Sheet>
+>>>>>>> origin/main
 
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -436,6 +567,7 @@ export default function DashboardPage() {
                     </div>
                   </button>
                 </DropdownMenuTrigger>
+<<<<<<< HEAD
                 <DropdownMenuContent
                   align="end"
                   className="w-56 bg-black/90 backdrop-blur-2xl border-white/10 rounded-[24px] p-2 mt-4 shadow-[0_20px_50px_rgba(0,0,0,0.5)]"
@@ -456,6 +588,23 @@ export default function DashboardPage() {
                     <span className="text-sm font-bold">Disconnect</span>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
+=======
+                  <DropdownMenuContent align="end" className="w-56 bg-black/90 backdrop-blur-2xl border-white/10 rounded-[24px] p-2 mt-4 shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
+                    <DropdownMenuItem 
+                      onClick={() => router.push("/settings")}
+                      className="rounded-xl focus:bg-white/5 focus:text-cyan-400 cursor-pointer p-3 gap-3"
+                    >
+                      <User className="w-4 h-4" /> <span className="text-sm font-bold">Profile Interface</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator className="bg-white/10" />
+                    <DropdownMenuItem 
+                      onClick={() => router.push("/")}
+                      className="rounded-xl focus:bg-rose-500/20 focus:text-rose-400 cursor-pointer p-3 gap-3"
+                    >
+                      <LogOut className="w-4 h-4" /> <span className="text-sm font-bold">Disconnect</span>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+>>>>>>> origin/main
               </DropdownMenu>
             </div>
           </div>
@@ -470,6 +619,10 @@ export default function DashboardPage() {
               transition={{ duration: 1, ease: [0.23, 1, 0.32, 1] }}
               className="space-y-8"
             >
+<<<<<<< HEAD
+=======
+
+>>>>>>> origin/main
               <h1 className="text-7xl lg:text-9xl font-black tracking-tighter leading-[0.85] mb-4">
                 Welcome, {session?.user?.name || "Demo User"} <br />
                 <span className="relative inline-block text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-purple-500 to-blue-600 animate-gradient-x">
@@ -486,6 +639,7 @@ export default function DashboardPage() {
                 A high-performance AI ecosystem built to guide the next
                 generation of innovators. Your future, calculated in real-time.
               </p>
+<<<<<<< HEAD
               <div className="flex flex-wrap gap-4 pt-4">
                 <Link href="/match-analysis">
                   <Button className="h-16 px-10 rounded-2xl bg-cyan-500 hover:bg-cyan-400 text-black font-black uppercase tracking-[0.2em] text-xs transition-all hover:shadow-[0_0_40px_#06b6d4] group overflow-hidden relative">
@@ -497,6 +651,21 @@ export default function DashboardPage() {
                   </Button>
                 </Link>
               </div>
+=======
+                <div className="flex flex-wrap gap-4 pt-4">
+                  <Link href="/match-analysis">
+                    <Button className="h-16 px-10 rounded-2xl bg-cyan-500 hover:bg-cyan-400 text-black font-black uppercase tracking-[0.2em] text-xs transition-all hover:shadow-[0_0_40px_#06b6d4] group overflow-hidden relative">
+                      <span className="relative z-10 flex items-center">
+                        Analyze Matches <ArrowRight className="ml-3 w-4 h-4 group-hover:translate-x-2 transition-transform duration-500" />
+                      </span>
+                      <motion.div 
+                        className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300"
+                      />
+                    </Button>
+                  </Link>
+
+                </div>
+>>>>>>> origin/main
             </motion.div>
           </section>
 
@@ -696,6 +865,7 @@ export default function DashboardPage() {
                     </span>
                   </div>
                 </div>
+<<<<<<< HEAD
 
                 <div className="space-y-4">
                   {activities.map((item, i) => (
@@ -732,6 +902,35 @@ export default function DashboardPage() {
                     </Link>
                   ))}
                 </div>
+=======
+                
+                  <div className="space-y-4">
+                    {activities.map((item, i) => (
+                      <Link key={i} href={item.href}>
+                        <motion.div 
+                          whileHover={{ x: 10, backgroundColor: "rgba(255,255,255,0.1)" }}
+                          className="flex items-center gap-6 p-6 rounded-[32px] bg-white/5 border border-white/10 group/item transition-all duration-300 hover:border-white/30 cursor-pointer mb-4 last:mb-0"
+                        >
+                          <div className="w-14 h-14 rounded-2xl bg-black flex items-center justify-center border border-white/20 group-hover/item:border-cyan-500/50 transition-colors">
+                            <item.icon className="w-6 h-6 text-white/60 group-hover/item:text-cyan-400 transition-colors" />
+                          </div>
+                          <div className="flex-1">
+                            <div className="flex items-center gap-3">
+                              <p className="font-black text-lg text-white/80 group-hover/item:text-white transition-colors">{item.title}</p>
+                              {item.status === "new" && (
+                                <span className="px-2 py-0.5 rounded-md bg-emerald-500/30 text-emerald-400 text-[8px] font-black border border-emerald-500/30">NEW</span>
+                              )}
+                            </div>
+                            <p className="text-[10px] text-white/40 uppercase tracking-widest mt-1 font-black group-hover/item:text-white/60">{item.time} // {item.status}</p>
+                          </div>
+                          <div className="w-10 h-10 rounded-full flex items-center justify-center border border-white/10 group-hover/item:bg-white/20 transition-all">
+                            <ArrowRight className="w-4 h-4 text-white/30 group-hover/item:text-white" />
+                          </div>
+                        </motion.div>
+                      </Link>
+                    ))}
+                  </div>
+>>>>>>> origin/main
               </motion.div>
             </div>
 
