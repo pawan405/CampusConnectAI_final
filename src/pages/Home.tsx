@@ -101,18 +101,27 @@ export default function Home() {
             </span>
           </Link>
           <div className="hidden md:flex items-center gap-8">
-            <Link to="/features" className="text-sm font-medium text-zinc-400 hover:text-white transition-colors">
+            <Link
+              to="/features"
+              className="text-sm font-medium text-zinc-400 hover:text-white transition-colors"
+            >
               Features
             </Link>
-            <Link to="/how-it-works" className="text-sm font-medium text-zinc-400 hover:text-white transition-colors">
+            <Link
+              to="/how-it-works"
+              className="text-sm font-medium text-zinc-400 hover:text-white transition-colors"
+            >
               How it works
             </Link>
-            <Link to="/pricing" className="text-sm font-medium text-zinc-400 hover:text-white transition-colors">
+            <Link
+              to="/pricing"
+              className="text-sm font-medium text-zinc-400 hover:text-white transition-colors"
+            >
               Pricing
             </Link>
           </div>
           <div className="flex items-center gap-4">
-             <button
+            <button
               onClick={handleGoogleLogin}
               className="flex items-center gap-2 bg-white text-black px-5 py-2.5 rounded-xl font-semibold hover:bg-zinc-200 transition-all active:scale-95 text-sm"
             >
@@ -125,28 +134,68 @@ export default function Home() {
 
       {/* Main content continues here... (truncated for brevity, assumes full migration in one go normally but for tool call I'll simplify) */}
       <div className="pt-32 px-6 max-w-7xl mx-auto">
-          {/* Hero Section */}
-          <div className="text-center max-w-3xl mx-auto mb-20">
-             <h1 className="text-5xl md:text-7xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-b from-white via-white/90 to-white/50 tracking-tight">
-               Build Your Future with AI
-             </h1>
-             <p className="text-lg md:text-xl text-zinc-400 mb-8">
-               CampusConnectAI is the ultimate platform for students to navigate their careers, find hackathons, and get internships.
-             </p>
-             <button onClick={handleGoogleLogin} className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-full transition-all hover:scale-105 shadow-lg shadow-blue-500/20">
-               Get Started Now
-             </button>
-          </div>
-           
-           {/* Features Grid */}
-           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-20">
-             <FeatureCard icon={Brain} title="AI Roadmap" description="Personalized learning paths tailored to your goals." delay={0.1} href="/ai-roadmap" />
-             <FeatureCard icon={Trophy} title="Hackathons" description="Find and join the best hackathons globally." delay={0.2} href="/hackathons" />
-             <FeatureCard icon={Briefcase} title="Internships" description="Get matched with top internship opportunities." delay={0.3} href="/internship-feed" />
-             <FeatureCard icon={Mic} title="Silent Scream" description="Anonymous reporting and student support system." delay={0.4} href="/silent-scream" />
-             <FeatureCard icon={Shield} title="Secure & Private" description="Your data is encrypted and safe with us." delay={0.5} href="/privacy" />
-             <FeatureCard icon={Users} title="Community" description="Connect with like-minded students and mentors." delay={0.6} href="/community" />
-           </div>
+        {/* Hero Section */}
+        <div className="text-center max-w-3xl mx-auto mb-20">
+          <h1 className="text-5xl md:text-7xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-b from-white via-white/90 to-white/50 tracking-tight">
+            Build Your Future with AI
+          </h1>
+          <p className="text-lg md:text-xl text-zinc-400 mb-8">
+            CampusConnectAI is the ultimate platform for students to navigate
+            their careers, find hackathons, and get internships.
+          </p>
+          <button
+            onClick={handleGoogleLogin}
+            className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-full transition-all hover:scale-105 shadow-lg shadow-blue-500/20"
+          >
+            Get Started Now
+          </button>
+        </div>
+
+        {/* Features Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-20">
+          <FeatureCard
+            icon={Brain}
+            title="AI Roadmap"
+            description="Personalized learning paths tailored to your goals."
+            delay={0.1}
+            href="/ai-roadmap"
+          />
+          <FeatureCard
+            icon={Trophy}
+            title="Hackathons"
+            description="Find and join the best hackathons globally."
+            delay={0.2}
+            href="/hackathons"
+          />
+          <FeatureCard
+            icon={Briefcase}
+            title="Internships"
+            description="Get matched with top internship opportunities."
+            delay={0.3}
+            href="/internship-feed"
+          />
+          <FeatureCard
+            icon={Mic}
+            title="Silent Scream"
+            description="Anonymous reporting and student support system."
+            delay={0.4}
+            href="/silent-scream"
+          />
+          <FeatureCard
+            icon={Shield}
+            title="Secure & Private"
+            description="Your data is encrypted and safe with us."
+            delay={0.5}
+            href="/privacy"
+          />
+          <FeatureCard
+            icon={Users}
+            title="Community"
+            description="Connect with like-minded students and mentors."
+            delay={0.6}
+            href="/community"
+          />
+        </div>
       </div>
     </div>
   );

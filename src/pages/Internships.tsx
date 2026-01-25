@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { Link, useNavigate } from "react-router-dom";
@@ -176,7 +175,7 @@ export default function InternshipFeedPage() {
     const matchesFilter =
       filterSkill === "all" ||
       post.skills.some((s) =>
-        s.toLowerCase().includes(filterSkill.toLowerCase())
+        s.toLowerCase().includes(filterSkill.toLowerCase()),
       );
     return matchesSearch && matchesFilter;
   });
@@ -197,7 +196,7 @@ export default function InternshipFeedPage() {
           };
         }
         return post;
-      })
+      }),
     );
   };
 
@@ -216,12 +215,12 @@ export default function InternshipFeedPage() {
                   className={`w-4 h-4 ${isSaving ? "fill-amber-500 text-amber-500" : ""}`}
                 />
               ),
-            }
+            },
           );
           return { ...post, saved: isSaving };
         }
         return post;
-      })
+      }),
     );
   };
 

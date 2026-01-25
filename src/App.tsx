@@ -1,12 +1,12 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Home from './pages/Home';
-import Dashboard from './pages/Dashboard';
-import Login from './pages/Login';
-import AIRoadmap from './pages/AIRoadmap';
-import Hackathons from './pages/Hackathons';
-import Internships from './pages/Internships';
-import SilentScream from './pages/SilentScream';
-import Settings from './pages/Settings';
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Home from "./pages/Home";
+import Dashboard from "./pages/Dashboard";
+import Login from "./pages/Login";
+import AIRoadmap from "./pages/AIRoadmap";
+import Hackathons from "./pages/Hackathons";
+import Internships from "./pages/Internships";
+import SilentScream from "./pages/SilentScream";
+import Settings from "./pages/Settings";
 
 function App() {
   return (

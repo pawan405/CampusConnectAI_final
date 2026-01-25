@@ -1,4 +1,3 @@
-
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
@@ -68,18 +67,22 @@ export default function SilentScreamPage() {
 
   useEffect(() => {
     setMounted(true);
-    
+
     // Global keydown listener for accessibility (type to start)
     const handleGlobalKeyDown = (e: KeyboardEvent) => {
       // Don't trigger if user is already in an input or textarea
-      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+      if (
+        e.target instanceof HTMLInputElement ||
+        e.target instanceof HTMLTextAreaElement
+      )
+        return;
 
       if (
-        !isRecording && 
-        !showSummary && 
-        e.key.length === 1 && 
-        !e.ctrlKey && 
-        !e.altKey && 
+        !isRecording &&
+        !showSummary &&
+        e.key.length === 1 &&
+        !e.ctrlKey &&
+        !e.altKey &&
         !e.metaKey
       ) {
         setShowSummary(true);
@@ -95,14 +98,16 @@ export default function SilentScreamPage() {
     };
 
     window.addEventListener("keydown", handleGlobalKeyDown);
-    
+
     // Initialize Speech Recognition
-    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    const SpeechRecognition =
+      (window as any).SpeechRecognition ||
+      (window as any).webkitSpeechRecognition;
     if (SpeechRecognition) {
       const recognition = new SpeechRecognition();
       recognition.continuous = true;
       recognition.interimResults = true;
-      
+
       recognition.onresult = (event: any) => {
         let currentTranscription = "";
         for (let i = 0; i < event.results.length; i++) {
@@ -117,7 +122,7 @@ export default function SilentScreamPage() {
 
       recognitionRef.current = recognition;
     }
-    
+
     return () => {
       window.removeEventListener("keydown", handleGlobalKeyDown);
       if (timerRef.current) clearInterval(timerRef.current);
@@ -132,7 +137,7 @@ export default function SilentScreamPage() {
       if (timerRef.current) clearInterval(timerRef.current);
       setIsRecording(false);
       setShowSummary(true);
-      
+
       // Generate AI Summary
       if (transcription) {
         generateSummary(transcription);
@@ -143,12 +148,12 @@ export default function SilentScreamPage() {
       setDuration(0);
       setSummary("");
       setShowSummary(false);
-      
+
       if (recognitionRef.current) {
         try {
           recognitionRef.current.start();
           setIsRecording(true);
-          
+
           const startTime = performance.now();
           timerRef.current = setInterval(() => {
             setDuration((performance.now() - startTime) / 1000);
@@ -158,14 +163,18 @@ export default function SilentScreamPage() {
           toast.error("Could not access microphone. Please check permissions.");
         }
       } else {
-        toast.error("Speech recognition is not supported in this browser. You can still type your report.");
+        toast.error(
+          "Speech recognition is not supported in this browser. You can still type your report.",
+        );
         setShowSummary(true);
         setTimeout(() => textareaRef.current?.focus(), 100);
       }
     }
   };
 
-  const handleTextareaKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+  const handleTextareaKeyDown = (
+    e: React.KeyboardEvent<HTMLTextAreaElement>,
+  ) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       handleUploadSignal();
@@ -174,7 +183,9 @@ export default function SilentScreamPage() {
 
   const handleUploadSignal = async () => {
     if (!transcription) {
-      toast.error("No signal data to upload. Please record your message first.");
+      toast.error(
+        "No signal data to upload. Please record your message first.",
+      );
       return;
     }
 
@@ -232,7 +243,10 @@ export default function SilentScreamPage() {
       const data = await response.json();
 
       if (data.success) {
-        toast.success("Signal successfully submitted to authorities. Reference ID: " + data.submission.id.slice(0, 8));
+        toast.success(
+          "Signal successfully submitted to authorities. Reference ID: " +
+            data.submission.id.slice(0, 8),
+        );
       } else {
         throw new Error(data.error || "Submission failed");
       }
@@ -271,8 +285,12 @@ export default function SilentScreamPage() {
           </Link>
 
           <div className="flex items-center gap-4">
-            <Badge 
-              onClick={() => toast.success("Secure Connection Verified", { description: "256-bit end-to-end encryption is active." })}
+            <Badge
+              onClick={() =>
+                toast.success("Secure Connection Verified", {
+                  description: "256-bit end-to-end encryption is active.",
+                })
+              }
               className="bg-rose-500/10 text-rose-400 border border-rose-500/20 px-4 py-1.5 rounded-full text-[10px] font-black tracking-[0.2em] uppercase cursor-pointer hover:bg-rose-500/20 transition-all"
             >
               <Lock className="w-3 h-3 mr-2" /> Encrypted Link
@@ -347,11 +365,11 @@ export default function SilentScreamPage() {
                     exit={{ opacity: 0, scale: 0.5 }}
                     className="flex flex-col items-center"
                   >
-                      <Activity className="w-16 h-16 text-white animate-pulse" />
-                      <span className="absolute -bottom-12 text-rose-400 font-black tracking-[0.3em] uppercase text-[10px] animate-pulse">
-                        Recording ({duration.toFixed(2)}s)...
-                      </span>
-                    </motion.div>
+                    <Activity className="w-16 h-16 text-white animate-pulse" />
+                    <span className="absolute -bottom-12 text-rose-400 font-black tracking-[0.3em] uppercase text-[10px] animate-pulse">
+                      Recording ({duration.toFixed(2)}s)...
+                    </span>
+                  </motion.div>
                 ) : (
                   <motion.div
                     key="idle"
@@ -414,7 +432,6 @@ export default function SilentScreamPage() {
               </div>
             </div>
           </motion.div>
-
         </div>
 
         {/* AI Summary Section */}
@@ -450,39 +467,38 @@ export default function SilentScreamPage() {
 
                 <div className="grid md:grid-cols-2 gap-12">
                   <div className="space-y-6">
-                        <p className="text-white/20 text-[10px] font-black uppercase tracking-widest">
-                          Original Transcription
-                        </p>
-                        <textarea
-                          ref={textareaRef}
-                          value={transcription}
-                          onChange={(e) => setTranscription(e.target.value)}
-                          onKeyDown={handleTextareaKeyDown}
-                          onBlur={() => generateSummary(transcription)}
-                          className="w-full p-8 rounded-[32px] bg-black/40 border border-white/5 font-medium text-white/60 leading-relaxed italic min-h-[150px] resize-none focus:outline-none focus:border-cyan-500/50 transition-all"
-                          placeholder="Type your report here or use voice input..."
-                        />
-                      </div>
-
+                    <p className="text-white/20 text-[10px] font-black uppercase tracking-widest">
+                      Original Transcription
+                    </p>
+                    <textarea
+                      ref={textareaRef}
+                      value={transcription}
+                      onChange={(e) => setTranscription(e.target.value)}
+                      onKeyDown={handleTextareaKeyDown}
+                      onBlur={() => generateSummary(transcription)}
+                      className="w-full p-8 rounded-[32px] bg-black/40 border border-white/5 font-medium text-white/60 leading-relaxed italic min-h-[150px] resize-none focus:outline-none focus:border-cyan-500/50 transition-all"
+                      placeholder="Type your report here or use voice input..."
+                    />
+                  </div>
 
                   <div className="space-y-6">
                     <p className="text-cyan-400/20 text-[10px] font-black uppercase tracking-widest">
                       AI Executive Summary
                     </p>
-                      <div className="p-8 rounded-[32px] bg-cyan-500/5 border border-cyan-500/20">
-                        <div className="flex items-start gap-4 mb-6">
-                          <div className="w-1 h-12 bg-cyan-500 rounded-full" />
-                          <p className="text-lg font-bold text-white leading-snug">
-                            {isProcessing ? (
-                              <span className="flex items-center gap-2">
-                                <Loader2 className="w-4 h-4 animate-spin" />
-                                {summary}
-                              </span>
-                            ) : (
-                              summary || "Neural summary will appear here..."
-                            )}
-                          </p>
-                        </div>
+                    <div className="p-8 rounded-[32px] bg-cyan-500/5 border border-cyan-500/20">
+                      <div className="flex items-start gap-4 mb-6">
+                        <div className="w-1 h-12 bg-cyan-500 rounded-full" />
+                        <p className="text-lg font-bold text-white leading-snug">
+                          {isProcessing ? (
+                            <span className="flex items-center gap-2">
+                              <Loader2 className="w-4 h-4 animate-spin" />
+                              {summary}
+                            </span>
+                          ) : (
+                            summary || "Neural summary will appear here..."
+                          )}
+                        </p>
+                      </div>
                       <div className="flex flex-wrap gap-3">
                         {["Safety", "Facilities", "High Priority"].map(
                           (tag) => (
@@ -492,7 +508,7 @@ export default function SilentScreamPage() {
                             >
                               {tag}
                             </span>
-                          )
+                          ),
                         )}
                       </div>
                     </div>
@@ -505,72 +521,82 @@ export default function SilentScreamPage() {
                     with a neural-generated monotone to ensure absolute
                     anonymity.
                   </p>
-                    <Button
-                      onClick={handleSubmitToAuthorities}
-                      disabled={isSubmitting || !signalId}
-                      className="h-16 px-12 rounded-[24px] bg-cyan-500 hover:bg-cyan-400 text-black font-black text-xs tracking-[0.2em] uppercase transition-all shadow-[0_20px_40px_rgba(6,182,212,0.3)] group disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      {isSubmitting ? (
-                        <Loader2 className="w-5 h-5 animate-spin mr-2" />
-                      ) : (
-                        <ChevronRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
-                      )}
-                      {isSubmitting ? "Submitting..." : "Submit to Authorities"}
-                    </Button>
-
+                  <Button
+                    onClick={handleSubmitToAuthorities}
+                    disabled={isSubmitting || !signalId}
+                    className="h-16 px-12 rounded-[24px] bg-cyan-500 hover:bg-cyan-400 text-black font-black text-xs tracking-[0.2em] uppercase transition-all shadow-[0_20px_40px_rgba(6,182,212,0.3)] group disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {isSubmitting ? (
+                      <Loader2 className="w-5 h-5 animate-spin mr-2" />
+                    ) : (
+                      <ChevronRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                    )}
+                    {isSubmitting ? "Submitting..." : "Submit to Authorities"}
+                  </Button>
                 </div>
               </div>
             </motion.div>
           )}
         </AnimatePresence>
 
-          {/* Info Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full mt-32">
-            {[
-              {
-                icon: Shield,
-                title: "Zero Trace",
-                desc: "No IP logging, no metadata, no identity leaks.",
-                color: "rose",
-                action: () => toast.info("Security Audit", { description: "Identity scrubbing protocol is 100% operational." }),
-              },
-              {
-                icon: Zap,
-                title: "AI Scrubbing",
-                desc: "Voices are re-synthesized to prevent bio-recognition.",
-                color: "cyan",
-                action: () => toast.info("Neural Sync", { description: "Voice synthesis engine is ready for deployment." }),
-              },
-              {
-                icon: Volume2,
-                title: "Safe Storage",
-                desc: "Reports are encrypted with 256-bit military standards.",
-                color: "violet",
-                action: () => toast.info("Vault Status", { description: "Encrypted storage nodes are online and secure." }),
-              },
-            ].map((item, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.5 + i * 0.1 }}
-                onClick={item.action}
-                className="p-8 rounded-[32px] bg-white/[0.02] border border-white/[0.05] hover:bg-white/[0.04] transition-all group cursor-pointer"
+        {/* Info Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full mt-32">
+          {[
+            {
+              icon: Shield,
+              title: "Zero Trace",
+              desc: "No IP logging, no metadata, no identity leaks.",
+              color: "rose",
+              action: () =>
+                toast.info("Security Audit", {
+                  description:
+                    "Identity scrubbing protocol is 100% operational.",
+                }),
+            },
+            {
+              icon: Zap,
+              title: "AI Scrubbing",
+              desc: "Voices are re-synthesized to prevent bio-recognition.",
+              color: "cyan",
+              action: () =>
+                toast.info("Neural Sync", {
+                  description:
+                    "Voice synthesis engine is ready for deployment.",
+                }),
+            },
+            {
+              icon: Volume2,
+              title: "Safe Storage",
+              desc: "Reports are encrypted with 256-bit military standards.",
+              color: "violet",
+              action: () =>
+                toast.info("Vault Status", {
+                  description: "Encrypted storage nodes are online and secure.",
+                }),
+            },
+          ].map((item, i) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5 + i * 0.1 }}
+              onClick={item.action}
+              className="p-8 rounded-[32px] bg-white/[0.02] border border-white/[0.05] hover:bg-white/[0.04] transition-all group cursor-pointer"
+            >
+              <div
+                className={`w-14 h-14 rounded-2xl bg-${item.color}-500/10 flex items-center justify-center border border-${item.color}-500/20 mb-6 group-hover:rotate-12 transition-transform`}
               >
-                <div
-                  className={`w-14 h-14 rounded-2xl bg-${item.color}-500/10 flex items-center justify-center border border-${item.color}-500/20 mb-6 group-hover:rotate-12 transition-transform`}
-                >
-                  <item.icon className={`w-7 h-7 text-${item.color}-400`} />
-                </div>
-                <h4 className="text-xl font-black tracking-tight mb-2 uppercase">
-                  {item.title}
-                </h4>
-                <p className="text-white/40 text-sm font-medium leading-relaxed">
-                  {item.desc}
-                </p>
-              </motion.div>
-            ))}
-          </div>
+                <item.icon className={`w-7 h-7 text-${item.color}-400`} />
+              </div>
+              <h4 className="text-xl font-black tracking-tight mb-2 uppercase">
+                {item.title}
+              </h4>
+              <p className="text-white/40 text-sm font-medium leading-relaxed">
+                {item.desc}
+              </p>
+            </motion.div>
+          ))}
+        </div>
       </main>
 
       <footer className="p-12 border-t border-white/[0.03] text-center">
