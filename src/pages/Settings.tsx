@@ -1,7 +1,6 @@
-"use client";
 
 import { motion } from "framer-motion";
-import Link from "next/link";
+import { Link, useNavigate } from "react-router-dom";
 import {
   Settings,
   ArrowLeft,
@@ -44,7 +43,7 @@ export default function SettingsPage() {
       <nav className="sticky top-0 z-50 border-b border-white/[0.06] bg-[#08080c]/70 backdrop-blur-xl">
         <div className="max-w-5xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
-            <Link href="/dashboard">
+            <Link to="/dashboard">
               <Button
                 variant="ghost"
                 size="sm"

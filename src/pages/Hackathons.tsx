@@ -1,4 +1,3 @@
-"use client";
 
 import React, { useState, useEffect, useRef, useMemo } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
@@ -21,6 +20,7 @@ import {
   useSpring,
 } from "framer-motion";
 import * as THREE from "three";
+import { Link, useNavigate } from "react-router-dom";
 import {
   Trophy,
   Users,

@@ -1,8 +1,7 @@
-"use client";
 
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import Link from "next/link";
+import { Link, useNavigate } from "react-router-dom";
 import {
   Brain,
   ArrowLeft,
@@ -320,7 +319,7 @@ export default function AICareerRoadmap() {
       {/* Navigation */}
       <nav className="relative z-50 border-b border-white/5 bg-black/20 backdrop-blur-2xl">
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-          <Link href="/dashboard" className="flex items-center gap-3 group">
+          <Link to="/dashboard" className="flex items-center gap-3 group">
             <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center group-hover:bg-cyan-500/10 group-hover:border-cyan-500/20 transition-all duration-500">
               <ArrowLeft className="w-5 h-5 text-white/40 group-hover:text-cyan-400" />
             </div>

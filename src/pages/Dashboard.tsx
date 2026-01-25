@@ -1,8 +1,6 @@
-"use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { Link, useNavigate } from "react-router-dom";
 import {
   Brain,
   Mic,
@@ -50,7 +48,10 @@ import ThreeDBackground from "@/components/ThreeDBackground";
 import TiltCard from "@/components/TiltCard";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
-import { useSession, signOut } from "next-auth/react";
+
+// Mock Auth
+const useSession = () => ({ data: { user: { name: "Test User", email: "test@example.com" } }, status: "authenticated" });
+const signOut = () => {};
 
 const navItems = [
   { icon: Activity, label: "System Core", href: "/dashboard", active: true },
@@ -131,10 +132,6 @@ const features = [
     href: "/internship-feed",
     accent: "#10b981",
   },
-];
-
-const activities = [
-<<<<<<< HEAD
   {
     title: "Neuro-Report Synced",
     time: "12m ago",
@@ -158,9 +155,7 @@ const activities = [
     color: "blue",
     status: "new",
     href: "/hackathons",
-  },
-=======
-  { title: "Neuro-Report Synced", time: "12m ago", icon: Shield, color: "cyan", status: "online", href: "/silent-scream" },
+  },eport Synced", time: "12m ago", icon: Shield, color: "cyan", status: "online", href: "/silent-scream" },
   { title: "Career Path Updated", time: "4h ago", icon: Target, color: "purple", status: "syncing", href: "/ai-roadmap" },
   { title: "Hackathon Match Found", time: "1h ago", icon: Zap, color: "blue", status: "new", href: "/hackathons" },
 >>>>>>> origin/main
@@ -196,7 +191,7 @@ function CountUp({ value, suffix = "" }: { value: number; suffix?: string }) {
 }
 
 export default function DashboardPage() {
-  const router = useRouter();
+  const navigate = useNavigate();
   const { data: session, status } = useSession();
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -251,11 +246,10 @@ export default function DashboardPage() {
       duration: 2000,
     });
   };
->>>>>>> origin/main
 
   useEffect(() => {
     if (status === "unauthenticated") {
-      router.push("/login");
+      navigate("/login");
     }
   }, [status, router]);
 
@@ -316,7 +310,7 @@ export default function DashboardPage() {
         className={`fixed inset-y-0 left-0 z-50 w-[280px] bg-black/40 backdrop-blur-3xl border-r border-white/5 transform transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] lg:translate-x-0 ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}`}
       >
         <div className="p-8 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-3 group">
+          <Link to="/" className="flex items-center gap-3 group">
             <motion.div
               whileHover={{ rotate: 180 }}
               transition={{ duration: 0.5 }}
@@ -340,7 +334,7 @@ export default function DashboardPage() {
 
         <nav className="px-4 mt-8 space-y-2">
           {navItems.map((item, i) => (
-            <Link key={i} href={item.href}>
+            <Link key={i} to={item.href}>
               <motion.div
                 whileHover={{
                   x: 10,
@@ -394,20 +388,17 @@ export default function DashboardPage() {
                     className="w-[300px] h-11 pl-12 bg-white/5 border-white/10 rounded-2xl text-sm focus:border-cyan-500/30 transition-all placeholder:text-white/20 focus:w-[400px] duration-300"
                   />
                 </form>
-=======
-                <div className="relative group hidden md:block">
-                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/20 group-focus-within:text-cyan-400 transition-colors" />
-                  <form onSubmit={handleSearch}>
-                    <Input
-                      placeholder="Query Neural Network..."
-                      className="w-[300px] h-11 pl-12 bg-white/5 border-white/10 rounded-2xl text-sm focus:border-cyan-500/30 transition-all placeholder:text-white/20 focus:w-[400px] duration-300"
-                    />
-                  </form>
-                </div>
->>>>>>> origin/main
-              </div>
+              </div>>
 
 <<<<<<< HEAD
+            <div className="flex items-center gap-4">
+              <Sheet>
+                <SheetTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="w-11 h-11 rounded-2xl border border-white/5 hover:bg-white/5 relative group"
+                  >
             <div className="flex items-center gap-4">
               <Sheet>
                 <SheetTrigger asChild>
@@ -419,17 +410,7 @@ export default function DashboardPage() {
                     <Bell className="w-5 h-5 text-white/60 group-hover:text-cyan-400 transition-colors" />
                     <span className="absolute top-3 right-3 w-2 h-2 bg-cyan-500 rounded-full shadow-[0_0_10px_#06b6d4] animate-pulse" />
                   </Button>
-                </SheetTrigger>
-                <SheetContent className="w-full sm:max-w-md bg-black/95 border-l border-white/10 backdrop-blur-2xl p-0">
-                  <div className="h-full flex flex-col">
-                    <SheetHeader className="p-8 border-b border-white/5">
-                      <div className="flex items-center justify-between">
-                        <SheetTitle className="text-3xl font-black tracking-tighter text-white uppercase">
-                          Neural Feed
-                        </SheetTitle>
-                        <Badge
-                          variant="outline"
-                          className="bg-cyan-500/10 text-cyan-400 border-cyan-500/20 font-black tracking-widest uppercase"
+                </SheetTriggerclassName="bg-cyan-500/10 text-cyan-400 border-cyan-500/20 font-black tracking-widest uppercase"
                         >
                           4 New
                         </Badge>
@@ -573,7 +554,7 @@ export default function DashboardPage() {
                   className="w-56 bg-black/90 backdrop-blur-2xl border-white/10 rounded-[24px] p-2 mt-4 shadow-[0_20px_50px_rgba(0,0,0,0.5)]"
                 >
                   <DropdownMenuItem
-                    onClick={() => router.push("/settings")}
+                    onClick={() => navigate("/settings")}
                     className="rounded-xl focus:bg-white/5 focus:text-cyan-400 cursor-pointer p-3 gap-3"
                   >
                     <User className="w-4 h-4" />{" "}
@@ -591,14 +572,14 @@ export default function DashboardPage() {
 =======
                   <DropdownMenuContent align="end" className="w-56 bg-black/90 backdrop-blur-2xl border-white/10 rounded-[24px] p-2 mt-4 shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
                     <DropdownMenuItem 
-                      onClick={() => router.push("/settings")}
+                      onClick={() => navigate("/settings")}
                       className="rounded-xl focus:bg-white/5 focus:text-cyan-400 cursor-pointer p-3 gap-3"
                     >
                       <User className="w-4 h-4" /> <span className="text-sm font-bold">Profile Interface</span>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator className="bg-white/10" />
                     <DropdownMenuItem 
-                      onClick={() => router.push("/")}
+                      onClick={() => navigate("/")}
                       className="rounded-xl focus:bg-rose-500/20 focus:text-rose-400 cursor-pointer p-3 gap-3"
                     >
                       <LogOut className="w-4 h-4" /> <span className="text-sm font-bold">Disconnect</span>
@@ -621,10 +602,6 @@ export default function DashboardPage() {
             >
 <<<<<<< HEAD
 =======
-
->>>>>>> origin/main
-              <h1 className="text-7xl lg:text-9xl font-black tracking-tighter leading-[0.85] mb-4">
-                Welcome, {session?.user?.name || "Demo User"} <br />
                 <span className="relative inline-block text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-purple-500 to-blue-600 animate-gradient-x">
                   Evolve your destiny.
                   <motion.div
@@ -641,7 +618,10 @@ export default function DashboardPage() {
               </p>
 <<<<<<< HEAD
               <div className="flex flex-wrap gap-4 pt-4">
-                <Link href="/match-analysis">
+                <Link to="/match-analysis">
+                  <Button className="h-16 px-10 rounded-2xl bg-cyan-500 hover:bg-cyan-400 text-black font-black uppercase tracking-[0.2em] text-xs transition-all hover:shadow-[0_0_40px_#06b6d4] group overflow-hidden relative">
+              <div className="flex flex-wrap gap-4 pt-4">
+                <Link to="/match-analysis">
                   <Button className="h-16 px-10 rounded-2xl bg-cyan-500 hover:bg-cyan-400 text-black font-black uppercase tracking-[0.2em] text-xs transition-all hover:shadow-[0_0_40px_#06b6d4] group overflow-hidden relative">
                     <span className="relative z-10 flex items-center">
                       Analyze Matches{" "}
@@ -651,18 +631,6 @@ export default function DashboardPage() {
                   </Button>
                 </Link>
               </div>
-=======
-                <div className="flex flex-wrap gap-4 pt-4">
-                  <Link href="/match-analysis">
-                    <Button className="h-16 px-10 rounded-2xl bg-cyan-500 hover:bg-cyan-400 text-black font-black uppercase tracking-[0.2em] text-xs transition-all hover:shadow-[0_0_40px_#06b6d4] group overflow-hidden relative">
-                      <span className="relative z-10 flex items-center">
-                        Analyze Matches <ArrowRight className="ml-3 w-4 h-4 group-hover:translate-x-2 transition-transform duration-500" />
-                      </span>
-                      <motion.div 
-                        className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300"
-                      />
-                    </Button>
-                  </Link>
 
                 </div>
 >>>>>>> origin/main
@@ -749,14 +717,14 @@ export default function DashboardPage() {
 
               if (isHackathonCard) {
                 return (
-                  <Link key={i} href={stat.href} className="group">
+                  <Link key={i} to={stat.href} className="group">
                     {CardContent}
                   </Link>
                 );
               }
 
               return (
-                <Link key={i} href={stat.href} className="group">
+                <Link key={i} to={stat.href} className="group">
                   {CardContent}
                 </Link>
               );
@@ -779,7 +747,7 @@ export default function DashboardPage() {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
               {features.map((feature, i) => (
-                <Link key={i} href={feature.href} className="group h-full">
+                <Link key={i} to={feature.href} className="group h-full">
                   <TiltCard className="h-full">
                     <motion.div
                       initial={{ opacity: 0, scale: 0.9 }}
@@ -869,7 +837,14 @@ export default function DashboardPage() {
 
                 <div className="space-y-4">
                   {activities.map((item, i) => (
-                    <Link key={i} href={item.href}>
+                    <Link key={i} to={item.href}>
+                      <motion.div
+                        whileHover={{
+                          x: 10,
+                          backgroundColor: "rgba(255,255,255,0.1)",
+                <div className="space-y-4">
+                  {activities.map((item, i) => (
+                    <Link key={i} to={item.href}>
                       <motion.div
                         whileHover={{
                           x: 10,
@@ -902,22 +877,6 @@ export default function DashboardPage() {
                     </Link>
                   ))}
                 </div>
-=======
-                
-                  <div className="space-y-4">
-                    {activities.map((item, i) => (
-                      <Link key={i} href={item.href}>
-                        <motion.div 
-                          whileHover={{ x: 10, backgroundColor: "rgba(255,255,255,0.1)" }}
-                          className="flex items-center gap-6 p-6 rounded-[32px] bg-white/5 border border-white/10 group/item transition-all duration-300 hover:border-white/30 cursor-pointer mb-4 last:mb-0"
-                        >
-                          <div className="w-14 h-14 rounded-2xl bg-black flex items-center justify-center border border-white/20 group-hover/item:border-cyan-500/50 transition-colors">
-                            <item.icon className="w-6 h-6 text-white/60 group-hover/item:text-cyan-400 transition-colors" />
-                          </div>
-                          <div className="flex-1">
-                            <div className="flex items-center gap-3">
-                              <p className="font-black text-lg text-white/80 group-hover/item:text-white transition-colors">{item.title}</p>
-                              {item.status === "new" && (
                                 <span className="px-2 py-0.5 rounded-md bg-emerald-500/30 text-emerald-400 text-[8px] font-black border border-emerald-500/30">NEW</span>
                               )}
                             </div>
@@ -956,7 +915,7 @@ export default function DashboardPage() {
                     high-affinity opportunities.
                   </p>
                 </div>
-                <Link href="/match-analysis" className="block w-full mt-12">
+                <Link to="/match-analysis" className="block w-full mt-12">
                   <Button className="h-20 w-full rounded-[32px] bg-gradient-to-r from-cyan-500 to-purple-600 text-white font-black uppercase tracking-[0.3em] text-xs hover:scale-[1.02] transition-all duration-500 shadow-[0_20px_60px_rgba(6,182,212,0.4)] group border-none">
                     Access Intelligence{" "}
                     <ArrowRight className="ml-3 w-4 h-4 group-hover:translate-x-2 transition-transform" />

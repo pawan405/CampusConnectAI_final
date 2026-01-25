@@ -1,4 +1,3 @@
-"use client";
 
 import React from "react";
 import { motion } from "framer-motion";
@@ -11,10 +10,10 @@ import {
   ArrowLeft,
   Sparkles,
 } from "lucide-react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { signIn } from "next-auth/react";
+import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { auth } from "@/lib/firebase";
 
 const FadeIn = ({
   children,
@@ -35,28 +34,15 @@ const FadeIn = ({
 );
 
 export default function LoginPage() {
-  const router = useRouter();
+  const navigate = useNavigate();
 
   const handleGoogleLogin = async () => {
     try {
-      const hasRealCredentials = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID &&
-        process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID !== "YOUR_ACTUAL_GOOGLE_CLIENT_ID" &&
-        process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID !== "your-google-client-id";
-
-      if (hasRealCredentials) {
-        await signIn("google", { callbackUrl: "/dashboard" });
-      } else {
-        // Demo mode
-        await signIn("credentials", {
-          username: "demo",
-          password: "demo",
-          callbackUrl: "/dashboard",
-        });
-      }
+      const provider = new GoogleAuthProvider();
+      await signInWithPopup(auth, provider);
+      navigate("/dashboard");
     } catch (error) {
       console.error("Sign in error:", error);
-      // Fallback
-      router.push("/dashboard");
     }
   };
 
@@ -68,7 +54,7 @@ export default function LoginPage() {
         <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-indigo-600/10 rounded-full blur-[120px]" />
       </div>
 
-      <Link href="/" className="absolute top-8 left-8 z-20">
+      <Link to="/" className="absolute top-8 left-8 z-20">
         <Button
           variant="ghost"
           className="text-zinc-500 hover:text-white hover:bg-zinc-900 gap-2 font-bold"

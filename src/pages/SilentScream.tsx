@@ -1,8 +1,7 @@
-"use client";
 
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import Link from "next/link";
+import { Link, useNavigate } from "react-router-dom";
 import {
   Mic,
   ArrowLeft,
@@ -262,7 +261,7 @@ export default function SilentScreamPage() {
 
       <nav className="fixed top-0 left-0 right-0 z-50 px-8 py-6 bg-black/20 backdrop-blur-xl border-b border-white/[0.05]">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <Link href="/dashboard" className="group flex items-center gap-3">
+          <Link to="/dashboard" className="group flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center group-hover:bg-rose-500/20 group-hover:border-rose-500/30 transition-all">
               <ArrowLeft className="w-5 h-5 text-white/60 group-hover:text-rose-400" />
             </div>

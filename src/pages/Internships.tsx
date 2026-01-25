@@ -1,8 +1,7 @@
-"use client";
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import Link from "next/link";
+import { Link, useNavigate } from "react-router-dom";
 import {
   Brain,
   Briefcase,
@@ -333,7 +332,7 @@ export default function InternshipFeedPage() {
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <Link href="/dashboard">
+              <Link to="/dashboard">
                 <Button
                   variant="ghost"
                   size="sm"
@@ -342,7 +341,7 @@ export default function InternshipFeedPage() {
                   <ArrowLeft className="w-4 h-4" /> Back
                 </Button>
               </Link>
-              <Link href="/" className="flex items-center gap-3">
+              <Link to="/" className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center">
                   <Brain className="w-6 h-6 text-white" />
                 </div>
