@@ -13,6 +13,8 @@ import {
   Zap,
   CheckCircle2,
   Users,
+  Trophy,
+  Briefcase,
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { FcGoogle } from "react-icons/fc";
@@ -43,7 +45,7 @@ const FeatureCard = ({
   delay,
   href,
 }: {
-  icon: React.ElementType;
+  icon: React.ElementType<any>;
   title: string;
   description: string;
   delay: number;

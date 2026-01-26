@@ -1,13 +1,12 @@
-
-import { motion, AnimatePresence } from "framer-motion";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 import {
   Brain,
   Mic,
   Briefcase,
   TrendingUp,
   Bell,
-  Search,
   Trophy,
   Rocket,
   ArrowRight,
@@ -18,16 +17,11 @@ import {
   Target,
   Menu,
   X,
-  Sparkles,
   Zap,
   Globe,
   Cpu,
-  CheckCircle2,
-  Clock,
-  AlertTriangle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -43,15 +37,15 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { useState, useEffect } from "react";
 import ThreeDBackground from "@/components/ThreeDBackground";
 import TiltCard from "@/components/TiltCard";
 import { toast } from "sonner";
-import { Badge } from "@/components/ui/badge";
 
 // Mock Auth
-const useSession = () => ({ data: { user: { name: "Test User", email: "test@example.com" } }, status: "authenticated" });
-const signOut = () => {};
+const useSession = () => ({
+  data: { user: { name: "Test User", email: "test@example.com" } },
+  status: "authenticated",
+});
 
 const navItems = [
   { icon: Activity, label: "System Core", href: "/dashboard", active: true },
@@ -132,6 +126,9 @@ const features = [
     href: "/internship-feed",
     accent: "#10b981",
   },
+];
+
+const activities = [
   {
     title: "Neuro-Report Synced",
     time: "12m ago",
@@ -155,10 +152,7 @@ const features = [
     color: "blue",
     status: "new",
     href: "/hackathons",
-  },eport Synced", time: "12m ago", icon: Shield, color: "cyan", status: "online", href: "/silent-scream" },
-  { title: "Career Path Updated", time: "4h ago", icon: Target, color: "purple", status: "syncing", href: "/ai-roadmap" },
-  { title: "Hackathon Match Found", time: "1h ago", icon: Zap, color: "blue", status: "new", href: "/hackathons" },
->>>>>>> origin/main
+  },
 ];
 
 function CountUp({ value, suffix = "" }: { value: number; suffix?: string }) {
@@ -192,15 +186,11 @@ function CountUp({ value, suffix = "" }: { value: number; suffix?: string }) {
 
 export default function DashboardPage() {
   const navigate = useNavigate();
-  const { data: session, status } = useSession();
+  const { status } = useSession();
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
-<<<<<<< HEAD
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-=======
+
   const [notifications, setNotifications] = useState([
     {
       id: 1,
@@ -240,87 +230,39 @@ export default function DashboardPage() {
     },
   ]);
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    toast.loading("Querying Neural Network...", {
-      duration: 2000,
-    });
-  };
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     if (status === "unauthenticated") {
       navigate("/login");
     }
-  }, [status, router]);
-
-  const [notifications, setNotifications] = useState([
-    {
-      id: 1,
-      title: "Hackathon Match",
-      desc: "New matches found for Cyberpunk Hack 2077!",
-      time: "2m ago",
-      icon: Trophy,
-      color: "text-amber-400",
-      isNew: true,
-    },
-    {
-      id: 2,
-      title: "System Update",
-      desc: "Neural Network core successfully upgraded to v5.0.",
-      time: "1h ago",
-      icon: Cpu,
-      color: "text-cyan-400",
-      isNew: false,
-    },
-    {
-      id: 3,
-      title: "Security Alert",
-      desc: "Anonymous signal detected from Silent Scream.",
-      time: "3h ago",
-      icon: Shield,
-      color: "text-rose-400",
-      isNew: false,
-    },
-    {
-      id: 4,
-      title: "Career Growth",
-      desc: "Your skill gap analysis report is ready for review.",
-      time: "5h ago",
-      icon: TrendingUp,
-      color: "text-purple-400",
-      isNew: false,
-    },
-  ]);
-
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    toast.loading("Querying Neural Network...", {
-      duration: 2000,
-    });
-  };
+  }, [status, navigate]);
 
   if (!mounted || status === "loading") return null;
 
   return (
-    <div className="min-h-screen bg-transparent text-white selection:bg-cyan-500/30 font-sans overflow-x-hidden">
+    <div className="min-h-screen bg-black text-white selection:bg-cyan-500/30 font-sans overflow-x-hidden">
+      {/* Background */}
       <ThreeDBackground />
 
-      {/* Sidebar - Enhanced Glassmorphism */}
+      {/* Sidebar */}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 w-[280px] bg-black/40 backdrop-blur-3xl border-r border-white/5 transform transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] lg:translate-x-0 ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}`}
+        className={`fixed inset-y-0 left-0 z-40 w-[280px] bg-black/80 backdrop-blur-xl border-r border-white/10 transform transition-all duration-700 lg:translate-x-0 ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}`}
       >
         <div className="p-8 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-3 group">
             <motion.div
               whileHover={{ rotate: 180 }}
               transition={{ duration: 0.5 }}
-              className="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-400 to-purple-500 p-[1px] shadow-[0_0_20px_rgba(6,182,212,0.5)]"
+              className="w-10 h-10 rounded-xl bg-linear-to-br from-cyan-400 to-purple-500 p-px shadow-[0_0_20px_rgba(6,182,212,0.5)]"
             >
               <div className="w-full h-full rounded-[11px] bg-black flex items-center justify-center">
                 <Cpu className="w-5 h-5 text-cyan-400" />
               </div>
             </motion.div>
-            <span className="text-xl font-black tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-white via-white to-white/40">
+            <span className="text-xl font-black tracking-tighter bg-clip-text text-transparent bg-linear-to-r from-white via-white to-white/40">
               CampusConnect
             </span>
           </Link>
@@ -368,37 +310,19 @@ export default function DashboardPage() {
       </aside>
 
       {/* Main Content */}
-      <div className="lg:pl-[280px] min-h-screen">
+      <div className="lg:ml-[280px] min-h-screen">
         {/* Header */}
-        <header className="sticky top-0 z-40 px-8 py-6 bg-black/40 backdrop-blur-xl border-b border-white/5">
+        <header className="sticky top-0 z-30 px-8 py-4 bg-black/60 backdrop-blur-md border-b border-white/5">
           <div className="flex items-center justify-between max-w-7xl mx-auto">
             <div className="flex items-center gap-6">
               <button
                 onClick={() => setSidebarOpen(true)}
-                className="lg:hidden p-2 hover:bg-white/5 rounded-xl transition-colors"
+                className="lg:hidden p-2 hover:bg-white/10 rounded-lg transition-colors"
               >
                 <Menu className="w-6 h-6 text-white/60" />
               </button>
-<<<<<<< HEAD
-              <div className="relative group hidden md:block">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/20 group-focus-within:text-cyan-400 transition-colors" />
-                <form onSubmit={handleSearch}>
-                  <Input
-                    placeholder="Query Neural Network..."
-                    className="w-[300px] h-11 pl-12 bg-white/5 border-white/10 rounded-2xl text-sm focus:border-cyan-500/30 transition-all placeholder:text-white/20 focus:w-[400px] duration-300"
-                  />
-                </form>
-              </div>>
+            </div>
 
-<<<<<<< HEAD
-            <div className="flex items-center gap-4">
-              <Sheet>
-                <SheetTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="w-11 h-11 rounded-2xl border border-white/5 hover:bg-white/5 relative group"
-                  >
             <div className="flex items-center gap-4">
               <Sheet>
                 <SheetTrigger asChild>
@@ -410,11 +334,13 @@ export default function DashboardPage() {
                     <Bell className="w-5 h-5 text-white/60 group-hover:text-cyan-400 transition-colors" />
                     <span className="absolute top-3 right-3 w-2 h-2 bg-cyan-500 rounded-full shadow-[0_0_10px_#06b6d4] animate-pulse" />
                   </Button>
-                </SheetTriggerclassName="bg-cyan-500/10 text-cyan-400 border-cyan-500/20 font-black tracking-widest uppercase"
-                        >
-                          4 New
-                        </Badge>
-                      </div>
+                </SheetTrigger>
+                <SheetContent className="w-full sm:max-w-md bg-black/95 border-l border-white/10 backdrop-blur-2xl p-0">
+                  <div className="h-full flex flex-col">
+                    <SheetHeader className="p-8 border-b border-white/5">
+                      <SheetTitle className="text-2xl font-black text-white">
+                        System Alerts
+                      </SheetTitle>
                       <SheetDescription className="text-white/40 font-medium mt-2">
                         Real-time system updates and peer interactions.
                       </SheetDescription>
@@ -424,26 +350,32 @@ export default function DashboardPage() {
                       {notifications.map((notif) => (
                         <motion.div
                           key={notif.id}
-                          whileHover={{ scale: 1.02, x: 5 }}
-                          className={`p-5 rounded-[32px] border ${notif.isNew ? "bg-white/5 border-white/20" : "bg-transparent border-white/5"} group cursor-pointer transition-all hover:bg-white/10`}
+                          initial={{ opacity: 0, x: -20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          className="p-6 bg-white/5 border border-white/10 rounded-[28px] hover:bg-white/10 transition-all cursor-pointer group"
                         >
-                          <div className="flex gap-4">
-                            <div
-                              className={`w-12 h-12 rounded-2xl bg-black flex items-center justify-center border border-white/10 ${notif.color}`}
-                            >
-                              <notif.icon className="w-6 h-6" />
+                          <div className="flex items-start gap-4">
+                            <div className="w-12 h-12 rounded-2xl bg-black border border-white/20 flex items-center justify-center group-hover:scale-110 transition-transform">
+                              <notif.icon
+                                className={`w-6 h-6 ${notif.color}`}
+                              />
                             </div>
                             <div className="flex-1">
-                              <div className="flex items-center justify-between mb-1">
-                                <h4 className="font-black text-white group-hover:text-cyan-400 transition-colors">
+                              <div className="flex items-center gap-2 mb-2">
+                                <p className="font-black text-white">
                                   {notif.title}
-                                </h4>
-                                <span className="text-[10px] font-black text-white/20 uppercase tracking-widest">
-                                  {notif.time}
-                                </span>
+                                </p>
+                                {notif.isNew && (
+                                  <span className="px-2 py-0.5 bg-cyan-500/30 text-cyan-400 text-[8px] font-black rounded-md">
+                                    NEW
+                                  </span>
+                                )}
                               </div>
-                              <p className="text-sm text-white/50 leading-relaxed font-medium">
+                              <p className="text-white/60 text-sm mb-2">
                                 {notif.desc}
+                              </p>
+                              <p className="text-white/40 text-[10px] uppercase tracking-widest font-black">
+                                {notif.time}
                               </p>
                             </div>
                           </div>
@@ -455,12 +387,8 @@ export default function DashboardPage() {
                       <Button
                         className="w-full h-14 rounded-2xl bg-white text-black font-black uppercase tracking-[0.2em] text-xs hover:bg-cyan-400 transition-all shadow-[0_10px_30px_rgba(0,0,0,0.5)]"
                         onClick={() => {
-                          setNotifications(
-                            notifications.map((n) => ({ ...n, isNew: false })),
-                          );
-                          toast.success("Feed Synchronized", {
-                            description: "All notifications marked as read.",
-                          });
+                          setNotifications([]);
+                          toast.success("All notifications cleared");
                         }}
                       >
                         Sync All Clear
@@ -469,89 +397,20 @@ export default function DashboardPage() {
                   </div>
                 </SheetContent>
               </Sheet>
-=======
-                <div className="flex items-center gap-4">
-                  <Sheet>
-                    <SheetTrigger asChild>
-                      <Button 
-                        variant="ghost" 
-                        size="icon" 
-                        className="w-11 h-11 rounded-2xl border border-white/5 hover:bg-white/5 relative group"
-                      >
-                        <Bell className="w-5 h-5 text-white/60 group-hover:text-cyan-400 transition-colors" />
-                        <span className="absolute top-3 right-3 w-2 h-2 bg-cyan-500 rounded-full shadow-[0_0_10px_#06b6d4] animate-pulse" />
-                      </Button>
-                    </SheetTrigger>
-                    <SheetContent className="w-full sm:max-w-md bg-black/95 border-l border-white/10 backdrop-blur-2xl p-0">
-                      <div className="h-full flex flex-col">
-                        <SheetHeader className="p-8 border-b border-white/5">
-                          <div className="flex items-center justify-between">
-                            <SheetTitle className="text-3xl font-black tracking-tighter text-white uppercase">Neural Feed</SheetTitle>
-                            <Badge variant="outline" className="bg-cyan-500/10 text-cyan-400 border-cyan-500/20 font-black tracking-widest uppercase">4 New</Badge>
-                          </div>
-                          <SheetDescription className="text-white/40 font-medium mt-2">
-                            Real-time system updates and peer interactions.
-                          </SheetDescription>
-                        </SheetHeader>
-                        
-                        <div className="flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar">
-                          {notifications.map((notif) => (
-                            <motion.div
-                              key={notif.id}
-                              whileHover={{ scale: 1.02, x: 5 }}
-                              className={`p-5 rounded-[32px] border ${notif.isNew ? "bg-white/5 border-white/20" : "bg-transparent border-white/5"} group cursor-pointer transition-all hover:bg-white/10`}
-                            >
-                              <div className="flex gap-4">
-                                <div className={`w-12 h-12 rounded-2xl bg-black flex items-center justify-center border border-white/10 ${notif.color}`}>
-                                  <notif.icon className="w-6 h-6" />
-                                </div>
-                                <div className="flex-1">
-                                  <div className="flex items-center justify-between mb-1">
-                                    <h4 className="font-black text-white group-hover:text-cyan-400 transition-colors">{notif.title}</h4>
-                                    <span className="text-[10px] font-black text-white/20 uppercase tracking-widest">{notif.time}</span>
-                                  </div>
-                                  <p className="text-sm text-white/50 leading-relaxed font-medium">
-                                    {notif.desc}
-                                  </p>
-                                </div>
-                              </div>
-                            </motion.div>
-                          ))}
-                        </div>
-                        
-                        <div className="p-8 border-t border-white/5 bg-black/50">
-                          <Button 
-                            className="w-full h-14 rounded-2xl bg-white text-black font-black uppercase tracking-[0.2em] text-xs hover:bg-cyan-400 transition-all shadow-[0_10px_30px_rgba(0,0,0,0.5)]"
-                            onClick={() => {
-                              setNotifications(notifications.map(n => ({...n, isNew: false})));
-                              toast.success("Feed Synchronized", { description: "All notifications marked as read." });
-                            }}
-                          >
-                            Sync All Clear
-                          </Button>
-                        </div>
-                      </div>
-                    </SheetContent>
-                  </Sheet>
->>>>>>> origin/main
 
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <button className="flex items-center gap-3 p-1 rounded-2xl border border-white/5 bg-white/5 hover:bg-white/10 transition-all hover:scale-105 duration-300">
-                    <div className="w-8 h-8 rounded-xl overflow-hidden bg-gradient-to-br from-cyan-500 to-purple-500 p-[1px]">
-                      <div className="w-full h-full rounded-[11px] overflow-hidden bg-black">
-                        <img
-                          src="https://api.dicebear.com/7.x/avataaars/svg?seed=Sentinel"
-                          alt="avatar"
-                        />
+                    <div className="w-8 h-8 rounded-xl overflow-hidden bg-linear-to-br from-cyan-500 to-purple-500 p-px">
+                      <div className="w-full h-full rounded-[11px] bg-black flex items-center justify-center">
+                        <User className="w-4 h-4 text-white" />
                       </div>
                     </div>
                   </button>
                 </DropdownMenuTrigger>
-<<<<<<< HEAD
                 <DropdownMenuContent
                   align="end"
-                  className="w-56 bg-black/90 backdrop-blur-2xl border-white/10 rounded-[24px] p-2 mt-4 shadow-[0_20px_50px_rgba(0,0,0,0.5)]"
+                  className="w-56 bg-black/90 backdrop-blur-2xl border-white/10 rounded-3xl p-2 mt-4 shadow-[0_20px_50px_rgba(0,0,0,0.5)]"
                 >
                   <DropdownMenuItem
                     onClick={() => navigate("/settings")}
@@ -562,30 +421,13 @@ export default function DashboardPage() {
                   </DropdownMenuItem>
                   <DropdownMenuSeparator className="bg-white/10" />
                   <DropdownMenuItem
-                    onClick={() => signOut({ callbackUrl: "/login" })}
+                    onClick={() => navigate("/")}
                     className="rounded-xl focus:bg-rose-500/20 focus:text-rose-400 cursor-pointer p-3 gap-3"
                   >
                     <LogOut className="w-4 h-4" />{" "}
                     <span className="text-sm font-bold">Disconnect</span>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
-=======
-                  <DropdownMenuContent align="end" className="w-56 bg-black/90 backdrop-blur-2xl border-white/10 rounded-[24px] p-2 mt-4 shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
-                    <DropdownMenuItem 
-                      onClick={() => navigate("/settings")}
-                      className="rounded-xl focus:bg-white/5 focus:text-cyan-400 cursor-pointer p-3 gap-3"
-                    >
-                      <User className="w-4 h-4" /> <span className="text-sm font-bold">Profile Interface</span>
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator className="bg-white/10" />
-                    <DropdownMenuItem 
-                      onClick={() => navigate("/")}
-                      className="rounded-xl focus:bg-rose-500/20 focus:text-rose-400 cursor-pointer p-3 gap-3"
-                    >
-                      <LogOut className="w-4 h-4" /> <span className="text-sm font-bold">Disconnect</span>
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
->>>>>>> origin/main
               </DropdownMenu>
             </div>
           </div>
@@ -600,8 +442,7 @@ export default function DashboardPage() {
               transition={{ duration: 1, ease: [0.23, 1, 0.32, 1] }}
               className="space-y-8"
             >
-<<<<<<< HEAD
-=======
+              <h1 className="text-6xl lg:text-8xl font-black tracking-tighter leading-[0.9] uppercase">
                 <span className="relative inline-block text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-purple-500 to-blue-600 animate-gradient-x">
                   Evolve your destiny.
                   <motion.div
@@ -616,24 +457,17 @@ export default function DashboardPage() {
                 A high-performance AI ecosystem built to guide the next
                 generation of innovators. Your future, calculated in real-time.
               </p>
-<<<<<<< HEAD
-              <div className="flex flex-wrap gap-4 pt-4">
-                <Link to="/match-analysis">
-                  <Button className="h-16 px-10 rounded-2xl bg-cyan-500 hover:bg-cyan-400 text-black font-black uppercase tracking-[0.2em] text-xs transition-all hover:shadow-[0_0_40px_#06b6d4] group overflow-hidden relative">
               <div className="flex flex-wrap gap-4 pt-4">
                 <Link to="/match-analysis">
                   <Button className="h-16 px-10 rounded-2xl bg-cyan-500 hover:bg-cyan-400 text-black font-black uppercase tracking-[0.2em] text-xs transition-all hover:shadow-[0_0_40px_#06b6d4] group overflow-hidden relative">
                     <span className="relative z-10 flex items-center">
-                      Analyze Matches{" "}
+                      Analyze Matches
                       <ArrowRight className="ml-3 w-4 h-4 group-hover:translate-x-2 transition-transform duration-500" />
                     </span>
                     <motion.div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
                   </Button>
                 </Link>
               </div>
-
-                </div>
->>>>>>> origin/main
             </motion.div>
           </section>
 
@@ -650,7 +484,7 @@ export default function DashboardPage() {
                       y: [0, -8, 0],
                     }}
                     transition={{
-                      initial: { duration: 0.5, delay: i * 0.2 },
+                      opacity: { duration: 0.5, delay: i * 0.2 },
                       y: {
                         duration: 4,
                         repeat: Infinity,
@@ -679,26 +513,24 @@ export default function DashboardPage() {
                               cx="28"
                               cy="28"
                               r="24"
-                              stroke="rgba(255,255,255,0.1)"
+                              className="stroke-white/10"
                               strokeWidth="4"
-                              fill="transparent"
+                              fill="none"
                             />
-                            <motion.circle
-                              initial={{ strokeDashoffset: 150.8 }}
-                              animate={{ strokeDashoffset: 150.8 * (1 - 0.84) }}
-                              transition={{ duration: 2, delay: 1 }}
+                            <circle
                               cx="28"
                               cy="28"
                               r="24"
-                              stroke="currentColor"
+                              className="stroke-purple-500"
                               strokeWidth="4"
-                              fill="transparent"
-                              strokeDasharray={150.8}
-                              className="text-purple-400 drop-shadow-[0_0_15px_#a855f7]"
+                              fill="none"
+                              strokeDasharray={`${2 * Math.PI * 24}`}
+                              strokeDashoffset={`${2 * Math.PI * 24 * (1 - stat.value / 100)}`}
+                              strokeLinecap="round"
                             />
                           </svg>
-                          <span className="absolute inset-0 flex items-center justify-center text-xs font-black">
-                            84
+                          <span className="absolute inset-0 flex items-center justify-center text-xs font-black text-white">
+                            {stat.value}%
                           </span>
                         </div>
                       )}
@@ -758,7 +590,7 @@ export default function DashboardPage() {
                       }}
                       viewport={{ once: true }}
                       transition={{
-                        initial: { delay: i * 0.1 },
+                        opacity: { delay: i * 0.1 },
                         y: {
                           duration: 5,
                           repeat: Infinity,
@@ -768,7 +600,6 @@ export default function DashboardPage() {
                       }}
                       className="h-full bg-black/60 backdrop-blur-3xl border border-white/20 rounded-[48px] p-10 flex flex-col relative overflow-hidden transition-all duration-700 hover:bg-black/80 hover:border-white/40 hover:shadow-[0_30px_100px_rgba(0,0,0,0.6)]"
                     >
-                      {/* Neon Highlight Top */}
                       <div
                         className="absolute top-0 left-0 w-full h-[2px] opacity-0 group-hover:opacity-100 transition-opacity duration-500"
                         style={{
@@ -797,9 +628,11 @@ export default function DashboardPage() {
                         {feature.desc}
                       </p>
 
-                      <div className="mt-auto flex items-center text-[10px] font-black text-white/50 uppercase tracking-[0.3em] group-hover:text-cyan-400 transition-all duration-500">
-                        Access System{" "}
-                        <ArrowRight className="w-3 h-3 ml-3 group-hover:translate-x-3 transition-transform duration-500" />
+                      <div className="mt-auto flex items-center gap-2 text-white/40 group-hover:text-white/80 transition-colors">
+                        <span className="text-xs font-black uppercase tracking-wider">
+                          Access Module
+                        </span>
+                        <ArrowRight className="w-4 h-4 group-hover:translate-x-2 transition-transform" />
                       </div>
                     </motion.div>
                   </TiltCard>
@@ -833,7 +666,6 @@ export default function DashboardPage() {
                     </span>
                   </div>
                 </div>
-<<<<<<< HEAD
 
                 <div className="space-y-4">
                   {activities.map((item, i) => (
@@ -842,15 +674,8 @@ export default function DashboardPage() {
                         whileHover={{
                           x: 10,
                           backgroundColor: "rgba(255,255,255,0.1)",
-                <div className="space-y-4">
-                  {activities.map((item, i) => (
-                    <Link key={i} to={item.href}>
-                      <motion.div
-                        whileHover={{
-                          x: 10,
-                          backgroundColor: "rgba(255,255,255,0.1)",
                         }}
-                        className="flex items-center gap-6 p-6 rounded-[32px] bg-white/5 border border-white/10 group/item transition-all duration-300 hover:border-white/30 cursor-pointer mb-4 last:mb-0"
+                        className="flex items-center gap-6 p-6 rounded-[32px] bg-white/5 border border-white/10 group/item transition-all duration-300 hover:border-white/30 cursor-pointer"
                       >
                         <div className="w-14 h-14 rounded-2xl bg-black flex items-center justify-center border border-white/20 group-hover/item:border-cyan-500/50 transition-colors">
                           <item.icon className="w-6 h-6 text-white/60 group-hover/item:text-cyan-400 transition-colors" />
@@ -877,19 +702,6 @@ export default function DashboardPage() {
                     </Link>
                   ))}
                 </div>
-                                <span className="px-2 py-0.5 rounded-md bg-emerald-500/30 text-emerald-400 text-[8px] font-black border border-emerald-500/30">NEW</span>
-                              )}
-                            </div>
-                            <p className="text-[10px] text-white/40 uppercase tracking-widest mt-1 font-black group-hover/item:text-white/60">{item.time} // {item.status}</p>
-                          </div>
-                          <div className="w-10 h-10 rounded-full flex items-center justify-center border border-white/10 group-hover/item:bg-white/20 transition-all">
-                            <ArrowRight className="w-4 h-4 text-white/30 group-hover/item:text-white" />
-                          </div>
-                        </motion.div>
-                      </Link>
-                    ))}
-                  </div>
->>>>>>> origin/main
               </motion.div>
             </div>
 
@@ -944,7 +756,7 @@ export default function DashboardPage() {
         </footer>
       </div>
 
-      <style jsx global>{`
+      <style>{`
         @keyframes gradient-x {
           0% {
             background-position: 0% 50%;
