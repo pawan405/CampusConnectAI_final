@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "@/components/AuthProvider";
 import {
   Settings,
   ArrowLeft,
@@ -27,6 +28,15 @@ import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 
 export default function SettingsPage() {
+  const navigate = useNavigate(); // ADD THIS
+  const { signOutUser } = useAuth(); // ADD THIS
+
+  const handleLogout = async () => {
+    // ADD THIS
+    await signOutUser();
+    navigate("/");
+  };
+
   const handleSave = () => {
     toast.success("Settings saved successfully!");
   };

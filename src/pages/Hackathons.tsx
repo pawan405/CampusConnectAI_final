@@ -51,6 +51,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
+import { listHackathons } from "@/lib/data";
 
 // --- 3D Components ---
 
@@ -476,15 +477,28 @@ export default function CrackHackPage() {
   const [mounted, setMounted] = useState(false);
   const [filter, setFilter] = useState("");
   const containerRef = useRef<HTMLDivElement>(null);
+  const [feed, setFeed] = useState<any[]>([]);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const docs = await listHackathons();
+        if (docs && docs.length) setFeed(docs);
+      } catch (e) {
+        // ignore; fallback stays
+      }
+    })();
+  }, []);
 
   const filteredHackathons = useMemo(() => {
-    if (!filter) return mockHackathons;
-    return mockHackathons.filter(
+    const source = feed.length ? feed : mockHackathons;
+    if (!filter) return source as any[];
+    return source.filter(
       (h) =>
         h.name.toLowerCase().includes(filter.toLowerCase()) ||
         h.description.toLowerCase().includes(filter.toLowerCase()),
     );
-  }, [filter]);
+  }, [filter, feed]);
 
   // Initialize useScroll with the ref
   const { scrollYProgress } = useScroll({

@@ -17,8 +17,11 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import ThreeDBackground from "@/components/ThreeDBackground";
 import { toast } from "sonner";
+import { useAuth } from "@/components/AuthProvider";
+import { createSilentReport, submitSilentReport } from "@/lib/data";
 
 export default function SilentScreamPage() {
+  const { user } = useAuth();
   const [isRecording, setIsRecording] = useState(false);
   const [showSummary, setShowSummary] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -38,24 +41,10 @@ export default function SilentScreamPage() {
     setIsProcessing(true);
     setSummary("Analyzing transcription for safety protocols...");
     try {
-      const response = await fetch("/api/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          messages: [
-            {
-              role: "user",
-              content: `Please provide a professional, concise executive summary for this report: "${text}". Focus on identifying key concerns and priority level. Keep it under 30 words.`,
-            },
-          ],
-        }),
-      });
-      const data = await response.json();
-      if (data.content) {
-        setSummary(data.content);
-        return data.content;
-      }
-      return "";
+      // Local heuristic summary to avoid external API dependency
+      const s = text.length > 120 ? text.slice(0, 120) + "…" : text;
+      setSummary(s);
+      return s;
     } catch (err) {
       console.error("Failed to generate summary:", err);
       setSummary("Summary unavailable. Please review transcription manually.");
@@ -188,6 +177,10 @@ export default function SilentScreamPage() {
       );
       return;
     }
+    if (!user) {
+      toast.error("Please sign in to upload your report.");
+      return;
+    }
 
     setIsUploading(true);
     try {
@@ -196,25 +189,14 @@ export default function SilentScreamPage() {
       if (transcription && !summary) {
         currentSummary = await generateSummary(transcription);
       }
-
-      const response = await fetch("/api/signals", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          transcription,
-          summary: currentSummary,
-          duration,
-        }),
+      const id = await createSilentReport({
+        uid: user.uid,
+        transcription,
+        summary: currentSummary,
+        duration,
       });
-
-      const data = await response.json();
-
-      if (data.success) {
-        setSignalId(data.signal.id);
-        toast.success("Signal uploaded securely to the encrypted database.");
-      } else {
-        throw new Error(data.error || "Upload failed");
-      }
+      setSignalId(id);
+      toast.success("Signal uploaded securely to the encrypted database.");
     } catch (error: any) {
       console.error("Upload error:", error);
       toast.error(`Upload failed: ${error.message}`);
@@ -231,25 +213,8 @@ export default function SilentScreamPage() {
 
     setIsSubmitting(true);
     try {
-      const response = await fetch("/api/submissions", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          signalId,
-          authorityName: "Campus Security",
-        }),
-      });
-
-      const data = await response.json();
-
-      if (data.success) {
-        toast.success(
-          "Signal successfully submitted to authorities. Reference ID: " +
-            data.submission.id.slice(0, 8),
-        );
-      } else {
-        throw new Error(data.error || "Submission failed");
-      }
+      await submitSilentReport(signalId);
+      toast.success("Signal successfully submitted to authorities.");
     } catch (error: any) {
       console.error("Submission error:", error);
       toast.error(`Submission failed: ${error.message}`);

@@ -40,7 +40,7 @@ import {
 import ThreeDBackground from "@/components/ThreeDBackground";
 import TiltCard from "@/components/TiltCard";
 import { toast } from "sonner";
-
+import { useAuth } from "@/components/AuthProvider";
 // Mock Auth
 const useSession = () => ({
   data: { user: { name: "Test User", email: "test@example.com" } },
@@ -187,7 +187,7 @@ function CountUp({ value, suffix = "" }: { value: number; suffix?: string }) {
 export default function DashboardPage() {
   const navigate = useNavigate();
   const { status } = useSession();
-
+ const { signOutUser } = useAuth(); 
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
 
@@ -421,7 +421,10 @@ export default function DashboardPage() {
                   </DropdownMenuItem>
                   <DropdownMenuSeparator className="bg-white/10" />
                   <DropdownMenuItem
-                    onClick={() => navigate("/")}
+                    onClick={async () => {
+                      await signOutUser();
+                      navigate("/");
+                    }}
                     className="rounded-xl focus:bg-rose-500/20 focus:text-rose-400 cursor-pointer p-3 gap-3"
                   >
                     <LogOut className="w-4 h-4" />{" "}
@@ -479,18 +482,9 @@ export default function DashboardPage() {
                 <TiltCard className="h-48">
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
-                    animate={{
-                      opacity: 1,
-                      y: [0, -8, 0],
-                    }}
+                    animate={{ opacity: 1, y: 0 }}
                     transition={{
                       opacity: { duration: 0.5, delay: i * 0.2 },
-                      y: {
-                        duration: 4,
-                        repeat: Infinity,
-                        ease: "easeInOut",
-                        delay: i * 0.3,
-                      },
                     }}
                     className="w-full h-full bg-black/60 backdrop-blur-3xl border border-white/20 rounded-[40px] p-8 flex flex-col justify-between relative overflow-hidden transition-all duration-500 group-hover:border-cyan-500/50 group-hover:bg-black/80 group-hover:shadow-[0_20px_80px_rgba(6,182,212,0.3)]"
                   >
@@ -586,17 +580,11 @@ export default function DashboardPage() {
                       whileInView={{
                         opacity: 1,
                         scale: 1,
-                        y: [0, -12, 0],
                       }}
-                      viewport={{ once: true }}
+                      viewport={{ once: true, amount: 0.3 }}
                       transition={{
                         opacity: { delay: i * 0.1 },
-                        y: {
-                          duration: 5,
-                          repeat: Infinity,
-                          ease: "easeInOut",
-                          delay: i * 0.4,
-                        },
+                        scale: { delay: i * 0.1 },
                       }}
                       className="h-full bg-black/60 backdrop-blur-3xl border border-white/20 rounded-[48px] p-10 flex flex-col relative overflow-hidden transition-all duration-700 hover:bg-black/80 hover:border-white/40 hover:shadow-[0_30px_100px_rgba(0,0,0,0.6)]"
                     >
@@ -647,7 +635,7 @@ export default function DashboardPage() {
               <motion.div
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
+                viewport={{ once: true, amount: 0.2 }}
                 className="h-full bg-black/60 backdrop-blur-3xl border border-white/20 rounded-[56px] p-12 relative overflow-hidden group"
               >
                 <div className="flex items-center justify-between mb-12">
@@ -707,9 +695,11 @@ export default function DashboardPage() {
 
             <div className="lg:col-span-2">
               <motion.div
+                // Around line 713
                 initial={{ opacity: 0, x: 30 }}
                 whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
+                viewport={{ once: true, amount: 0.2 }}
+                // ...existing code...
                 className="h-full bg-gradient-to-br from-cyan-900/60 via-purple-900/60 to-blue-900/60 backdrop-blur-3xl border border-white/30 rounded-[56px] p-12 flex flex-col justify-between group hover:border-white/60 transition-all duration-700 shadow-[0_40px_100px_rgba(6,182,212,0.3)]"
               >
                 <div>

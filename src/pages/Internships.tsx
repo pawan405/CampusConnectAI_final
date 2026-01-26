@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { Link, useNavigate } from "react-router-dom";
 import {
@@ -46,6 +46,8 @@ import {
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
+import { createInternship, listInternships } from "@/lib/data";
+import { useAuth } from "@/components/AuthProvider";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -142,7 +144,43 @@ const initialPosts = [
 ];
 
 export default function InternshipFeedPage() {
+  const { user } = useAuth();
   const [posts, setPosts] = useState(initialPosts);
+  
+  useEffect(() => {
+    (async () => {
+      try {
+        const docs = await listInternships();
+        if (docs && docs.length) {
+          // map to the UI structure if needed
+          const mapped = docs.map((d: any, i: number) => ({
+            id: i + 1000,
+            company: d.company,
+            role: d.role,
+            location: d.location,
+            duration: d.duration,
+            skills: d.skills || [],
+            obtained: d.obtained || "",
+            prep: d.prep || "",
+            mistakes: d.mistakes || "",
+            resources: d.resources || [],
+            advice: d.advice || "",
+            rating: d.rating || 5,
+            likes: d.likes || 0,
+            comments: d.comments || 0,
+            author: d.author || "Anonymous",
+            year: d.year || "",
+            date: d.date || "",
+            saved: false,
+            liked: false,
+          }));
+          setPosts(mapped);
+        }
+      } catch (e) {
+        // ignore; fallback to initialPosts
+      }
+    })();
+  }, []);
   const [searchQuery, setSearchQuery] = useState("");
   const [filterSkill, setFilterSkill] = useState("all");
   const [showNewPostModal, setShowNewPostModal] = useState(false);
@@ -266,55 +304,75 @@ export default function InternshipFeedPage() {
     });
   };
 
-  const handleSubmitPost = () => {
-    const skills = newPost.skills
-      .split(",")
-      .map((s) => s.trim())
-      .filter((s) => s);
-    const resources = newPost.resources
-      .split(",")
-      .map((s) => s.trim())
-      .filter((s) => s);
+    const handleSubmitPost = async () => {
+      const skills = newPost.skills
+        .split(",")
+        .map((s) => s.trim())
+        .filter((s) => s);
+      const resources = newPost.resources
+        .split(",")
+        .map((s) => s.trim())
+        .filter((s) => s);
 
-    const post = {
-      id: posts.length + 1,
-      ...newPost,
-      skills,
-      resources,
-      likes: 0,
-      comments: 0,
-      date: "Just now",
-      saved: false,
-      liked: false,
+      try {
+        const id = await createInternship({
+          company: newPost.company,
+          role: newPost.role,
+          location: newPost.location,
+          duration: newPost.duration,
+          skills,
+          obtained: newPost.obtained,
+          prep: newPost.prep,
+          mistakes: newPost.mistakes,
+          resources,
+          advice: newPost.advice,
+          rating: newPost.rating,
+          author: newPost.author || user?.displayName || "Anonymous",
+          year: newPost.year,
+          uid: user?.uid,
+        });
+
+        const post = {
+          id: Date.now(),
+          ...newPost,
+          skills,
+          resources,
+          likes: 0,
+          comments: 0,
+          date: "Just now",
+          saved: false,
+          liked: false,
+        };
+
+        setPosts([post, ...posts]);
+        setShowNewPostModal(false);
+        setNewPost({
+          company: "",
+          role: "",
+          location: "",
+          duration: "",
+          skills: "",
+          obtained: "",
+          prep: "",
+          mistakes: "",
+          resources: "",
+          advice: "",
+          rating: 5,
+          author: "",
+          year: "",
+        });
+
+        toast.success("Experience shared successfully!", {
+          description: "Your story is now live and helping other students.",
+          action: {
+            label: "View",
+            onClick: () => window.scrollTo({ top: 0, behavior: "smooth" }),
+          },
+        });
+      } catch (error: any) {
+        toast.error("Failed to share: " + error.message);
+      }
     };
-
-    setPosts([post, ...posts]);
-    setShowNewPostModal(false);
-    setNewPost({
-      company: "",
-      role: "",
-      location: "",
-      duration: "",
-      skills: "",
-      obtained: "",
-      prep: "",
-      mistakes: "",
-      resources: "",
-      advice: "",
-      rating: 5,
-      author: "",
-      year: "",
-    });
-
-    toast.success("Experience shared successfully!", {
-      description: "Your story is now live and helping other students.",
-      action: {
-        label: "View",
-        onClick: () => window.scrollTo({ top: 0, behavior: "smooth" }),
-      },
-    });
-  };
-
   const allSkills = [...new Set(posts.flatMap((p) => p.skills))];
 
   return (

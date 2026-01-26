@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { useAuth } from "@/components/AuthProvider";
 import { auth } from "@/lib/firebase";
 
 const FadeIn = ({
@@ -34,11 +34,11 @@ const FadeIn = ({
 
 export default function LoginPage() {
   const navigate = useNavigate();
+  const { signInWithGoogle, configured } = useAuth();
 
   const handleGoogleLogin = async () => {
     try {
-      const provider = new GoogleAuthProvider();
-      await signInWithPopup(auth, provider);
+      await signInWithGoogle();
       navigate("/dashboard");
     } catch (error) {
       console.error("Sign in error:", error);
@@ -95,12 +95,19 @@ export default function LoginPage() {
               <h2 className="text-xl font-bold text-white mb-8 tracking-tight text-center">
                 Sign in to CampusConnect AI
               </h2>
+              {!configured && (
+                <div className="text-xs text-amber-300 bg-amber-900/30 border border-amber-700 rounded-xl p-3 mb-4">
+                  Firebase is not configured. Add VITE_FIREBASE_* keys to .env
+                  and restart dev.
+                </div>
+              )}
 
               <motion.button
                 onClick={handleGoogleLogin}
                 whileHover={{ y: -5, scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className="flex items-center gap-4 bg-white text-black w-full py-5 px-6 rounded-2xl font-black shadow-2xl hover:bg-zinc-100 transition-all justify-center mb-10"
+                className="flex items-center gap-4 bg-white text-black w-full py-5 px-6 rounded-2xl font-black shadow-2xl hover:bg-zinc-100 transition-all justify-center mb-10 disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={!configured}
               >
                 <FcGoogle className="w-7 h-7" />
                 Continue with Google
