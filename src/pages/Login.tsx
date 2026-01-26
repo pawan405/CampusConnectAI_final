@@ -46,7 +46,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white flex items-center justify-center p-6 relative overflow-hidden selection:bg-blue-500/30">
+    <div className="min-h-screen bg-transparent text-white flex items-center justify-center p-6 relative overflow-hidden selection:bg-blue-500/30">
       {/* Premium Background Atmosphere */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-blue-600/10 rounded-full blur-[120px]" />

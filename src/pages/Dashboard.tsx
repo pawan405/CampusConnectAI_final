@@ -243,7 +243,7 @@ export default function DashboardPage() {
   if (!mounted || status === "loading") return null;
 
   return (
-    <div className="min-h-screen bg-black text-white selection:bg-cyan-500/30 font-sans overflow-x-hidden">
+    <div className="min-h-screen bg-transparent text-white selection:bg-cyan-500/30 font-sans overflow-x-hidden">
       {/* Background */}
       <ThreeDBackground />
 
