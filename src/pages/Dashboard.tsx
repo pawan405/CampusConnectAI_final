@@ -16,7 +16,6 @@ import {
   Shield,
   Target,
   Menu,
-  X,
   Zap,
   Globe,
   Cpu,
@@ -41,6 +40,7 @@ import ThreeDBackground from "@/components/ThreeDBackground";
 import TiltCard from "@/components/TiltCard";
 import { toast } from "sonner";
 import { useAuth } from "@/components/AuthProvider";
+
 // Mock Auth
 const useSession = () => ({
   data: { user: { name: "Test User", email: "test@example.com" } },
@@ -163,11 +163,11 @@ function CountUp({ value, suffix = "" }: { value: number; suffix?: string }) {
     const end = value;
     if (start === end) return;
 
-    let totalMiliseconds = 2000;
-    let incrementTime =
+    const totalMiliseconds = 2000;
+    const incrementTime =
       totalMiliseconds / end > 10 ? totalMiliseconds / end : 10;
 
-    let timer = setInterval(() => {
+    const timer = setInterval(() => {
       start += 1;
       setCount(start);
       if (start === end) clearInterval(timer);
@@ -187,7 +187,7 @@ function CountUp({ value, suffix = "" }: { value: number; suffix?: string }) {
 export default function DashboardPage() {
   const navigate = useNavigate();
   const { status } = useSession();
- const { signOutUser } = useAuth(); 
+  const { signOutUser } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
 
@@ -247,83 +247,93 @@ export default function DashboardPage() {
       {/* Background */}
       <ThreeDBackground />
 
-      {/* Sidebar */}
-      <aside
-        className={`fixed inset-y-0 left-0 z-40 w-[280px] bg-black/80 backdrop-blur-xl border-r border-white/10 transform transition-all duration-700 lg:translate-x-0 ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}`}
-      >
-        <div className="p-8 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-3 group">
-            <motion.div
-              whileHover={{ rotate: 180 }}
-              transition={{ duration: 0.5 }}
-              className="w-10 h-10 rounded-xl bg-linear-to-br from-cyan-400 to-purple-500 p-px shadow-[0_0_20px_rgba(6,182,212,0.5)]"
-            >
-              <div className="w-full h-full rounded-[11px] bg-black flex items-center justify-center">
-                <Cpu className="w-5 h-5 text-cyan-400" />
-              </div>
-            </motion.div>
-            <span className="text-xl font-black tracking-tighter bg-clip-text text-transparent bg-linear-to-r from-white via-white to-white/40">
-              CampusConnect
-            </span>
-          </Link>
-          <button
-            onClick={() => setSidebarOpen(false)}
-            className="lg:hidden p-2 text-white/40 hover:text-white transition-colors"
-          >
-            <X className="w-5 h-5" />
-          </button>
-        </div>
-
-        <nav className="px-4 mt-8 space-y-2">
-          {navItems.map((item, i) => (
-            <Link key={i} to={item.href}>
-              <motion.div
-                whileHover={{
-                  x: 10,
-                  backgroundColor: "rgba(255,255,255,0.12)",
-                }}
-                className={`flex items-center justify-between px-4 py-3.5 rounded-2xl transition-all relative group ${item.active ? "bg-white/15 text-white shadow-[0_0_25px_rgba(6,182,212,0.2)] border border-white/20" : "text-white/60 hover:text-white"}`}
+      {/* Sidebar as Burger Menu */}
+      <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
+        <SheetContent
+          side="left"
+          className="w-[280px] bg-black/95 border-r border-white/10 backdrop-blur-2xl p-0"
+        >
+          <SheetHeader className="p-6 border-b border-white/10">
+            <SheetTitle>
+              <Link
+                to="/"
+                className="flex items-center gap-3"
+                onClick={() => setSidebarOpen(false)}
               >
-                <div className="flex items-center gap-4">
-                  <item.icon
-                    className={`w-5 h-5 transition-all duration-300 ${item.active ? "text-cyan-400 scale-110" : "group-hover:text-white"}`}
-                  />
-                  <span className="font-bold text-sm tracking-wide">
-                    {item.label}
-                  </span>
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-400 to-purple-500 p-px shadow-[0_0_20px_rgba(6,182,212,0.5)]">
+                  <div className="w-full h-full rounded-[11px] bg-black flex items-center justify-center">
+                    <Cpu className="w-5 h-5 text-cyan-400" />
+                  </div>
                 </div>
-                {item.badge && (
-                  <span className="text-[10px] px-2 py-0.5 rounded-md bg-cyan-500/20 text-cyan-400 border border-cyan-500/20 font-black animate-pulse">
-                    {item.badge}
-                  </span>
-                )}
-                {item.active && (
-                  <motion.div
-                    layoutId="activeNav"
-                    className="absolute left-0 w-1 h-6 bg-cyan-400 rounded-r-full"
-                  />
-                )}
-              </motion.div>
-            </Link>
-          ))}
-        </nav>
-      </aside>
+                <span className="text-xl font-black tracking-tighter text-white">
+                  CampusConnect
+                </span>
+              </Link>
+            </SheetTitle>
+          </SheetHeader>
+
+          <nav className="px-4 mt-6 space-y-2">
+            {navItems.map((item, i) => (
+              <Link
+                key={i}
+                to={item.href}
+                onClick={() => setSidebarOpen(false)}
+              >
+                <div
+                  className={`flex items-center justify-between px-4 py-3.5 rounded-2xl transition-all relative group hover:bg-white/10 ${item.active ? "bg-white/15 text-white border border-white/20" : "text-white/60 hover:text-white"}`}
+                >
+                  <div className="flex items-center gap-4">
+                    <item.icon
+                      className={`w-5 h-5 transition-all duration-300 ${item.active ? "text-cyan-400" : "group-hover:text-white"}`}
+                    />
+                    <span className="font-bold text-sm tracking-wide">
+                      {item.label}
+                    </span>
+                  </div>
+                  {item.badge && (
+                    <span className="text-[10px] px-2 py-0.5 rounded-md bg-cyan-500/20 text-cyan-400 border border-cyan-500/20 font-black">
+                      {item.badge}
+                    </span>
+                  )}
+                </div>
+              </Link>
+            ))}
+          </nav>
+        </SheetContent>
+      </Sheet>
 
       {/* Main Content */}
-      <div className="lg:ml-[280px] min-h-screen">
+      <div className="min-h-screen">
         {/* Header */}
-        <header className="sticky top-0 z-30 px-8 py-4 bg-black/60 backdrop-blur-md border-b border-white/5">
-          <div className="flex items-center justify-between max-w-7xl mx-auto">
-            <div className="flex items-center gap-6">
+        <header className="sticky top-0 z-30 px-6 py-4 bg-black/60 backdrop-blur-md border-b border-white/5">
+          <div className="flex items-center justify-between w-full">
+            {/* Left - Burger Menu */}
+            <div className="flex items-center w-1/3">
               <button
                 onClick={() => setSidebarOpen(true)}
-                className="lg:hidden p-2 hover:bg-white/10 rounded-lg transition-colors"
+                className="p-2 hover:bg-white/10 rounded-lg transition-colors"
               >
-                <Menu className="w-6 h-6 text-white/60" />
+                <Menu className="w-6 h-6 text-white/60 hover:text-cyan-400 transition-colors" />
               </button>
             </div>
 
-            <div className="flex items-center gap-4">
+            {/* Center - Logo */}
+            <div className="flex items-center justify-center w-1/3">
+              <Link to="/" className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan-400 to-purple-500 p-px">
+                  <div className="w-full h-full rounded-[7px] bg-black flex items-center justify-center">
+                    <Cpu className="w-4 h-4 text-cyan-400" />
+                  </div>
+                </div>
+                <span className="text-lg font-black tracking-tight">
+                  CampusConnect
+                </span>
+              </Link>
+            </div>
+
+            {/* Right - Notifications & User */}
+            <div className="flex items-center justify-end gap-4 w-1/3">
+              {/* Notifications Sheet - existing code */}
               <Sheet>
                 <SheetTrigger asChild>
                   <Button
@@ -346,12 +356,10 @@ export default function DashboardPage() {
                       </SheetDescription>
                     </SheetHeader>
 
-                    <div className="flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar">
+                    <div className="flex-1 overflow-y-auto p-4 space-y-4">
                       {notifications.map((notif) => (
-                        <motion.div
+                        <div
                           key={notif.id}
-                          initial={{ opacity: 0, x: -20 }}
-                          animate={{ opacity: 1, x: 0 }}
                           className="p-6 bg-white/5 border border-white/10 rounded-[28px] hover:bg-white/10 transition-all cursor-pointer group"
                         >
                           <div className="flex items-start gap-4">
@@ -379,7 +387,7 @@ export default function DashboardPage() {
                               </p>
                             </div>
                           </div>
-                        </motion.div>
+                        </div>
                       ))}
                     </div>
 
@@ -398,10 +406,11 @@ export default function DashboardPage() {
                 </SheetContent>
               </Sheet>
 
+              {/* User Menu - existing code */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <button className="flex items-center gap-3 p-1 rounded-2xl border border-white/5 bg-white/5 hover:bg-white/10 transition-all hover:scale-105 duration-300">
-                    <div className="w-8 h-8 rounded-xl overflow-hidden bg-linear-to-br from-cyan-500 to-purple-500 p-px">
+                    <div className="w-8 h-8 rounded-xl overflow-hidden bg-gradient-to-br from-cyan-500 to-purple-500 p-px">
                       <div className="w-full h-full rounded-[11px] bg-black flex items-center justify-center">
                         <User className="w-4 h-4 text-white" />
                       </div>
@@ -416,7 +425,7 @@ export default function DashboardPage() {
                     onClick={() => navigate("/settings")}
                     className="rounded-xl focus:bg-white/5 focus:text-cyan-400 cursor-pointer p-3 gap-3"
                   >
-                    <User className="w-4 h-4" />{" "}
+                    <User className="w-4 h-4" />
                     <span className="text-sm font-bold">Profile Interface</span>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator className="bg-white/10" />
@@ -427,7 +436,7 @@ export default function DashboardPage() {
                     }}
                     className="rounded-xl focus:bg-rose-500/20 focus:text-rose-400 cursor-pointer p-3 gap-3"
                   >
-                    <LogOut className="w-4 h-4" />{" "}
+                    <LogOut className="w-4 h-4" />
                     <span className="text-sm font-bold">Disconnect</span>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
@@ -436,7 +445,8 @@ export default function DashboardPage() {
           </div>
         </header>
 
-        <main className="p-8 lg:p-12 max-w-7xl mx-auto space-y-24">
+        {/* Main - Remove max-w-7xl, use full width with padding */}
+        <main className="p-6 lg:p-10 space-y-16">
           {/* Hero Section */}
           <section className="relative">
             <motion.div
@@ -461,13 +471,12 @@ export default function DashboardPage() {
                 generation of innovators. Your future, calculated in real-time.
               </p>
               <div className="flex flex-wrap gap-4 pt-4">
-                <Link to="/match-analysis">
+                <Link to="/neural-intelligence">
                   <Button className="h-16 px-10 rounded-2xl bg-cyan-500 hover:bg-cyan-400 text-black font-black uppercase tracking-[0.2em] text-xs transition-all hover:shadow-[0_0_40px_#06b6d4] group overflow-hidden relative">
                     <span className="relative z-10 flex items-center">
                       Analyze Matches
                       <ArrowRight className="ml-3 w-4 h-4 group-hover:translate-x-2 transition-transform duration-500" />
                     </span>
-                    <motion.div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
                   </Button>
                 </Link>
               </div>
@@ -476,16 +485,13 @@ export default function DashboardPage() {
 
           {/* Stats Grid */}
           <section className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {stats.map((stat, i) => {
-              const isHackathonCard = stat.label === "Hackathons Joined";
-              const CardContent = (
+            {stats.map((stat, i) => (
+              <Link key={i} to={stat.href} className="group">
                 <TiltCard className="h-48">
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{
-                      opacity: { duration: 0.5, delay: i * 0.2 },
-                    }}
+                    transition={{ duration: 0.5, delay: i * 0.2 }}
                     className="w-full h-full bg-black/60 backdrop-blur-3xl border border-white/20 rounded-[40px] p-8 flex flex-col justify-between relative overflow-hidden transition-all duration-500 group-hover:border-cyan-500/50 group-hover:bg-black/80 group-hover:shadow-[0_20px_80px_rgba(6,182,212,0.3)]"
                   >
                     <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-cyan-500/20 to-transparent blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
@@ -539,22 +545,8 @@ export default function DashboardPage() {
                     </div>
                   </motion.div>
                 </TiltCard>
-              );
-
-              if (isHackathonCard) {
-                return (
-                  <Link key={i} to={stat.href} className="group">
-                    {CardContent}
-                  </Link>
-                );
-              }
-
-              return (
-                <Link key={i} to={stat.href} className="group">
-                  {CardContent}
-                </Link>
-              );
-            })}
+              </Link>
+            ))}
           </section>
 
           {/* Feature Modules */}
@@ -577,15 +569,9 @@ export default function DashboardPage() {
                   <TiltCard className="h-full">
                     <motion.div
                       initial={{ opacity: 0, scale: 0.9 }}
-                      whileInView={{
-                        opacity: 1,
-                        scale: 1,
-                      }}
+                      whileInView={{ opacity: 1, scale: 1 }}
                       viewport={{ once: true, amount: 0.3 }}
-                      transition={{
-                        opacity: { delay: i * 0.1 },
-                        scale: { delay: i * 0.1 },
-                      }}
+                      transition={{ delay: i * 0.1 }}
                       className="h-full bg-black/60 backdrop-blur-3xl border border-white/20 rounded-[48px] p-10 flex flex-col relative overflow-hidden transition-all duration-700 hover:bg-black/80 hover:border-white/40 hover:shadow-[0_30px_100px_rgba(0,0,0,0.6)]"
                     >
                       <div
@@ -658,13 +644,7 @@ export default function DashboardPage() {
                 <div className="space-y-4">
                   {activities.map((item, i) => (
                     <Link key={i} to={item.href}>
-                      <motion.div
-                        whileHover={{
-                          x: 10,
-                          backgroundColor: "rgba(255,255,255,0.1)",
-                        }}
-                        className="flex items-center gap-6 p-6 rounded-[32px] bg-white/5 border border-white/10 group/item transition-all duration-300 hover:border-white/30 cursor-pointer"
-                      >
+                      <div className="flex items-center gap-6 p-6 rounded-[32px] bg-white/5 border border-white/10 group/item transition-all duration-300 hover:bg-white/10 hover:border-white/30 cursor-pointer">
                         <div className="w-14 h-14 rounded-2xl bg-black flex items-center justify-center border border-white/20 group-hover/item:border-cyan-500/50 transition-colors">
                           <item.icon className="w-6 h-6 text-white/60 group-hover/item:text-cyan-400 transition-colors" />
                         </div>
@@ -679,14 +659,14 @@ export default function DashboardPage() {
                               </span>
                             )}
                           </div>
-                          <p className="text-[10px] text-white/40 uppercase tracking-widest mt-1 font-black group-hover/item:text-white/60">
+                          <p className="text-[10px] text-white/40 uppercase tracking-widest mt-1 font-black group-hover:item:text-white/60">
                             {item.time} // {item.status}
                           </p>
                         </div>
-                        <div className="w-10 h-10 rounded-full flex items-center justify-center border border-white/10 group-hover/item:bg-white/20 transition-all">
-                          <ArrowRight className="w-4 h-4 text-white/30 group-hover/item:text-white" />
+                        <div className="w-10 h-10 rounded-full flex items-center justify-center border border-white/10 group-hover:item:bg-white/20 transition-all">
+                          <ArrowRight className="w-4 h-4 text-white/30 group-hover:item:text-white" />
                         </div>
-                      </motion.div>
+                      </div>
                     </Link>
                   ))}
                 </div>
@@ -695,11 +675,9 @@ export default function DashboardPage() {
 
             <div className="lg:col-span-2">
               <motion.div
-                // Around line 713
                 initial={{ opacity: 0, x: 30 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true, amount: 0.2 }}
-                // ...existing code...
                 className="h-full bg-gradient-to-br from-cyan-900/60 via-purple-900/60 to-blue-900/60 backdrop-blur-3xl border border-white/30 rounded-[56px] p-12 flex flex-col justify-between group hover:border-white/60 transition-all duration-700 shadow-[0_40px_100px_rgba(6,182,212,0.3)]"
               >
                 <div>
@@ -717,9 +695,9 @@ export default function DashboardPage() {
                     high-affinity opportunities.
                   </p>
                 </div>
-                <Link to="/match-analysis" className="block w-full mt-12">
+                <Link to="/neural-intelligence" className="block w-full mt-12">
                   <Button className="h-20 w-full rounded-[32px] bg-gradient-to-r from-cyan-500 to-purple-600 text-white font-black uppercase tracking-[0.3em] text-xs hover:scale-[1.02] transition-all duration-500 shadow-[0_20px_60px_rgba(6,182,212,0.4)] group border-none">
-                    Access Intelligence{" "}
+                    Access Intelligence
                     <ArrowRight className="ml-3 w-4 h-4 group-hover:translate-x-2 transition-transform" />
                   </Button>
                 </Link>
@@ -729,11 +707,7 @@ export default function DashboardPage() {
         </main>
 
         <footer className="py-24 text-center">
-          <motion.div
-            animate={{ opacity: [0.3, 0.6, 0.3] }}
-            transition={{ duration: 4, repeat: Infinity }}
-            className="flex flex-col items-center gap-6"
-          >
+          <div className="flex flex-col items-center gap-6 opacity-50">
             <div className="flex items-center gap-4">
               <div className="h-[1px] w-12 bg-white/10" />
               <Cpu className="w-5 h-5 text-white/20" />
@@ -742,21 +716,15 @@ export default function DashboardPage() {
             <p className="text-[10px] font-black text-white/10 uppercase tracking-[1em]">
               CampusConnect AI // Neural Link Established // v5.0.0-PRO
             </p>
-          </motion.div>
+          </div>
         </footer>
       </div>
 
       <style>{`
         @keyframes gradient-x {
-          0% {
-            background-position: 0% 50%;
-          }
-          50% {
-            background-position: 100% 50%;
-          }
-          100% {
-            background-position: 0% 50%;
-          }
+          0% { background-position: 0% 50%; }
+          50% { background-position: 100% 50%; }
+          100% { background-position: 0% 50%; }
         }
         .animate-gradient-x {
           background-size: 200% 200%;
