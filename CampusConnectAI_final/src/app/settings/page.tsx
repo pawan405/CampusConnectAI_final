@@ -53,10 +53,15 @@ export default function SettingsPage() {
                 <ArrowLeft className="w-4 h-4" /> Dashboard
               </Button>
             </Link>
-            <div className="flex items-center gap-3">
-              <Settings className="w-5 h-5 text-blue-400" />
-              <span className="font-bold">System Settings</span>
-            </div>
+            <Link
+              href="/settings"
+              className="flex items-center gap-3 group cursor-pointer"
+            >
+              <Settings className="w-5 h-5 text-blue-400 group-hover:text-blue-300" />
+              <span className="font-bold group-hover:text-white">
+                System Settings
+              </span>
+            </Link>
           </div>
         </div>
       </nav>

@@ -190,6 +190,7 @@ export default function DashboardPage() {
   const { signOutUser } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
 
   const [notifications, setNotifications] = useState([
     {
@@ -230,6 +231,20 @@ export default function DashboardPage() {
     },
   ]);
 
+  // Check if there are any new notifications
+  const hasNewNotifications = notifications.some((notif) => notif.isNew);
+
+  // Handle notification sheet open - mark all notifications as viewed
+  const handleNotificationsOpen = (open: boolean) => {
+    setNotificationsOpen(open);
+    if (open) {
+      // When sheet opens, mark all notifications as viewed
+      setNotifications((prev) =>
+        prev.map((notif) => ({ ...notif, isNew: false }))
+      );
+    }
+  };
+
   useEffect(() => {
     setMounted(true);
   }, []);
@@ -255,10 +270,10 @@ export default function DashboardPage() {
         >
           <SheetHeader className="p-6 border-b border-white/10">
             <SheetTitle>
-              <Link
-                to="/"
-                className="flex items-center gap-3"
-                onClick={() => setSidebarOpen(false)}
+              <div 
+                className="flex items-center gap-3 pointer-events-none select-none"
+                onClick={(e) => e.preventDefault()}
+                onMouseDown={(e) => e.preventDefault()}
               >
                 <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-400 to-purple-500 p-px shadow-[0_0_20px_rgba(6,182,212,0.5)]">
                   <div className="w-full h-full rounded-[11px] bg-black flex items-center justify-center">
@@ -268,7 +283,7 @@ export default function DashboardPage() {
                 <span className="text-xl font-black tracking-tighter text-white">
                   CampusConnect
                 </span>
-              </Link>
+              </div>
             </SheetTitle>
           </SheetHeader>
 
@@ -319,7 +334,7 @@ export default function DashboardPage() {
 
             {/* Center - Logo */}
             <div className="flex items-center justify-center w-1/3">
-              <Link to="/" className="flex items-center gap-2">
+              <div className="flex items-center gap-2">
                 <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan-400 to-purple-500 p-px">
                   <div className="w-full h-full rounded-[7px] bg-black flex items-center justify-center">
                     <Cpu className="w-4 h-4 text-cyan-400" />
@@ -328,13 +343,13 @@ export default function DashboardPage() {
                 <span className="text-lg font-black tracking-tight">
                   CampusConnect
                 </span>
-              </Link>
+              </div>
             </div>
 
             {/* Right - Notifications & User */}
             <div className="flex items-center justify-end gap-4 w-1/3">
               {/* Notifications Sheet - existing code */}
-              <Sheet>
+              <Sheet open={notificationsOpen} onOpenChange={handleNotificationsOpen}>
                 <SheetTrigger asChild>
                   <Button
                     variant="ghost"
@@ -342,7 +357,9 @@ export default function DashboardPage() {
                     className="w-11 h-11 rounded-2xl border border-white/5 hover:bg-white/5 relative group"
                   >
                     <Bell className="w-5 h-5 text-white/60 group-hover:text-cyan-400 transition-colors" />
-                    <span className="absolute top-3 right-3 w-2 h-2 bg-cyan-500 rounded-full shadow-[0_0_10px_#06b6d4] animate-pulse" />
+                    {hasNewNotifications && (
+                      <span className="absolute top-3 right-3 w-2 h-2 bg-cyan-500 rounded-full shadow-[0_0_10px_#06b6d4] animate-pulse" />
+                    )}
                   </Button>
                 </SheetTrigger>
                 <SheetContent className="w-full sm:max-w-md bg-black/95 border-l border-white/10 backdrop-blur-2xl p-0">
@@ -423,7 +440,7 @@ export default function DashboardPage() {
                 >
                   <DropdownMenuItem
                     onClick={() => navigate("/settings")}
-                    className="rounded-xl focus:bg-white/5 focus:text-cyan-400 cursor-pointer p-3 gap-3"
+                    className="rounded-xl text-white/80 focus:bg-cyan-500/20 focus:text-cyan-400 cursor-pointer p-3 gap-3"
                   >
                     <User className="w-4 h-4" />
                     <span className="text-sm font-bold">Profile Interface</span>
@@ -434,7 +451,7 @@ export default function DashboardPage() {
                       await signOutUser();
                       navigate("/");
                     }}
-                    className="rounded-xl focus:bg-rose-500/20 focus:text-rose-400 cursor-pointer p-3 gap-3"
+                    className="rounded-xl text-white/80 focus:bg-rose-500/20 focus:text-rose-400 cursor-pointer p-3 gap-3"
                   >
                     <LogOut className="w-4 h-4" />
                     <span className="text-sm font-bold">Disconnect</span>

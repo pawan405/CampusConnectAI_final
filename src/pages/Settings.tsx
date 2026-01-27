@@ -61,10 +61,15 @@ export default function SettingsPage() {
                 <ArrowLeft className="w-4 h-4" /> Dashboard
               </Button>
             </Link>
-            <div className="flex items-center gap-3">
-              <Settings className="w-5 h-5 text-blue-400" />
-              <span className="font-bold">System Settings</span>
-            </div>
+            <Link
+              to="/settings"
+              className="flex items-center gap-3 group cursor-pointer"
+            >
+              <Settings className="w-5 h-5 text-blue-400 group-hover:text-blue-300" />
+              <span className="font-bold group-hover:text-white">
+                System Settings
+              </span>
+            </Link>
           </div>
         </div>
       </nav>
@@ -87,7 +92,7 @@ export default function SettingsPage() {
                 <div className="p-2 rounded-lg bg-blue-500/10">
                   <User className="w-5 h-5 text-blue-400" />
                 </div>
-                <CardTitle>Public Profile</CardTitle>
+                <CardTitle className="text-white">Public Profile</CardTitle>
               </div>
               <CardDescription className="text-white/40">
                 How others see you on the platform.
@@ -101,7 +106,7 @@ export default function SettingsPage() {
                   </label>
                   <Input
                     placeholder="Student Name"
-                    className="bg-white/[0.03] border-white/[0.08]"
+                    className="bg-white/[0.03] border-white/[0.08] text-white placeholder:text-white/40"
                   />
                 </div>
                 <div className="space-y-2">
@@ -110,7 +115,7 @@ export default function SettingsPage() {
                   </label>
                   <Input
                     placeholder="student@campus.edu"
-                    className="bg-white/[0.03] border-white/[0.08]"
+                    className="bg-white/[0.03] border-white/[0.08] text-white placeholder:text-white/40"
                   />
                 </div>
               </div>
@@ -120,7 +125,7 @@ export default function SettingsPage() {
                 </label>
                 <Input
                   placeholder="Tell us about your career goals..."
-                  className="bg-white/[0.03] border-white/[0.08]"
+                  className="bg-white/[0.03] border-white/[0.08] text-white placeholder:text-white/40"
                 />
               </div>
             </CardContent>
@@ -133,7 +138,7 @@ export default function SettingsPage() {
                 <div className="p-2 rounded-lg bg-emerald-500/10">
                   <Cpu className="w-5 h-5 text-emerald-400" />
                 </div>
-                <CardTitle>AI Preferences</CardTitle>
+                <CardTitle className="text-white">AI Preferences</CardTitle>
               </div>
               <CardDescription className="text-white/40">
                 Customize how the AI assistant interacts with you.
@@ -142,7 +147,7 @@ export default function SettingsPage() {
             <CardContent className="space-y-6">
               <div className="flex items-center justify-between p-4 rounded-xl bg-white/[0.03] border border-white/[0.06]">
                 <div className="space-y-1">
-                  <p className="text-sm font-bold">
+                  <p className="text-sm font-bold text-white">
                     Proactive Roadmap Suggestions
                   </p>
                   <p className="text-xs text-white/40">
@@ -153,7 +158,7 @@ export default function SettingsPage() {
               </div>
               <div className="flex items-center justify-between p-4 rounded-xl bg-white/[0.03] border border-white/[0.06]">
                 <div className="space-y-1">
-                  <p className="text-sm font-bold">Anonymous Transcription</p>
+                  <p className="text-sm font-bold text-white">Anonymous Transcription</p>
                   <p className="text-xs text-white/40">
                     Automatically process Silent Scream reports with high
                     privacy AI.
@@ -171,7 +176,7 @@ export default function SettingsPage() {
                 <div className="p-2 rounded-lg bg-rose-500/10">
                   <ShieldCheck className="w-5 h-5 text-rose-400" />
                 </div>
-                <CardTitle>Security & Privacy</CardTitle>
+                <CardTitle className="text-white">Security & Privacy</CardTitle>
               </div>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -181,7 +186,7 @@ export default function SettingsPage() {
                     <Smartphone className="w-5 h-5 text-white/40" />
                   </div>
                   <div>
-                    <p className="text-sm font-bold">
+                    <p className="text-sm font-bold text-white">
                       Two-Factor Authentication
                     </p>
                     <p className="text-xs text-white/40">
@@ -197,7 +202,7 @@ export default function SettingsPage() {
                         "Establishing secure link with your mobile device...",
                     })
                   }
-                  className="border-white/[0.08] hover:bg-white/[0.06]"
+                  className="border-white/[0.08] hover:bg-white/[0.06] text-white"
                 >
                   Enable
                 </Button>
@@ -208,7 +213,7 @@ export default function SettingsPage() {
                     <Database className="w-5 h-5 text-white/40" />
                   </div>
                   <div>
-                    <p className="text-sm font-bold">Data Management</p>
+                    <p className="text-sm font-bold text-white">Data Management</p>
                     <p className="text-xs text-white/40">
                       Download or delete your account data.
                     </p>
