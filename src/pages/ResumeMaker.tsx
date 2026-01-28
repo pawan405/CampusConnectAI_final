@@ -151,38 +151,38 @@ export default function ResumeMaker() {
                     <div className="w-12 h-12 rounded-2xl bg-cyan-500/10 flex items-center justify-center border border-cyan-500/20">
                       <User className="w-6 h-6 text-cyan-400" />
                     </div>
-                    <div>
-                      <CardTitle className="text-xl font-black tracking-tight uppercase">Personal Matrix</CardTitle>
-                      <CardDescription className="text-white/70 text-xs">Core identification data</CardDescription>
+                      <div>
+                        <CardTitle className="text-xl font-black tracking-tight uppercase text-white">Personal Matrix</CardTitle>
+                        <CardDescription className="text-white/80 text-xs">Core identification data</CardDescription>
+                      </div>
                     </div>
-                  </div>
-                </CardHeader>
-                <CardContent className="p-8 space-y-6">
-                  <div className="grid grid-cols-2 gap-4">
+                  </CardHeader>
+                  <CardContent className="p-8 space-y-6">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-black text-white/70 uppercase tracking-widest pl-1">Full Name</label>
+                        <Input 
+                          value={personalInfo.name} 
+                          onChange={(e) => setPersonalInfo({...personalInfo, name: e.target.value})}
+                          className="bg-white/[0.02] border-white/10 rounded-xl h-12 text-sm text-white placeholder:text-white/20"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-black text-white/70 uppercase tracking-widest pl-1">Email Signal</label>
+                        <Input 
+                          value={personalInfo.email} 
+                          onChange={(e) => setPersonalInfo({...personalInfo, email: e.target.value})}
+                          className="bg-white/[0.02] border-white/10 rounded-xl h-12 text-sm text-white placeholder:text-white/20"
+                        />
+                      </div>
+                    </div>
                     <div className="space-y-2">
-                      <label className="text-[10px] font-black text-white/50 uppercase tracking-widest pl-1">Full Name</label>
-                      <Input 
-                        value={personalInfo.name} 
-                        onChange={(e) => setPersonalInfo({...personalInfo, name: e.target.value})}
-                        className="bg-white/[0.02] border-white/10 rounded-xl h-12 text-sm"
+                      <label className="text-[10px] font-black text-white/70 uppercase tracking-widest pl-1">Neural Summary</label>
+                      <Textarea 
+                        value={personalInfo.summary} 
+                        onChange={(e) => setPersonalInfo({...personalInfo, summary: e.target.value})}
+                        className="bg-white/[0.02] border-white/10 rounded-xl min-h-[100px] text-sm resize-none text-white placeholder:text-white/20"
                       />
-                    </div>
-                    <div className="space-y-2">
-                      <label className="text-[10px] font-black text-white/50 uppercase tracking-widest pl-1">Email Signal</label>
-                      <Input 
-                        value={personalInfo.email} 
-                        onChange={(e) => setPersonalInfo({...personalInfo, email: e.target.value})}
-                        className="bg-white/[0.02] border-white/10 rounded-xl h-12 text-sm"
-                      />
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-black text-white/50 uppercase tracking-widest pl-1">Neural Summary</label>
-                    <Textarea 
-                      value={personalInfo.summary} 
-                      onChange={(e) => setPersonalInfo({...personalInfo, summary: e.target.value})}
-                      className="bg-white/[0.02] border-white/10 rounded-xl min-h-[100px] text-sm resize-none"
-                    />
                   </div>
                 </CardContent>
               </Card>
@@ -193,81 +193,81 @@ export default function ResumeMaker() {
                     <div className="w-12 h-12 rounded-2xl bg-purple-500/10 flex items-center justify-center border border-purple-500/20">
                       <GraduationCap className="w-6 h-6 text-purple-400" />
                     </div>
-                    <div>
-                      <CardTitle className="text-xl font-black tracking-tight uppercase">Academic Core</CardTitle>
-                      <CardDescription className="text-white/70 text-xs">Educational milestones</CardDescription>
-                    </div>
-                  </div>
-                  <Button 
-                    onClick={() => setEducation([...education, { id: Date.now(), school: "", degree: "", year: "" }])}
-                    variant="ghost" className="h-10 w-10 p-0 rounded-xl hover:bg-white/5 border border-white/10"
-                  >
-                    <Plus className="w-4 h-4" />
-                  </Button>
-                </CardHeader>
-                <CardContent className="p-8 space-y-6">
-                  {education.map((edu) => (
-                    <div key={edu.id} className="p-6 bg-white/[0.02] border border-white/10 rounded-2xl space-y-4 relative group">
-                      <button 
-                        onClick={() => setEducation(education.filter(e => e.id !== edu.id))}
-                        className="absolute top-4 right-4 text-white/40 hover:text-rose-400 transition-colors opacity-0 group-hover:opacity-100"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                      <div className="grid grid-cols-2 gap-4">
-                        <Input 
-                          placeholder="Institution" 
-                          value={edu.school}
-                          onChange={(e) => setEducation(education.map(ed => ed.id === edu.id ? {...ed, school: e.target.value} : ed))}
-                          className="bg-black/40 border-white/10 rounded-lg h-10 text-xs"
-                        />
-                        <Input 
-                          placeholder="Degree" 
-                          value={edu.degree}
-                          onChange={(e) => setEducation(education.map(ed => ed.id === edu.id ? {...ed, degree: e.target.value} : ed))}
-                          className="bg-black/40 border-white/10 rounded-lg h-10 text-xs"
-                        />
+                      <div>
+                        <CardTitle className="text-xl font-black tracking-tight uppercase text-white">Academic Core</CardTitle>
+                        <CardDescription className="text-white/80 text-xs">Educational milestones</CardDescription>
                       </div>
                     </div>
-                  ))}
-                </CardContent>
-              </Card>
-
-              <Card className="bg-black/40 backdrop-blur-3xl border-white/10 rounded-[32px] overflow-hidden">
-                <CardHeader className="p-8 border-b border-white/5 flex flex-row items-center justify-between">
-                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 flex items-center justify-center border border-emerald-500/20">
-                      <Code className="w-6 h-6 text-emerald-400" />
-                    </div>
-                    <div>
-                      <CardTitle className="text-xl font-black tracking-tight uppercase">Skill Matrix</CardTitle>
-                      <CardDescription className="text-white/70 text-xs">Technical competencies</CardDescription>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent className="p-8">
-                  <div className="flex flex-wrap gap-2">
-                    {skills.map((skill, i) => (
-                      <div key={i} className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/5 border border-white/20 group">
-                        <span className="text-[11px] font-bold text-white/80">{skill}</span>
-                        <button onClick={() => setSkills(skills.filter((_, idx) => idx !== i))} className="text-white/40 hover:text-rose-400">
-                          <Trash2 className="w-3 h-3" />
+                    <Button 
+                      onClick={() => setEducation([...education, { id: Date.now(), school: "", degree: "", year: "" }])}
+                      variant="ghost" className="h-10 w-10 p-0 rounded-xl hover:bg-white/5 border border-white/10"
+                    >
+                      <Plus className="w-4 h-4 text-white" />
+                    </Button>
+                  </CardHeader>
+                  <CardContent className="p-8 space-y-6">
+                    {education.map((edu) => (
+                      <div key={edu.id} className="p-6 bg-white/[0.02] border border-white/10 rounded-2xl space-y-4 relative group">
+                        <button 
+                          onClick={() => setEducation(education.filter(e => e.id !== edu.id))}
+                          className="absolute top-4 right-4 text-white/40 hover:text-rose-400 transition-colors opacity-0 group-hover:opacity-100"
+                        >
+                          <Trash2 className="w-4 h-4" />
                         </button>
+                        <div className="grid grid-cols-2 gap-4">
+                          <Input 
+                            placeholder="Institution" 
+                            value={edu.school}
+                            onChange={(e) => setEducation(education.map(ed => ed.id === edu.id ? {...ed, school: e.target.value} : ed))}
+                            className="bg-black/40 border-white/10 rounded-lg h-10 text-xs text-white placeholder:text-white/20"
+                          />
+                          <Input 
+                            placeholder="Degree" 
+                            value={edu.degree}
+                            onChange={(e) => setEducation(education.map(ed => ed.id === edu.id ? {...ed, degree: e.target.value} : ed))}
+                            className="bg-black/40 border-white/10 rounded-lg h-10 text-xs text-white placeholder:text-white/20"
+                          />
+                        </div>
                       </div>
                     ))}
-                    <Input 
-                      placeholder="Add Skill..." 
-                      className="w-32 h-9 bg-black/40 border-white/10 rounded-lg text-xs"
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter' && e.currentTarget.value) {
-                          setSkills([...skills, e.currentTarget.value]);
-                          e.currentTarget.value = "";
-                        }
-                      }}
-                    />
-                  </div>
-                </CardContent>
-              </Card>
+                  </CardContent>
+                </Card>
+
+                <Card className="bg-black/40 backdrop-blur-3xl border-white/10 rounded-[32px] overflow-hidden">
+                  <CardHeader className="p-8 border-b border-white/5 flex flex-row items-center justify-between">
+                    <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 flex items-center justify-center border border-emerald-500/20">
+                        <Code className="w-6 h-6 text-emerald-400" />
+                      </div>
+                      <div>
+                        <CardTitle className="text-xl font-black tracking-tight uppercase text-white">Skill Matrix</CardTitle>
+                        <CardDescription className="text-white/80 text-xs">Technical competencies</CardDescription>
+                      </div>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="p-8">
+                    <div className="flex flex-wrap gap-2">
+                      {skills.map((skill, i) => (
+                        <div key={i} className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/5 border border-white/20 group">
+                          <span className="text-[11px] font-bold text-white/90">{skill}</span>
+                          <button onClick={() => setSkills(skills.filter((_, idx) => idx !== i))} className="text-white/40 hover:text-rose-400">
+                            <Trash2 className="w-3 h-3" />
+                          </button>
+                        </div>
+                      ))}
+                      <Input 
+                        placeholder="Add Skill..." 
+                        className="w-32 h-9 bg-black/40 border-white/10 rounded-lg text-xs text-white placeholder:text-white/20"
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' && e.currentTarget.value) {
+                            setSkills([...skills, e.currentTarget.value]);
+                            e.currentTarget.value = "";
+                          }
+                        }}
+                      />
+                    </div>
+                  </CardContent>
+                </Card>
             </div>
 
             {/* Preview Panel */}

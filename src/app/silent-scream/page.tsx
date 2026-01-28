@@ -292,13 +292,13 @@ export default function SilentScreamPage() {
               Security Protocol Alpha
             </span>
           </div>
-          <h1 className="text-7xl lg:text-9xl font-black tracking-tighter mb-6 bg-clip-text text-transparent bg-linear-to-b from-white to-white/20">
-            SILENT SCREAM
-          </h1>
-          <p className="text-white/40 text-xl font-medium italic max-w-2xl mx-auto leading-relaxed">
-            "Your identity is shielded. Your voice is heard."
-          </p>
-        </motion.div>
+            <h1 className="text-7xl lg:text-9xl font-black tracking-tighter mb-6 bg-clip-text text-transparent bg-linear-to-b from-white to-white/20">
+              SILENT SCREAM
+            </h1>
+            <p className="text-white/60 text-xl font-medium italic max-w-2xl mx-auto leading-relaxed">
+              "Your identity is shielded. Your voice is heard."
+            </p>
+          </motion.div>
 
         {/* Central Interface */}
         <div className="relative w-full flex flex-col items-center justify-center min-h-[400px]">
