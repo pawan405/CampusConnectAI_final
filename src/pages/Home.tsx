@@ -353,7 +353,7 @@ export default function Home() {
                   <FeatureCard
                     icon={Brain}
                     title="Career Analysis"
-                    description="Calculate learning vectors and personalized success trajectories."
+                    description="Click to enter your personalized career intelligence dashboard, where AI evaluates your progress, strengths, and growth trajectory."
                     delay={0.1}
                     badge="Active"
                     status="READY"
@@ -363,7 +363,7 @@ export default function Home() {
                   <FeatureCard
                     icon={Trophy}
                     title="Hackathon Matching"
-                    description="Real-time stream of global hackathons and competitive modules."
+                    description="Click to access the live hackathon intelligence feed, showing real-time opportunities matched to your profile."
                     delay={0.2}
                     badge="Active"
                     status="SYNCED"
@@ -373,7 +373,7 @@ export default function Home() {
                   <FeatureCard
                     icon={Rocket}
                     title="Skill Roadmap"
-                    description="Personalized career paths and skill gap analysis."
+                    description="Click to open your skill analysis workspace, where AI identifies gaps and recommends next steps."
                     delay={0.3}
                     badge="Ready"
                     status="OPTIMIZED"
@@ -383,7 +383,7 @@ export default function Home() {
                   <FeatureCard
                     icon={Mic}
                     title="Silent Scream"
-                    description="Encrypted anonymous reporting and peer support interface."
+                    description="Click to access a secure, anonymous support interface designed for private reporting and assistance."
                     delay={0.4}
                     badge="Protected"
                     status="SECURE"
@@ -393,7 +393,7 @@ export default function Home() {
                   <FeatureCard
                     icon={BarChart3}
                     title="System Analytics"
-                    description="Deep dive into your performance metrics and growth data."
+                    description="Click to view detailed performance analytics, including growth metrics and system insights."
                     delay={0.5}
                     badge="Pro"
                     status="ACTIVE"
@@ -406,7 +406,7 @@ export default function Home() {
                       <Sparkles className="w-8 h-8 text-blue-400 mb-6 group-hover:scale-110 transition-transform" />
                       <h3 className="text-xl font-black uppercase tracking-tight text-white mb-2">New Module</h3>
                       <p className="text-zinc-500 text-xs font-medium leading-relaxed">
-                        Intelligence feed expansion in progress. Global internship engine integration pending.
+                        Click to explore upcoming intelligence engines currently under active system development.
                       </p>
                     </div>
                     <div className="relative z-10 mt-8">
