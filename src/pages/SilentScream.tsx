@@ -19,6 +19,12 @@ import ThreeDBackground from "../components/ThreeDBackground";
 import { toast } from "sonner";
 import { useAuth } from "../components/AuthProvider";
 import { createSilentReport, submitSilentReport } from "../lib/data";
+import { GoogleGenerativeAI } from "@google/generative-ai";
+
+// Initialize Gemini
+const genAI = new GoogleGenerativeAI(
+  import.meta.env.VITE_GEMINI_API_KEY || "AIzaSyBRB5fEqRaOrbxrOnEmTqL1NHx7_hhycyc"
+);
 
 export default function SilentScreamPage() {
   const { user } = useAuth();
@@ -32,23 +38,26 @@ export default function SilentScreamPage() {
   const [isUploading, setIsUploading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [signalId, setSignalId] = useState<string | null>(null);
+
   const recognitionRef = useRef<any>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const shouldBeRecordingRef = useRef(false); // Track intentional state
 
   const generateSummary = async (text: string) => {
     if (!text) return "";
     setIsProcessing(true);
-    setSummary("Analyzing transcription for safety protocols...");
+    setSummary("Neural AI is analyzing...");
     try {
-      // Local heuristic summary to avoid external API dependency
-      const s = text.length > 120 ? text.slice(0, 120) + "…" : text;
+      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+      const prompt = `Summarize this emergency report into a concise executive summary (max 3 sentences): "${text}"`;
+      const result = await model.generateContent(prompt);
+      const s = result.response.text();
       setSummary(s);
       return s;
     } catch (err) {
-      console.error("Failed to generate summary:", err);
-      setSummary("Summary unavailable. Please review transcription manually.");
-      return "Summary unavailable.";
+      console.error("Summary failed", err);
+      return text;
     } finally {
       setIsProcessing(false);
     }
@@ -76,26 +85,22 @@ export default function SilentScreamPage() {
       ) {
         setShowSummary(true);
         setTranscription(e.key);
-        // We'll focus the textarea in the next render cycle
-        setTimeout(() => {
-          if (textareaRef.current) {
-            textareaRef.current.focus();
-            textareaRef.current.setSelectionRange(1, 1);
-          }
-        }, 50);
+        setTimeout(() => textareaRef.current?.focus(), 50);
       }
     };
 
     window.addEventListener("keydown", handleGlobalKeyDown);
 
-    // Initialize Speech Recognition
+    // --- FIXED SPEECH RECOGNITION SETUP ---
     const SpeechRecognition =
       (window as any).SpeechRecognition ||
       (window as any).webkitSpeechRecognition;
+
     if (SpeechRecognition) {
       const recognition = new SpeechRecognition();
-      recognition.continuous = true;
-      recognition.interimResults = true;
+      recognition.continuous = true; // Keep listening
+      recognition.interimResults = true; // Show words as you speak
+      recognition.lang = "en-US";
 
       recognition.onresult = (event: any) => {
         let currentTranscription = "";
@@ -106,7 +111,24 @@ export default function SilentScreamPage() {
       };
 
       recognition.onend = () => {
-        setIsRecording(false);
+        // Vital Logic: If it stops but we didn't want it to, RESTART IT
+        if (shouldBeRecordingRef.current) {
+          try {
+            recognition.start();
+          } catch (e) {
+            console.log("Restarting recognition...");
+          }
+        } else {
+          setIsRecording(false);
+        }
+      };
+
+      recognition.onerror = (event: any) => {
+        console.error("Speech error", event.error);
+        if (event.error === "not-allowed") {
+          setIsRecording(false);
+          shouldBeRecordingRef.current = false;
+        }
       };
 
       recognitionRef.current = recognition;
@@ -115,48 +137,42 @@ export default function SilentScreamPage() {
     return () => {
       window.removeEventListener("keydown", handleGlobalKeyDown);
       if (timerRef.current) clearInterval(timerRef.current);
+      // Only stop on actual unmount
       if (recognitionRef.current) recognitionRef.current.stop();
     };
-  }, [isRecording, showSummary]);
+  }, []); // DEPENDENCY ARRAY IS NOW EMPTY TO PREVENT LOOPS
 
-  const toggleRecording = async () => {
+  const toggleRecording = () => {
     if (isRecording) {
-      // Stop recording
+      // Stop
+      shouldBeRecordingRef.current = false;
       if (recognitionRef.current) recognitionRef.current.stop();
       if (timerRef.current) clearInterval(timerRef.current);
       setIsRecording(false);
       setShowSummary(true);
-
-      // Generate AI Summary
-      if (transcription) {
-        generateSummary(transcription);
-      }
+      if (transcription) generateSummary(transcription);
     } else {
-      // Start recording
+      // Start
       setTranscription("");
       setDuration(0);
       setSummary("");
-      setShowSummary(false);
+      setShowSummary(true); // Show UI immediately
+
+      shouldBeRecordingRef.current = true;
+      setIsRecording(true);
 
       if (recognitionRef.current) {
         try {
           recognitionRef.current.start();
-          setIsRecording(true);
-
           const startTime = performance.now();
           timerRef.current = setInterval(() => {
             setDuration((performance.now() - startTime) / 1000);
-          }, 10);
+          }, 100);
         } catch (err) {
-          console.error("Failed to start recognition:", err);
-          toast.error("Could not access microphone. Please check permissions.");
+          console.error(err);
         }
       } else {
-        toast.error(
-          "Speech recognition is not supported in this browser. You can still type your report.",
-        );
-        setShowSummary(true);
-        setTimeout(() => textareaRef.current?.focus(), 100);
+        toast.error("Browser does not support Speech Recognition.");
       }
     }
   };
