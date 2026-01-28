@@ -1,6 +1,8 @@
 import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
 import {
   FileText,
   User,
@@ -48,13 +50,40 @@ export default function ResumeMaker() {
   const [skills, setSkills] = useState(["React", "TypeScript", "Node.js", "AI Integration", "Cloud Native"]);
 
   const [isGenerating, setIsGenerating] = useState(false);
+  const resumeRef = useRef<HTMLDivElement>(null);
 
-  const handleDownload = () => {
-    toast.promise(new Promise((resolve) => setTimeout(resolve, 2000)), {
-      loading: "Synthesizing PDF assets...",
-      success: "Resume exported successfully (Mock)",
-      error: "Export failed",
-    });
+  const handleDownload = async () => {
+    if (!resumeRef.current) return;
+
+    const toastId = toast.loading("Synthesizing PDF assets...");
+
+    try {
+      const canvas = await html2canvas(resumeRef.current, {
+        scale: 2,
+        useCORS: true,
+        logging: false,
+        backgroundColor: "#ffffff",
+      });
+
+      const imgData = canvas.toDataURL("image/png");
+      const pdf = new jsPDF({
+        orientation: "portrait",
+        unit: "mm",
+        format: "a4",
+      });
+
+      const imgProps = pdf.getImageProperties(imgData);
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+
+      pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
+      pdf.save(`${personalInfo.name.replace(/\s+/g, "_")}_Resume.pdf`);
+
+      toast.success("Resume exported successfully", { id: toastId });
+    } catch (error) {
+      console.error("Export failed:", error);
+      toast.error("Export failed", { id: toastId });
+    }
   };
 
   const handleReset = () => {
@@ -258,70 +287,70 @@ export default function ResumeMaker() {
                 </div>
               </div>
 
-              <div className="aspect-[1/1.4] w-full bg-white text-black p-12 shadow-[0_40px_100px_rgba(0,0,0,0.5)] rounded-[2px] font-serif relative overflow-hidden group">
-                <div className="absolute top-0 left-0 w-full h-1 bg-cyan-500/20" />
-                
-                <div className="space-y-10">
-                  <header className="border-b-2 border-black pb-8 space-y-4">
-                    <h3 className="text-4xl font-bold tracking-tight uppercase">{personalInfo.name || "UNNAMED ENTITY"}</h3>
-                    <div className="flex flex-wrap gap-x-6 gap-y-1 text-sm font-medium text-black/70">
-                      <span>{personalInfo.email}</span>
-                      <span>{personalInfo.phone}</span>
-                      <span>{personalInfo.location}</span>
-                    </div>
-                  </header>
+                <div ref={resumeRef} className="aspect-[1/1.4] w-full bg-white text-black p-12 shadow-[0_40px_100px_rgba(0,0,0,0.5)] rounded-[2px] font-serif relative overflow-hidden group">
+                  <div className="absolute top-0 left-0 w-full h-1 bg-cyan-500/20" />
+                  
+                  <div className="space-y-10">
+                    <header className="border-b-2 border-black pb-8 space-y-4">
+                      <h3 className="text-4xl font-bold tracking-tight uppercase">{personalInfo.name || "UNNAMED ENTITY"}</h3>
+                      <div className="flex flex-wrap gap-x-6 gap-y-1 text-sm font-medium text-black/70">
+                        <span>{personalInfo.email}</span>
+                        <span>{personalInfo.phone}</span>
+                        <span>{personalInfo.location}</span>
+                      </div>
+                    </header>
 
-                  <section className="space-y-4">
-                    <h4 className="text-xs font-black uppercase tracking-[0.2em] text-black/60 border-b border-black/10 pb-2">Professional Summary</h4>
-                    <p className="text-sm leading-relaxed">{personalInfo.summary}</p>
-                  </section>
+                    <section className="space-y-4">
+                      <h4 className="text-xs font-black uppercase tracking-[0.2em] text-black/60 border-b border-black/10 pb-2">Professional Summary</h4>
+                      <p className="text-sm leading-relaxed">{personalInfo.summary}</p>
+                    </section>
 
-                  <section className="space-y-4">
-                    <h4 className="text-xs font-black uppercase tracking-[0.2em] text-black/60 border-b border-black/10 pb-2">Technical Matrix</h4>
-                    <div className="flex flex-wrap gap-x-4 gap-y-2">
-                      {skills.map((s, i) => (
-                        <span key={i} className="text-xs font-bold px-2 py-0.5 border border-black/20 rounded-md bg-black/5">{s}</span>
+                    <section className="space-y-4">
+                      <h4 className="text-xs font-black uppercase tracking-[0.2em] text-black/60 border-b border-black/10 pb-2">Technical Matrix</h4>
+                      <div className="flex flex-wrap gap-x-4 gap-y-2">
+                        {skills.map((s, i) => (
+                          <span key={i} className="text-xs font-bold px-2 py-0.5 border border-black/20 rounded-md bg-black/5">{s}</span>
+                        ))}
+                      </div>
+                    </section>
+
+                    <section className="space-y-4">
+                      <h4 className="text-xs font-black uppercase tracking-[0.2em] text-black/60 border-b border-black/10 pb-2">Experience History</h4>
+                      {experience.map(exp => (
+                        <div key={exp.id} className="space-y-1">
+                          <div className="flex justify-between items-baseline">
+                            <span className="font-bold uppercase">{exp.role} @ {exp.company}</span>
+                            <span className="text-[10px] font-bold">{exp.duration}</span>
+                          </div>
+                          <p className="text-xs text-black/80 leading-relaxed">{exp.desc}</p>
+                        </div>
                       ))}
-                    </div>
-                  </section>
+                    </section>
 
-                  <section className="space-y-4">
-                    <h4 className="text-xs font-black uppercase tracking-[0.2em] text-black/60 border-b border-black/10 pb-2">Experience History</h4>
-                    {experience.map(exp => (
-                      <div key={exp.id} className="space-y-1">
-                        <div className="flex justify-between items-baseline">
-                          <span className="font-bold uppercase">{exp.role} @ {exp.company}</span>
-                          <span className="text-[10px] font-bold">{exp.duration}</span>
+                    <section className="space-y-4">
+                      <h4 className="text-xs font-black uppercase tracking-[0.2em] text-black/60 border-b border-black/10 pb-2">Academic Record</h4>
+                      {education.map(edu => (
+                        <div key={edu.id} className="flex justify-between items-baseline">
+                          <div className="flex flex-col">
+                            <span className="font-bold text-xs uppercase">{edu.school}</span>
+                            <span className="text-xs italic">{edu.degree}</span>
+                          </div>
+                          <span className="text-[10px] font-bold">Class of {edu.year}</span>
                         </div>
-                        <p className="text-xs text-black/80 leading-relaxed">{exp.desc}</p>
-                      </div>
-                    ))}
-                  </section>
+                      ))}
+                    </section>
+                  </div>
 
-                  <section className="space-y-4">
-                    <h4 className="text-xs font-black uppercase tracking-[0.2em] text-black/60 border-b border-black/10 pb-2">Academic Record</h4>
-                    {education.map(edu => (
-                      <div key={edu.id} className="flex justify-between items-baseline">
-                        <div className="flex flex-col">
-                          <span className="font-bold text-xs uppercase">{edu.school}</span>
-                          <span className="text-xs italic">{edu.degree}</span>
-                        </div>
-                        <span className="text-[10px] font-bold">Class of {edu.year}</span>
-                      </div>
-                    ))}
-                  </section>
+                  {/* Download Overlay */}
+                  <div data-html2canvas-ignore className="absolute inset-0 bg-black/60 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center flex-col gap-6">
+                     <div className="w-20 h-20 rounded-3xl bg-cyan-500 flex items-center justify-center shadow-[0_0_50px_rgba(6,182,212,0.5)]">
+                       <Download className="w-10 h-10 text-black" />
+                     </div>
+                     <Button onClick={handleDownload} className="h-14 px-8 rounded-2xl bg-white text-black font-black uppercase tracking-widest text-xs hover:bg-cyan-400 transition-all">
+                       Export PDF Interface
+                     </Button>
+                  </div>
                 </div>
-
-                {/* Download Overlay */}
-                <div className="absolute inset-0 bg-black/60 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center flex-col gap-6">
-                   <div className="w-20 h-20 rounded-3xl bg-cyan-500 flex items-center justify-center shadow-[0_0_50px_rgba(6,182,212,0.5)]">
-                     <Download className="w-10 h-10 text-black" />
-                   </div>
-                   <Button onClick={handleDownload} className="h-14 px-8 rounded-2xl bg-white text-black font-black uppercase tracking-widest text-xs hover:bg-cyan-400 transition-all">
-                     Export PDF Interface
-                   </Button>
-                </div>
-              </div>
             </div>
           </div>
         </main>
