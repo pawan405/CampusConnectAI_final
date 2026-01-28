@@ -13,6 +13,20 @@ import {
   Target,
   Menu,
   Zap,
+  Cpu,
+  Loader2,
+  Activity,
+  RefreshCw,
+  Globe,
+  Server,
+  Terminal,
+  Trophy,
+  BarChart3,
+  LinkIcon,
+  Database,
+  Check,
+  Clock,
+  Workflow,
 } from "lucide-react";
 import { Card, CardContent } from "../components/ui/card";
 import { Button } from "../components/ui/button";
@@ -169,25 +183,25 @@ export default function Home() {
               </span>
             </Link>
 
-            <div className="hidden md:flex items-center gap-1 px-1 py-1 rounded-xl bg-white/5 border border-white/5">
-              {[
-                "CORE SYSTEM",
-                "CAPABILITIES",
-                "NETWORK",
-              ].map((tab) => (
-                <button
-                  key={tab}
-                  onClick={() => setActiveTab(tab)}
-                  className={`text-[10px] font-black uppercase tracking-widest px-4 py-2 rounded-lg transition-all ${
-                    activeTab === tab 
-                      ? "text-white bg-white/10 shadow-lg shadow-white/5" 
-                      : "text-zinc-500 hover:text-zinc-300 hover:bg-white/5"
-                  }`}
-                >
-                  {tab}
-                </button>
-              ))}
-            </div>
+              <div className="hidden md:flex items-center gap-1 px-1 py-1 rounded-xl bg-white/5 border border-white/10 shadow-[0_0_20px_rgba(0,0,0,0.5)]">
+                {[
+                  "CORE SYSTEM",
+                  "CAPABILITIES",
+                  "NETWORK",
+                ].map((tab) => (
+                  <button
+                    key={tab}
+                    onClick={() => setActiveTab(tab)}
+                    className={`text-[10px] font-black uppercase tracking-widest px-5 py-2.5 rounded-lg transition-all ${
+                      activeTab === tab 
+                        ? "text-white bg-blue-600 shadow-[0_0_15px_rgba(37,99,235,0.3)]" 
+                        : "text-zinc-400 hover:text-white hover:bg-white/10"
+                    }`}
+                  >
+                    {tab}
+                  </button>
+                ))}
+              </div>
 
             <div className="flex items-center gap-4">
               <Sheet>
@@ -195,9 +209,10 @@ export default function Home() {
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="w-10 h-10 rounded-lg border border-white/5 hover:bg-white/5 md:hidden"
+                    className="w-10 h-10 rounded-lg border border-white/10 bg-white/5 hover:bg-blue-500/20 hover:border-blue-500/30 transition-all shadow-[0_0_15px_rgba(59,130,246,0.1)] group relative overflow-hidden"
                   >
-                    <Menu className="w-4 h-4 text-white/60" />
+                    <div className="absolute inset-0 bg-gradient-to-tr from-blue-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <Menu className="w-5 h-5 text-blue-400 group-hover:text-blue-300" />
                   </Button>
                 </SheetTrigger>
                 <SheetContent side="left" className="w-72 bg-black/95 border-r border-white/10 backdrop-blur-2xl p-0">
