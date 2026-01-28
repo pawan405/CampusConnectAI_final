@@ -44,6 +44,7 @@ import ThreeDBackground from "../components/ThreeDBackground";
 import TiltCard from "../components/TiltCard";
 import { toast } from "sonner";
 import { useAuth } from "../components/AuthProvider";
+import { CampusConnectChatbot } from "../components/CampusConnectChatbot";
 
 // Mock Auth
 const useSession = () => ({
@@ -242,211 +243,132 @@ export default function DashboardPage() {
   if (!mounted || status === "loading") return null;
 
   return (
-    <div className="min-h-screen bg-transparent text-white selection:bg-cyan-500/30 font-sans overflow-x-hidden">
-      {/* Background */}
+    <div className="min-h-screen bg-black text-white selection:bg-cyan-500/30">
       <ThreeDBackground />
-
-      {/* Sidebar as Burger Menu */}
-      <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
-        <SheetContent
-          side="left"
-          className="w-[280px] bg-black/95 border-r border-white/10 backdrop-blur-2xl p-0"
-        >
-          <SheetHeader className="p-6 border-b border-white/10">
-            <SheetTitle>
-              <Link
-                to="/"
-                className="flex items-center gap-3"
-                onClick={() => setSidebarOpen(false)}
-              >
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-400 to-purple-500 p-px shadow-[0_0_20px_rgba(6,182,212,0.5)]">
-                  <div className="w-full h-full rounded-[11px] bg-black flex items-center justify-center">
-                    <Cpu className="w-5 h-5 text-cyan-400" />
-                  </div>
-                </div>
-                <span className="text-xl font-black tracking-tighter text-white">
-                  CampusConnect
-                </span>
-              </Link>
-            </SheetTitle>
-          </SheetHeader>
-
-          <nav className="px-4 mt-6 space-y-2">
-            {navItems.map((item, i) => (
-              <Link
-                key={i}
-                to={item.href}
-                onClick={() => setSidebarOpen(false)}
-              >
-                <div
-                  className={`flex items-center justify-between px-4 py-3.5 rounded-2xl transition-all relative group hover:bg-white/10 ${item.active ? "bg-white/15 text-white border border-white/20" : "text-white/60 hover:text-white"}`}
+      <CampusConnectChatbot />
+      <div className="relative z-10">
+        <header className="max-w-7xl mx-auto px-6 h-24 flex items-center justify-between">
+          <Link to="/" className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-400 to-purple-500 p-px shadow-[0_0_20px_rgba(6,182,212,0.5)]">
+              <div className="w-full h-full rounded-[11px] bg-black flex items-center justify-center">
+                <Cpu className="w-5 h-5 text-cyan-400" />
+              </div>
+            </div>
+            <span className="text-xl font-black tracking-tighter text-white">
+              CampusConnect
+            </span>
+          </Link>
+          <div className="flex items-center justify-end gap-4">
+            <Sheet>
+              <SheetTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="w-11 h-11 rounded-2xl border border-white/5 hover:bg-white/5 relative group"
                 >
-                  <div className="flex items-center gap-4">
-                    <item.icon
-                      className={`w-5 h-5 transition-all duration-300 ${item.active ? "text-cyan-400" : "group-hover:text-white"}`}
-                    />
-                    <span className="font-bold text-sm tracking-wide">
-                      {item.label}
-                    </span>
-                  </div>
-                  {item.badge && (
-                    <span className="text-[10px] px-2 py-0.5 rounded-md bg-cyan-500/20 text-cyan-400 border border-cyan-500/20 font-black">
-                      {item.badge}
-                    </span>
-                  )}
-                </div>
-              </Link>
-            ))}
-          </nav>
-        </SheetContent>
-      </Sheet>
+                  <Bell className="w-5 h-5 text-white/60 group-hover:text-cyan-400 transition-colors" />
+                  <span className="absolute top-3 right-3 w-2 h-2 bg-cyan-500 rounded-full shadow-[0_0_10px_#06b6d4] animate-pulse" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent className="w-full sm:max-w-md bg-black/95 border-l border-white/10 backdrop-blur-2xl p-0">
+                <div className="h-full flex flex-col">
+                  <SheetHeader className="p-8 border-b border-white/5">
+                    <SheetTitle className="text-2xl font-black text-white">
+                      System Alerts
+                    </SheetTitle>
+                    <SheetDescription className="text-white/40 font-medium mt-2">
+                      Real-time system updates and peer interactions.
+                    </SheetDescription>
+                  </SheetHeader>
 
-      {/* Main Content */}
-      <div className="min-h-screen">
-        {/* Header */}
-        <header className="sticky top-0 z-30 px-6 py-4 bg-black/60 backdrop-blur-md border-b border-white/5">
-          <div className="flex items-center justify-between w-full">
-            {/* Left - Burger Menu */}
-            <div className="flex items-center w-1/3">
-              <button
-                onClick={() => setSidebarOpen(true)}
-                className="p-2 hover:bg-white/10 rounded-lg transition-colors"
-              >
-                <Menu className="w-6 h-6 text-white/60 hover:text-cyan-400 transition-colors" />
-              </button>
-            </div>
-
-            {/* Center - Logo */}
-            <div className="flex items-center justify-center w-1/3">
-              <Link to="/" className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan-400 to-purple-500 p-px">
-                  <div className="w-full h-full rounded-[7px] bg-black flex items-center justify-center">
-                    <Cpu className="w-4 h-4 text-cyan-400" />
-                  </div>
-                </div>
-                <span className="text-lg font-black tracking-tight">
-                  CampusConnect
-                </span>
-              </Link>
-            </div>
-
-            {/* Right - Notifications & User */}
-            <div className="flex items-center justify-end gap-4 w-1/3">
-              {/* Notifications Sheet - existing code */}
-              <Sheet>
-                <SheetTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="w-11 h-11 rounded-2xl border border-white/5 hover:bg-white/5 relative group"
-                  >
-                    <Bell className="w-5 h-5 text-white/60 group-hover:text-cyan-400 transition-colors" />
-                    <span className="absolute top-3 right-3 w-2 h-2 bg-cyan-500 rounded-full shadow-[0_0_10px_#06b6d4] animate-pulse" />
-                  </Button>
-                </SheetTrigger>
-                <SheetContent className="w-full sm:max-w-md bg-black/95 border-l border-white/10 backdrop-blur-2xl p-0">
-                  <div className="h-full flex flex-col">
-                    <SheetHeader className="p-8 border-b border-white/5">
-                      <SheetTitle className="text-2xl font-black text-white">
-                        System Alerts
-                      </SheetTitle>
-                      <SheetDescription className="text-white/40 font-medium mt-2">
-                        Real-time system updates and peer interactions.
-                      </SheetDescription>
-                    </SheetHeader>
-
-                    <div className="flex-1 overflow-y-auto p-4 space-y-4">
-                      {notifications.map((notif) => (
-                        <div
-                          key={notif.id}
-                          className="p-6 bg-white/5 border border-white/10 rounded-[28px] hover:bg-white/10 transition-all cursor-pointer group"
-                        >
-                          <div className="flex items-start gap-4">
-                            <div className="w-12 h-12 rounded-2xl bg-black border border-white/20 flex items-center justify-center group-hover:scale-110 transition-transform">
-                              <notif.icon
-                                className={`w-6 h-6 ${notif.color}`}
-                              />
-                            </div>
-                            <div className="flex-1">
-                              <div className="flex items-center gap-2 mb-2">
-                                <p className="font-black text-white">
-                                  {notif.title}
-                                </p>
-                                {notif.isNew && (
-                                  <span className="px-2 py-0.5 bg-cyan-500/30 text-cyan-400 text-[8px] font-black rounded-md">
-                                    NEW
-                                  </span>
-                                )}
-                              </div>
-                              <p className="text-white/60 text-sm mb-2">
-                                {notif.desc}
+                  <div className="flex-1 overflow-y-auto p-4 space-y-4">
+                    {notifications.map((notif) => (
+                      <div
+                        key={notif.id}
+                        className="p-6 bg-white/5 border border-white/10 rounded-[28px] hover:bg-white/10 transition-all cursor-pointer group"
+                      >
+                        <div className="flex items-start gap-4">
+                          <div className="w-12 h-12 rounded-2xl bg-black border border-white/20 flex items-center justify-center group-hover:scale-110 transition-transform">
+                            <notif.icon
+                              className={`w-6 h-6 ${notif.color}`}
+                            />
+                          </div>
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-2">
+                              <p className="font-black text-white">
+                                {notif.title}
                               </p>
-                              <p className="text-white/40 text-[10px] uppercase tracking-widest font-black">
-                                {notif.time}
-                              </p>
+                              {notif.isNew && (
+                                <span className="px-2 py-0.5 bg-cyan-500/30 text-cyan-400 text-[8px] font-black rounded-md">
+                                  NEW
+                                </span>
+                              )}
                             </div>
+                            <p className="text-white/60 text-sm mb-2">
+                              {notif.desc}
+                            </p>
+                            <p className="text-white/40 text-[10px] uppercase tracking-widest font-black">
+                              {notif.time}
+                            </p>
                           </div>
                         </div>
-                      ))}
-                    </div>
+                      </div>
+                    ))}
+                  </div>
 
-                    <div className="p-8 border-t border-white/5 bg-black/50">
-                      <Button
-                        className="w-full h-14 rounded-2xl bg-white text-black font-black uppercase tracking-[0.2em] text-xs hover:bg-cyan-400 transition-all shadow-[0_10px_30px_rgba(0,0,0,0.5)]"
-                        onClick={() => {
-                          setNotifications([]);
-                          toast.success("All notifications cleared");
-                        }}
-                      >
-                        Sync All Clear
-                      </Button>
+                  <div className="p-8 border-t border-white/5 bg-black/50">
+                    <Button
+                      className="w-full h-14 rounded-2xl bg-white text-black font-black uppercase tracking-[0.2em] text-xs hover:bg-cyan-400 transition-all shadow-[0_10px_30px_rgba(0,0,0,0.5)]"
+                      onClick={() => {
+                        setNotifications([]);
+                        toast.success("All notifications cleared");
+                      }}
+                    >
+                      Sync All Clear
+                    </Button>
+                  </div>
+                </div>
+              </SheetContent>
+            </Sheet>
+
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="flex items-center gap-3 p-1 rounded-2xl border border-white/5 bg-white/5 hover:bg-white/10 transition-all hover:scale-105 duration-300">
+                  <div className="w-8 h-8 rounded-xl overflow-hidden bg-gradient-to-br from-cyan-500 to-purple-500 p-px">
+                    <div className="w-full h-full rounded-[11px] bg-black flex items-center justify-center">
+                      <User className="w-4 h-4 text-white" />
                     </div>
                   </div>
-                </SheetContent>
-              </Sheet>
-
-              {/* User Menu - existing code */}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <button className="flex items-center gap-3 p-1 rounded-2xl border border-white/5 bg-white/5 hover:bg-white/10 transition-all hover:scale-105 duration-300">
-                    <div className="w-8 h-8 rounded-xl overflow-hidden bg-gradient-to-br from-cyan-500 to-purple-500 p-px">
-                      <div className="w-full h-full rounded-[11px] bg-black flex items-center justify-center">
-                        <User className="w-4 h-4 text-white" />
-                      </div>
-                    </div>
-                  </button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent
-                  align="end"
-                  className="w-56 bg-black/90 backdrop-blur-2xl border-white/10 rounded-3xl p-2 mt-4 shadow-[0_20px_50px_rgba(0,0,0,0.5)]"
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                align="end"
+                className="w-56 bg-black/90 backdrop-blur-2xl border-white/10 rounded-3xl p-2 mt-4 shadow-[0_20px_50px_rgba(0,0,0,0.5)]"
+              >
+                <DropdownMenuItem
+                  onClick={() => navigate("/settings")}
+                  className="rounded-xl focus:bg-white/5 focus:text-cyan-400 cursor-pointer p-3 gap-3"
                 >
-                  <DropdownMenuItem
-                    onClick={() => navigate("/settings")}
-                    className="rounded-xl focus:bg-white/5 focus:text-cyan-400 cursor-pointer p-3 gap-3"
-                  >
-                    <User className="w-4 h-4" />
-                    <span className="text-sm font-bold">Profile Interface</span>
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator className="bg-white/10" />
-                  <DropdownMenuItem
-                    onClick={async () => {
-                      await signOutUser();
-                      navigate("/");
-                    }}
-                    className="rounded-xl focus:bg-rose-500/20 focus:text-rose-400 cursor-pointer p-3 gap-3"
-                  >
-                    <LogOut className="w-4 h-4" />
-                    <span className="text-sm font-bold">Disconnect</span>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
+                  <User className="w-4 h-4" />
+                  <span className="text-sm font-bold">Profile Interface</span>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator className="bg-white/10" />
+                <DropdownMenuItem
+                  onClick={async () => {
+                    await signOutUser();
+                    navigate("/");
+                  }}
+                  className="rounded-xl focus:bg-rose-500/20 focus:text-rose-400 cursor-pointer p-3 gap-3"
+                >
+                  <LogOut className="w-4 h-4" />
+                  <span className="text-sm font-bold">Disconnect</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </header>
 
-        {/* Main - Remove max-w-7xl, use full width with padding */}
         <main className="p-6 lg:p-10 space-y-16">
-          {/* Hero Section */}
           <section className="relative">
             <motion.div
               initial={{ opacity: 0, x: -50 }}
@@ -482,7 +404,6 @@ export default function DashboardPage() {
             </motion.div>
           </section>
 
-          {/* Stats Grid */}
           <section className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {stats.map((stat, i) => (
               <Link key={i} to={stat.href} className="group">
@@ -548,7 +469,6 @@ export default function DashboardPage() {
             ))}
           </section>
 
-          {/* Feature Modules */}
           <section className="space-y-12">
             <div className="flex items-center gap-6">
               <h2 className="text-4xl font-black tracking-tighter uppercase">
@@ -614,7 +534,6 @@ export default function DashboardPage() {
             </div>
           </section>
 
-          {/* Control Center & Activity */}
           <section className="grid grid-cols-1 lg:grid-cols-5 gap-8">
             <div className="lg:col-span-3">
               <motion.div
