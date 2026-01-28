@@ -211,7 +211,7 @@ export default function Home() {
           </div>
         </nav>
 
-        <main className="pt-32 px-6 max-w-[1400px] mx-auto pb-24">
+        <main className="relative z-10 pt-32 px-6 max-w-[1400px] mx-auto pb-24">
           <AnimatePresence mode="wait">
             {activeTab === "CORE SYSTEM" && (
               <motion.div
