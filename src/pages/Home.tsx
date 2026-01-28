@@ -112,12 +112,14 @@ const FeatureCard = ({
 
 export default function Home() {
   const navigate = useNavigate();
+  const [mounted, setMounted] = useState(false);
   const [activeTab, setActiveTab] = useState("CORE SYSTEM");
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [logs, setLogs] = useState<string[]>([]);
 
   useEffect(() => {
+    setMounted(true);
     const initialLogs = [
       "SYSTEM_INITIALIZE: 0x4f2a",
       "NEURAL_LINK: ESTABLISHED",
@@ -126,6 +128,8 @@ export default function Home() {
     ];
     setLogs(initialLogs);
   }, []);
+
+  if (!mounted) return null;
 
   const addLog = (message: string) => {
     setLogs((prev) => [
