@@ -57,15 +57,6 @@ const navItems = [
   { icon: Users, label: "Campus Community", href: "/campus-community" },
   { icon: LifeBuoy, label: "Help & Support", href: "/help-support" },
   { icon: MessageSquare, label: "Feedback", href: "/feedback" },
-  { icon: Mic, label: "Silent Scream", href: "/silent-scream", badge: "Live" },
-  {
-    icon: Briefcase,
-    label: "Internship Feed",
-    href: "/internship-feed",
-    badge: "Hot",
-  },
-  { icon: Brain, label: "AI Roadmap", href: "/ai-roadmap" },
-  { icon: Trophy, label: "CrackHack", href: "/hackathons" },
 ];
 
 const stats = [
