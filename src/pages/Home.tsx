@@ -10,28 +10,19 @@ import {
   Rocket,
   Code,
   Lock,
+  Target,
+  Menu,
   Zap,
-  CheckCircle2,
-  Users,
-  Trophy,
-  Briefcase,
-  Activity,
-  Cpu,
-  Globe,
-  Terminal,
-  RefreshCw,
-  Search,
-  Database,
-  Link as LinkIcon,
-  Check,
-  Loader2,
-  Server,
-  Workflow,
-  BarChart3,
-  Clock,
 } from "lucide-react";
 import { Card, CardContent } from "../components/ui/card";
 import { Button } from "../components/ui/button";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "../components/ui/sheet";
 import { FcGoogle } from "react-icons/fc";
 import ThreeDBackground from "../components/ThreeDBackground";
 
@@ -199,13 +190,54 @@ export default function Home() {
             </div>
 
             <div className="flex items-center gap-4">
+              <Sheet>
+                <SheetTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="w-10 h-10 rounded-lg border border-white/5 hover:bg-white/5 md:hidden"
+                  >
+                    <Menu className="w-4 h-4 text-white/60" />
+                  </Button>
+                </SheetTrigger>
+                <SheetContent side="left" className="w-72 bg-black/95 border-r border-white/10 backdrop-blur-2xl p-0">
+                  <div className="h-full flex flex-col">
+                    <SheetHeader className="p-8 border-b border-white/5 text-left">
+                      <SheetTitle className="text-xl font-black text-white uppercase tracking-tighter">
+                        CampusConnect<span className="text-blue-500">AI</span>
+                      </SheetTitle>
+                    </SheetHeader>
+                    <div className="flex-1 overflow-y-auto p-4 space-y-2">
+                      {[
+                        { label: "CORE SYSTEM", active: activeTab === "CORE SYSTEM" },
+                        { label: "CAPABILITIES", active: activeTab === "CAPABILITIES" },
+                        { label: "NETWORK", active: activeTab === "NETWORK" },
+                      ].map((item) => (
+                        <button
+                          key={item.label}
+                          onClick={() => {
+                            setActiveTab(item.label);
+                          }}
+                          className={`w-full flex items-center gap-4 p-4 rounded-xl transition-all ${
+                            item.active ? "bg-white/10 text-blue-400 border border-white/10" : "text-white/60 hover:bg-white/5 hover:text-white"
+                          }`}
+                        >
+                          <span className="font-bold text-[11px] tracking-widest uppercase">{item.label}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </SheetContent>
+              </Sheet>
+
               <Button
                 onClick={handleGoogleLogin}
                 variant="outline"
                 className="h-10 px-5 rounded-lg border-white/10 bg-white/5 text-white hover:bg-white hover:text-black font-bold text-[11px] uppercase tracking-wider transition-all active:scale-95"
               >
                 <FcGoogle className="w-4 h-4 mr-2" />
-                System Access
+                <span className="hidden sm:inline">System Access</span>
+                <span className="sm:hidden">Login</span>
               </Button>
             </div>
           </div>

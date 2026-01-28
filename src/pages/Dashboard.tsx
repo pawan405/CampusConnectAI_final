@@ -258,8 +258,58 @@ export default function DashboardPage() {
               CampusConnect
             </span>
           </Link>
-          <div className="flex items-center justify-end gap-4">
-            <Sheet>
+            <div className="flex items-center justify-end gap-4">
+              <Sheet>
+                <SheetTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="w-11 h-11 rounded-2xl border border-white/5 hover:bg-white/5 md:hidden"
+                  >
+                    <Menu className="w-5 h-5 text-white/60" />
+                  </Button>
+                </SheetTrigger>
+                <SheetContent side="left" className="w-72 bg-black/95 border-r border-white/10 backdrop-blur-2xl p-0">
+                  <div className="h-full flex flex-col">
+                    <SheetHeader className="p-8 border-b border-white/5">
+                      <SheetTitle className="text-2xl font-black text-white">
+                        Menu
+                      </SheetTitle>
+                    </SheetHeader>
+                    <div className="flex-1 overflow-y-auto p-4 space-y-2">
+                      {navItems.map((item) => (
+                        <Link key={item.href} to={item.href} onClick={() => setSidebarOpen(false)}>
+                          <div className={`flex items-center gap-4 p-4 rounded-2xl transition-all ${
+                            item.active ? "bg-white/10 text-cyan-400 border border-white/10" : "text-white/60 hover:bg-white/5 hover:text-white"
+                          }`}>
+                            <item.icon className="w-5 h-5" />
+                            <span className="font-bold">{item.label}</span>
+                          </div>
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                </SheetContent>
+              </Sheet>
+
+              <div className="hidden md:flex items-center gap-2 mr-4">
+                {navItems.map((item) => (
+                  <Link key={item.href} to={item.href}>
+                    <Button
+                      variant="ghost"
+                      className={`h-10 px-4 rounded-xl text-[11px] font-black uppercase tracking-wider transition-all ${
+                        item.active 
+                          ? "text-cyan-400 bg-white/5 border border-white/10" 
+                          : "text-white/40 hover:text-white hover:bg-white/5"
+                      }`}
+                    >
+                      {item.label}
+                    </Button>
+                  </Link>
+                ))}
+              </div>
+
+              <Sheet>
               <SheetTrigger asChild>
                 <Button
                   variant="ghost"
