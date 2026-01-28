@@ -8,7 +8,6 @@ import Internships from "./pages/Internships";
 import SilentScream from "./pages/SilentScream";
 import Settings from "./pages/Settings";
 import Analytics from "./pages/Analytics";
-import NeuralIntelligence from "./pages/NeuralIntelligence";
 import MatchAnalysis from "./pages/MatchAnalysis";
 import HackathonPortfolio from "./pages/HackathonPortfolio";
 import ResumeMaker from "./pages/ResumeMaker";
@@ -74,24 +73,24 @@ function App() {
             }
           />
           {/* New routes */}
+          <Route
+            path="/analytics"
+            element={
+              <RequireAuth>
+                <Analytics />
+              </RequireAuth>
+            }
+          />
             <Route
-              path="/analytics"
+              path="/match-analysis"
               element={
                 <RequireAuth>
-                  <Analytics />
+                  <MatchAnalysis />
                 </RequireAuth>
               }
             />
             <Route
               path="/neural-intelligence"
-              element={
-                <RequireAuth>
-                  <NeuralIntelligence />
-                </RequireAuth>
-              }
-            />
-            <Route
-              path="/match-analysis"
               element={
                 <RequireAuth>
                   <MatchAnalysis />

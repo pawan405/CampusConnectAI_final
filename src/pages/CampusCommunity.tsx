@@ -224,37 +224,37 @@ export default function CampusCommunity() {
                   </motion.div>
                 )}
 
-                {activeTab === "groups" && (
-                  <motion.div
-                    key="groups"
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -20 }}
-                    className="grid grid-cols-1 md:grid-cols-2 gap-6"
-                  >
-                      {colleges.map((college, i) => (
-                        <Card key={i} className="bg-black/60 border-white/20 rounded-[40px] overflow-hidden hover:border-cyan-500/50 transition-all group backdrop-blur-3xl shadow-2xl">
-                          <CardHeader className="p-8 border-b border-white/10">
-                            <div className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-6 ${
-                              college.color === 'cyan' ? 'bg-cyan-500/20 border-cyan-500/30 text-cyan-400' :
-                              college.color === 'purple' ? 'bg-purple-500/20 border-purple-500/30 text-purple-400' :
-                              college.color === 'emerald' ? 'bg-emerald-500/20 border-emerald-500/30 text-emerald-400' :
-                              'bg-blue-500/20 border-blue-500/30 text-blue-400'
-                            }`}>
-                              <School className="w-7 h-7" />
-                            </div>
-                            <CardTitle className="text-2xl font-black tracking-tight uppercase leading-tight text-white group-hover:text-cyan-400 transition-colors">{college.name}</CardTitle>
-                            <CardDescription className="text-white font-black uppercase tracking-widest text-[10px] pt-2 drop-shadow-sm">{college.members} Neurons Active</CardDescription>
-                          </CardHeader>
-                          <CardContent className="p-8">
-                            <Button className="w-full h-12 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 font-black uppercase tracking-widest text-[10px] text-white">
-                              Sync with Group
-                            </Button>
-                          </CardContent>
-                        </Card>
-                      ))}
-                  </motion.div>
-                )}
+                  {activeTab === "groups" && (
+                    <motion.div
+                      key="groups"
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -20 }}
+                      className="grid grid-cols-1 md:grid-cols-2 gap-6"
+                    >
+                        {colleges.map((college, i) => (
+                          <Card key={i} className="bg-black/80 border-white/20 rounded-[40px] overflow-hidden hover:border-cyan-500/50 transition-all group backdrop-blur-3xl shadow-2xl">
+                            <CardHeader className="p-8 border-b border-white/10">
+                              <div className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-6 ${
+                                college.color === 'cyan' ? 'bg-cyan-500/20 border-cyan-500/30 text-cyan-400' :
+                                college.color === 'purple' ? 'bg-purple-500/20 border-purple-500/30 text-purple-400' :
+                                college.color === 'emerald' ? 'bg-emerald-500/20 border-emerald-500/30 text-emerald-400' :
+                                'bg-blue-500/20 border-blue-500/30 text-blue-400'
+                              }`}>
+                                <School className="w-7 h-7" />
+                              </div>
+                              <CardTitle className="text-2xl font-black tracking-tight uppercase leading-tight text-white/90 group-hover:text-cyan-400 transition-colors drop-shadow-md">{college.name}</CardTitle>
+                              <CardDescription className="text-white font-black uppercase tracking-widest text-[10px] pt-2 drop-shadow-md">{college.members} Neurons Active</CardDescription>
+                            </CardHeader>
+                            <CardContent className="p-8">
+                              <Button className="w-full h-12 rounded-2xl bg-white/10 border border-white/20 hover:bg-white/20 font-black uppercase tracking-widest text-[10px] text-white">
+                                Sync with Group
+                              </Button>
+                            </CardContent>
+                          </Card>
+                        ))}
+                    </motion.div>
+                  )}
               </AnimatePresence>
             </div>
 
@@ -264,14 +264,14 @@ export default function CampusCommunity() {
                 <CardHeader className="p-8 border-b border-white/10">
                   <CardTitle className="text-xs font-black uppercase tracking-[0.2em] text-cyan-400">Trending Topics</CardTitle>
                 </CardHeader>
-                <CardContent className="p-8 space-y-4">
-                    {["#QuantumComputing", "#AIAesthetics", "#NeuralRoadmaps", "#CyberSecurity"].map((tag, i) => (
-                      <div key={i} className="flex items-center justify-between group cursor-pointer">
-                        <span className="text-sm font-bold text-white group-hover:text-cyan-400 transition-colors drop-shadow-sm">{tag}</span>
-                        <Badge className="bg-white/10 border-white/20 text-[9px] font-black text-white drop-shadow-sm">{12 + i * 5}k</Badge>
-                      </div>
-                    ))}
-                </CardContent>
+                  <CardContent className="p-8 space-y-4">
+                      {["#QuantumComputing", "#AIAesthetics", "#NeuralRoadmaps", "#CyberSecurity"].map((tag, i) => (
+                        <div key={i} className="flex items-center justify-between group cursor-pointer border-b border-white/5 pb-3 last:border-0">
+                          <span className="text-sm font-black text-white/90 group-hover:text-cyan-400 transition-colors drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]">{tag}</span>
+                          <Badge className="bg-cyan-500/10 border-cyan-500/20 text-[9px] font-black text-cyan-400 drop-shadow-sm">{12 + i * 5}k</Badge>
+                        </div>
+                      ))}
+                  </CardContent>
               </Card>
 
               <Card className="bg-gradient-to-br from-purple-500/10 to-cyan-500/10 border-white/10 rounded-[32px] p-8 space-y-6">
