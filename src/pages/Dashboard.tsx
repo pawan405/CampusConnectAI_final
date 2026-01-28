@@ -19,6 +19,7 @@ import {
   Zap,
   Globe,
   Cpu,
+  Settings,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -270,7 +271,7 @@ export default function DashboardPage() {
         >
           <SheetHeader className="p-6 border-b border-white/10">
             <SheetTitle>
-              <div 
+              <div
                 className="flex items-center gap-3 pointer-events-none select-none"
                 onClick={(e) => e.preventDefault()}
                 onMouseDown={(e) => e.preventDefault()}
@@ -438,11 +439,10 @@ export default function DashboardPage() {
                   align="end"
                   className="w-56 bg-black/90 backdrop-blur-2xl border-white/10 rounded-3xl p-2 mt-4 shadow-[0_20px_50px_rgba(0,0,0,0.5)]"
                 >
-                    <DropdownMenuItem
-                      onClick={() => navigate("/system-settings")}
-                      className="rounded-xl text-white/80 focus:bg-cyan-500/20 focus:text-cyan-400 cursor-pointer p-3 gap-3"
-                    >
-
+                  <DropdownMenuItem
+                    onClick={() => navigate("/system-settings")}
+                    className="rounded-xl text-white/80 focus:bg-cyan-500/20 focus:text-cyan-400 cursor-pointer p-3 gap-3"
+                  >
                     <User className="w-4 h-4" />
                     <span className="text-sm font-bold">Profile Interface</span>
                   </DropdownMenuItem>

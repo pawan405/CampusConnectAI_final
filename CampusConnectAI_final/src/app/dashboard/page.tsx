@@ -245,9 +245,11 @@ export default function DashboardPage() {
                   </button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56 bg-black/90 backdrop-blur-2xl border-white/10 rounded-[24px] p-2 mt-4 shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
-                  <DropdownMenuItem className="rounded-xl focus:bg-white/5 focus:text-cyan-400 cursor-pointer p-3 gap-3">
-                    <User className="w-4 h-4" /> <span className="text-sm font-bold">Profile Interface</span>
-                  </DropdownMenuItem>
+                  <Link href="/settings">
+                    <DropdownMenuItem className="rounded-xl focus:bg-white/5 focus:text-cyan-400 cursor-pointer p-3 gap-3">
+                      <User className="w-4 h-4" /> <span className="text-sm font-bold">Profile Interface</span>
+                    </DropdownMenuItem>
+                  </Link>
                   <DropdownMenuSeparator className="bg-white/10" />
                   <DropdownMenuItem className="rounded-xl focus:bg-rose-500/20 focus:text-rose-400 cursor-pointer p-3 gap-3">
                     <LogOut className="w-4 h-4" /> <span className="text-sm font-bold">Disconnect</span>
