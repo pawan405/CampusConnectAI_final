@@ -34,8 +34,14 @@ export default function SilentScreamPage() {
   const [signalId, setSignalId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const recognitionRef = useRef<any>(null);
+  const isRecordingRef = useRef(false);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const silenceTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Sync ref with state
+  useEffect(() => {
+    isRecordingRef.current = isRecording;
+  }, [isRecording]);
 
   const generateSummary = async (text: string) => {
     if (!text || text.trim().length < 5) {
@@ -115,7 +121,7 @@ export default function SilentScreamPage() {
         // Reset silence timer on speech
         if (silenceTimerRef.current) clearTimeout(silenceTimerRef.current);
         silenceTimerRef.current = setTimeout(() => {
-          if (isRecording) stopRecording();
+          if (isRecordingRef.current) stopRecording();
         }, 5000); // Stop after 5s of silence
       };
 
@@ -123,10 +129,10 @@ export default function SilentScreamPage() {
         console.error("Recognition error:", event.error);
         if (event.error === "not-allowed") {
           setError("Microphone access denied. Please check permissions.");
-        } else {
+        } else if (event.error !== "no-speech") {
           setError("Connection lost. Please try again.");
         }
-        stopRecording();
+        if (isRecordingRef.current) stopRecording();
       };
 
       recognition.onend = () => {
@@ -139,9 +145,13 @@ export default function SilentScreamPage() {
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
       if (silenceTimerRef.current) clearTimeout(silenceTimerRef.current);
-      if (recognitionRef.current) recognitionRef.current.stop();
+      if (recognitionRef.current) {
+        try {
+          recognitionRef.current.stop();
+        } catch (e) {}
+      }
     };
-  }, [isRecording]);
+  }, []);
 
   const startRecording = () => {
     setError(null);
