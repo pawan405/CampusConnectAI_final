@@ -10,6 +10,10 @@ import Settings from "./pages/Settings";
 import Analytics from "./pages/Analytics";
 import MatchAnalysis from "./pages/MatchAnalysis";
 import HackathonPortfolio from "./pages/HackathonPortfolio";
+import ResumeMaker from "./pages/ResumeMaker";
+import CampusCommunity from "./pages/CampusCommunity";
+import HelpSupport from "./pages/HelpSupport";
+import Feedback from "./pages/Feedback";
 import { AuthProvider } from "./components/AuthProvider";
 import RequireAuth from "./components/RequireAuth";
 
@@ -85,18 +89,50 @@ function App() {
               </RequireAuth>
             }
           />
-          <Route
-            path="/hackathon-portfolio"
-            element={
-              <RequireAuth>
-                <HackathonPortfolio />
-              </RequireAuth>
-            }
-          />
-        </Routes>
-      </Router>
-    </AuthProvider>
-  );
-}
+            <Route
+              path="/hackathon-portfolio"
+              element={
+                <RequireAuth>
+                  <HackathonPortfolio />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/resume-maker"
+              element={
+                <RequireAuth>
+                  <ResumeMaker />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/campus-community"
+              element={
+                <RequireAuth>
+                  <CampusCommunity />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/help-support"
+              element={
+                <RequireAuth>
+                  <HelpSupport />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/feedback"
+              element={
+                <RequireAuth>
+                  <Feedback />
+                </RequireAuth>
+              }
+            />
+          </Routes>
+        </Router>
+      </AuthProvider>
+    );
+  }
 
 export default App;

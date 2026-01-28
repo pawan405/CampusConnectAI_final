@@ -19,6 +19,10 @@ import {
   Zap,
   Globe,
   Cpu,
+  FileText,
+  Users,
+  LifeBuoy,
+  MessageSquare,
 } from "lucide-react";
 import { Button } from "../components/ui/button";
 import {
@@ -49,6 +53,10 @@ const useSession = () => ({
 
 const navItems = [
   { icon: Activity, label: "System Core", href: "/dashboard", active: true },
+  { icon: FileText, label: "Resume Maker", href: "/resume-maker" },
+  { icon: Users, label: "Campus Community", href: "/campus-community" },
+  { icon: LifeBuoy, label: "Help & Support", href: "/help-support" },
+  { icon: MessageSquare, label: "Feedback", href: "/feedback" },
   { icon: Mic, label: "Silent Scream", href: "/silent-scream", badge: "Live" },
   {
     icon: Briefcase,
