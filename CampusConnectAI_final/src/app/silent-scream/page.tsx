@@ -14,6 +14,8 @@ import {
   ChevronRight,
   Activity,
   Loader2,
+  AlertCircle,
+  RotateCcw,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -28,17 +30,21 @@ export default function SilentScreamPage() {
   const [summary, setSummary] = useState("");
   const [duration, setDuration] = useState(0);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [isUploading, setIsUploading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [signalId, setSignalId] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const recognitionRef = useRef<any>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const silenceTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   const generateSummary = async (text: string) => {
-    if (!text) return "";
+    if (!text || text.trim().length < 5) {
+      setSummary("Message too brief for analysis. Please provide more detail.");
+      return;
+    }
+    
     setIsProcessing(true);
-    setSummary("Analyzing transcription for safety protocols...");
+    setSummary("Synthesizing neural summary...");
     try {
       const response = await fetch("/api/chat", {
         method: "POST",
@@ -46,8 +52,12 @@ export default function SilentScreamPage() {
         body: JSON.stringify({
           messages: [
             {
+              role: "system",
+              content: "You are an empathetic, neutral assistant summarizing sensitive reports. Be supportive but professional.",
+            },
+            {
               role: "user",
-              content: `Please provide a professional, concise executive summary for this report: "${text}". Focus on identifying key concerns and priority level. Keep it under 30 words.`,
+              content: `Summarize this anonymous report in a neutral, empathetic way. Keep it under 25 words: "${text}"`,
             },
           ],
         }),
@@ -55,54 +65,45 @@ export default function SilentScreamPage() {
       const data = await response.json();
       if (data.content) {
         setSummary(data.content);
-        return data.content;
+        // Automatically upload the signal after summary is generated
+        handleUploadSignal(text, data.content);
       }
-      return "";
     } catch (err) {
       console.error("Failed to generate summary:", err);
-      setSummary("Summary unavailable. Please review transcription manually.");
-      return "Summary unavailable.";
+      setSummary("Summary unavailable. Encryption remains active.");
     } finally {
       setIsProcessing(false);
     }
   };
 
+  const handleUploadSignal = async (text: string, currentSummary: string) => {
+    try {
+      const response = await fetch("/api/signals", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          transcription: text,
+          summary: currentSummary,
+          duration,
+        }),
+      });
+      const data = await response.json();
+      if (data.success) {
+        setSignalId(data.signal.id);
+      }
+    } catch (error) {
+      console.error("Auto-upload failed:", error);
+    }
+  };
+
   useEffect(() => {
     setMounted(true);
-    
-    // Global keydown listener for accessibility (type to start)
-    const handleGlobalKeyDown = (e: KeyboardEvent) => {
-      // Don't trigger if user is already in an input or textarea
-      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
-
-      if (
-        !isRecording && 
-        !showSummary && 
-        e.key.length === 1 && 
-        !e.ctrlKey && 
-        !e.altKey && 
-        !e.metaKey
-      ) {
-        setShowSummary(true);
-        setTranscription(e.key);
-        // We'll focus the textarea in the next render cycle
-        setTimeout(() => {
-          if (textareaRef.current) {
-            textareaRef.current.focus();
-            textareaRef.current.setSelectionRange(1, 1);
-          }
-        }, 50);
-      }
-    };
-
-    window.addEventListener("keydown", handleGlobalKeyDown);
-    
-    // Initialize Speech Recognition
     const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     if (SpeechRecognition) {
       const recognition = new SpeechRecognition();
       recognition.continuous = true;
       recognition.interimResults = true;
+      recognition.lang = "en-US";
       
       recognition.onresult = (event: any) => {
         let currentTranscription = "";
@@ -110,6 +111,22 @@ export default function SilentScreamPage() {
           currentTranscription += event.results[i][0].transcript;
         }
         setTranscription(currentTranscription);
+        
+        // Reset silence timer on speech
+        if (silenceTimerRef.current) clearTimeout(silenceTimerRef.current);
+        silenceTimerRef.current = setTimeout(() => {
+          if (isRecording) stopRecording();
+        }, 5000); // Stop after 5s of silence
+      };
+
+      recognition.onerror = (event: any) => {
+        console.error("Recognition error:", event.error);
+        if (event.error === "not-allowed") {
+          setError("Microphone access denied. Please check permissions.");
+        } else {
+          setError("Connection lost. Please try again.");
+        }
+        stopRecording();
       };
 
       recognition.onend = () => {
@@ -120,126 +137,70 @@ export default function SilentScreamPage() {
     }
     
     return () => {
-      window.removeEventListener("keydown", handleGlobalKeyDown);
       if (timerRef.current) clearInterval(timerRef.current);
+      if (silenceTimerRef.current) clearTimeout(silenceTimerRef.current);
       if (recognitionRef.current) recognitionRef.current.stop();
     };
-  }, [isRecording, showSummary]);
+  }, [isRecording]);
 
-  const toggleRecording = async () => {
-    if (isRecording) {
-      // Stop recording
-      if (recognitionRef.current) recognitionRef.current.stop();
-      if (timerRef.current) clearInterval(timerRef.current);
-      setIsRecording(false);
-      setShowSummary(true);
-      
-      // Generate AI Summary
-      if (transcription) {
-        generateSummary(transcription);
+  const startRecording = () => {
+    setError(null);
+    setTranscription("");
+    setDuration(0);
+    setSummary("");
+    setShowSummary(false);
+    setSignalId(null);
+    
+    if (recognitionRef.current) {
+      try {
+        recognitionRef.current.start();
+        setIsRecording(true);
+        const startTime = Date.now();
+        timerRef.current = setInterval(() => {
+          setDuration((Date.now() - startTime) / 1000);
+        }, 100);
+      } catch (err) {
+        setError("Failed to initialize microphone.");
       }
     } else {
-      // Start recording
-      setTranscription("");
-      setDuration(0);
-      setSummary("");
-      setShowSummary(false);
-      
-      if (recognitionRef.current) {
-        try {
-          recognitionRef.current.start();
-          setIsRecording(true);
-          
-          const startTime = performance.now();
-          timerRef.current = setInterval(() => {
-            setDuration((performance.now() - startTime) / 1000);
-          }, 10);
-        } catch (err) {
-          console.error("Failed to start recognition:", err);
-          toast.error("Could not access microphone. Please check permissions.");
-        }
-      } else {
-        toast.error("Speech recognition is not supported in this browser. You can still type your report.");
-        setShowSummary(true);
-        setTimeout(() => textareaRef.current?.focus(), 100);
-      }
+      setError("Voice recognition not supported in this browser.");
     }
   };
 
-  const handleTextareaKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      handleUploadSignal();
+  const stopRecording = () => {
+    if (recognitionRef.current) recognitionRef.current.stop();
+    if (timerRef.current) clearInterval(timerRef.current);
+    if (silenceTimerRef.current) clearTimeout(silenceTimerRef.current);
+    setIsRecording(false);
+    
+    if (transcription.trim().length > 0) {
+      setShowSummary(true);
+      generateSummary(transcription);
+    } else if (!error) {
+      setError("No speech detected. Please try again.");
     }
   };
 
-  const handleUploadSignal = async () => {
-    if (!transcription) {
-      toast.error("No signal data to upload. Please record your message first.");
-      return;
-    }
-
-    setIsUploading(true);
-    try {
-      // If summary is missing, generate it first
-      let currentSummary = summary;
-      if (transcription && !summary) {
-        currentSummary = await generateSummary(transcription);
-      }
-
-      const response = await fetch("/api/signals", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          transcription,
-          summary: currentSummary,
-          duration,
-        }),
-      });
-
-      const data = await response.json();
-
-      if (data.success) {
-        setSignalId(data.signal.id);
-        toast.success("Signal uploaded securely to the encrypted database.");
-      } else {
-        throw new Error(data.error || "Upload failed");
-      }
-    } catch (error: any) {
-      console.error("Upload error:", error);
-      toast.error(`Upload failed: ${error.message}`);
-    } finally {
-      setIsUploading(false);
-    }
+  const toggleRecording = () => {
+    if (isRecording) stopRecording();
+    else startRecording();
   };
 
   const handleSubmitToAuthorities = async () => {
-    if (!signalId) {
-      toast.error("Please upload the signal first before submitting.");
-      return;
-    }
-
+    if (!signalId) return;
     setIsSubmitting(true);
     try {
       const response = await fetch("/api/submissions", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          signalId,
-          authorityName: "Campus Security",
-        }),
+        body: JSON.stringify({ signalId, authorityName: "Campus Security" }),
       });
-
       const data = await response.json();
-
       if (data.success) {
-        toast.success("Signal successfully submitted to authorities. Reference ID: " + data.submission.id.slice(0, 8));
-      } else {
-        throw new Error(data.error || "Submission failed");
+        toast.success("Signal submitted securely.");
       }
-    } catch (error: any) {
-      console.error("Submission error:", error);
-      toast.error(`Submission failed: ${error.message}`);
+    } catch (error) {
+      toast.error("Submission failed.");
     } finally {
       setIsSubmitting(false);
     }
@@ -251,325 +212,202 @@ export default function SilentScreamPage() {
     <div className="min-h-screen bg-[#050508] text-white overflow-x-hidden selection:bg-rose-500/30">
       <ThreeDBackground />
 
-      {/* Background Gradients */}
-      <div className="fixed inset-0 pointer-events-none">
-        <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-rose-500/10 rounded-full blur-[120px] animate-pulse" />
-        <div
-          className="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-cyan-500/10 rounded-full blur-[120px] animate-pulse"
-          style={{ animationDelay: "2s" }}
-        />
-      </div>
-
-      <nav className="fixed top-0 left-0 right-0 z-50 px-8 py-6 bg-black/20 backdrop-blur-xl border-b border-white/[0.05]">
+      <nav className="fixed top-0 left-0 right-0 z-50 px-8 py-4 bg-black/40 backdrop-blur-xl border-b border-white/[0.05]">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <Link href="/dashboard" className="group flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center group-hover:bg-rose-500/20 group-hover:border-rose-500/30 transition-all">
-              <ArrowLeft className="w-5 h-5 text-white/60 group-hover:text-rose-400" />
+            <div className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center group-hover:bg-rose-500/20 transition-all">
+              <ArrowLeft className="w-4 h-4 text-white/60 group-hover:text-rose-400" />
             </div>
-            <span className="text-sm font-black tracking-widest uppercase text-white/40 group-hover:text-white transition-colors">
-              Return to Hub
+            <span className="text-[10px] font-black tracking-widest uppercase text-white/40 group-hover:text-white transition-colors">
+              Return
             </span>
           </Link>
-
-          <div className="flex items-center gap-4">
-            <Badge className="bg-rose-500/10 text-rose-400 border border-rose-500/20 px-4 py-1.5 rounded-full text-[10px] font-black tracking-[0.2em] uppercase">
-              <Lock className="w-3 h-3 mr-2" /> Encrypted Link
-            </Badge>
-          </div>
+          <Badge className="bg-rose-500/10 text-rose-400 border border-rose-500/20 px-3 py-1 rounded-full text-[9px] font-black tracking-widest uppercase">
+            <Lock className="w-3 h-3 mr-2 inline" /> Encrypted Protocol
+          </Badge>
         </div>
       </nav>
 
-      <main className="relative pt-32 pb-20 px-8 max-w-5xl mx-auto flex flex-col items-center">
-        {/* Header Section */}
+      <main className="relative pt-24 pb-12 px-6 max-w-4xl mx-auto flex flex-col items-center">
+        {/* Compact Header */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-20"
+          className="text-center mb-12"
         >
-          <div className="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-rose-500/10 border border-rose-500/20 mb-8 backdrop-blur-md">
-            <div className="w-2 h-2 rounded-full bg-rose-500 animate-pulse shadow-[0_0_10px_rgba(244,63,94,0.8)]" />
-            <span className="text-[11px] font-black text-rose-400 tracking-[0.2em] uppercase">
-              Security Protocol Alpha
-            </span>
-          </div>
-          <h1 className="text-7xl lg:text-9xl font-black tracking-tighter mb-6 bg-clip-text text-transparent bg-gradient-to-b from-white to-white/20">
+          <h1 className="text-5xl lg:text-7xl font-black tracking-tighter mb-2 bg-clip-text text-transparent bg-gradient-to-b from-white to-white/20">
             SILENT SCREAM
           </h1>
-          <p className="text-white/40 text-xl font-medium italic max-w-2xl mx-auto leading-relaxed">
+          <p className="text-white/40 text-sm font-medium italic tracking-wide">
             "Your identity is shielded. Your voice is heard."
           </p>
         </motion.div>
 
-        {/* Central Interface */}
-        <div className="relative w-full flex flex-col items-center justify-center min-h-[400px]">
-          {/* Waveform Animation */}
-          <div className="absolute inset-0 flex items-center justify-center gap-1.5 opacity-20 pointer-events-none">
-            {Array.from({ length: 40 }).map((_, i) => (
-              <motion.div
-                key={i}
-                animate={{
-                  height: isRecording ? [20, 80, 20] : [10, 30, 10],
-                  opacity: isRecording ? [0.2, 0.8, 0.2] : 0.2,
-                }}
-                transition={{
-                  duration: isRecording ? 0.5 + Math.random() : 2,
-                  repeat: Infinity,
-                  delay: i * 0.05,
-                }}
-                className={`w-1 rounded-full ${isRecording ? "bg-rose-500" : "bg-white/20"}`}
-              />
-            ))}
-          </div>
+        {/* Central UI */}
+        <div className="w-full flex flex-col items-center gap-12">
+          {/* Visual Feedback */}
+          <div className="relative flex items-center justify-center">
+            <AnimatePresence>
+              {isRecording && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.8 }}
+                  className="absolute -inset-24 flex items-center justify-center gap-1.5 opacity-30 pointer-events-none"
+                >
+                  {Array.from({ length: 24 }).map((_, i) => (
+                    <motion.div
+                      key={i}
+                      animate={{ height: [10, 60, 10] }}
+                      transition={{ duration: 0.5 + Math.random(), repeat: Infinity, delay: i * 0.05 }}
+                      className="w-1 bg-rose-500 rounded-full"
+                    />
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
 
-          {/* Microphone Button */}
-          <motion.div
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="relative z-10"
-          >
-            <button
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
               onClick={toggleRecording}
-              aria-label={isRecording ? "Stop recording" : "Start recording"}
-              className={`relative w-48 h-48 rounded-full flex items-center justify-center transition-all duration-700 ${
+              className={`relative z-10 w-40 h-40 rounded-full flex flex-col items-center justify-center transition-all duration-500 ${
                 isRecording
-                  ? "bg-rose-500 shadow-[0_0_100px_rgba(244,63,94,0.4)]"
-                  : "bg-white/5 border border-white/10 hover:border-rose-500/50 hover:bg-rose-500/10 shadow-[0_0_50px_rgba(0,0,0,0.5)]"
+                  ? "bg-rose-600 shadow-[0_0_80px_rgba(225,29,72,0.4)]"
+                  : "bg-white/5 border border-white/10 hover:border-rose-500/50"
               }`}
             >
-              <AnimatePresence mode="wait">
-                {isRecording ? (
-                  <motion.div
-                    key="recording"
-                    initial={{ opacity: 0, scale: 0.5 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.5 }}
-                    className="flex flex-col items-center"
-                  >
-                      <Activity className="w-16 h-16 text-white animate-pulse" />
-                      <span className="absolute -bottom-12 text-rose-400 font-black tracking-[0.3em] uppercase text-[10px] animate-pulse">
-                        Recording ({duration.toFixed(2)}s)...
-                      </span>
-                    </motion.div>
-                ) : (
-                  <motion.div
-                    key="idle"
-                    initial={{ opacity: 0, scale: 0.5 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.5 }}
-                  >
-                    <Mic className="w-16 h-16 text-white/80 group-hover:text-white" />
-                  </motion.div>
-                )}
-              </AnimatePresence>
-
-              {/* Pulse Rings */}
-              {isRecording && (
-                <>
-                  <motion.div
-                    initial={{ scale: 1, opacity: 0.5 }}
-                    animate={{ scale: 1.5, opacity: 0 }}
-                    transition={{ duration: 2, repeat: Infinity }}
-                    className="absolute inset-0 rounded-full border-2 border-rose-500"
-                  />
-                  <motion.div
-                    initial={{ scale: 1, opacity: 0.5 }}
-                    animate={{ scale: 2, opacity: 0 }}
-                    transition={{ duration: 2, repeat: Infinity, delay: 0.5 }}
-                    className="absolute inset-0 rounded-full border border-rose-500/50"
-                  />
-                </>
+              {isRecording ? (
+                <Activity className="w-12 h-12 text-white animate-pulse" />
+              ) : (
+                <Mic className="w-12 h-12 text-white/80" />
               )}
-            </button>
-          </motion.div>
+              <span className={`mt-2 text-[10px] font-black uppercase tracking-[0.2em] ${isRecording ? "text-white" : "text-white/40"}`}>
+                {isRecording ? "Stop" : "Speak"}
+              </span>
+            </motion.button>
+          </div>
 
-          {/* Visible Text Input Bar */}
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mt-12 w-full max-w-2xl relative z-10"
-          >
-            <div className="relative group">
-              <div className="absolute -inset-0.5 bg-gradient-to-r from-rose-500/20 to-cyan-500/20 rounded-3xl blur opacity-20 group-hover:opacity-100 transition duration-1000"></div>
-              <textarea
-                value={transcription}
-                onChange={(e) => {
-                  setTranscription(e.target.value);
-                  if (!showSummary && e.target.value.trim().length > 0) {
-                    setShowSummary(true);
-                  }
-                }}
-                onKeyDown={handleTextareaKeyDown}
-                placeholder="Type your message here..."
-                className="relative w-full px-8 py-6 rounded-3xl bg-black/60 border border-white/10 text-white placeholder:text-white/20 focus:outline-none focus:border-rose-500/50 transition-all resize-none min-h-[100px] text-lg font-medium italic shadow-2xl"
-              />
-              <div className="absolute right-8 bottom-6 flex items-center gap-2 pointer-events-none opacity-40 group-hover:opacity-100 transition-opacity">
-                <kbd className="px-2 py-1 rounded bg-white/5 border border-white/10 text-[10px] font-black uppercase tracking-widest text-white/40">
-                  Enter
-                </kbd>
-                <span className="text-[10px] font-black uppercase tracking-widest text-white/20">
-                  to upload
-                </span>
-              </div>
-            </div>
-          </motion.div>
-
-        </div>
-
-        {/* AI Summary Section */}
-        <AnimatePresence>
-          {showSummary && (
-            <motion.div
-              initial={{ opacity: 0, y: 40 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 20 }}
-              className="w-full mt-32"
-            >
-              <div className="bg-white/[0.02] backdrop-blur-[40px] border border-white/[0.08] rounded-[48px] p-12 relative overflow-hidden group shadow-[0_50px_100px_-20px_rgba(0,0,0,0.5)]">
-                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-cyan-500/40 to-transparent" />
-
-                <div className="flex items-center justify-between mb-12">
-                  <div className="flex items-center gap-6">
-                    <div className="w-14 h-14 rounded-2xl bg-cyan-500/10 flex items-center justify-center border border-cyan-500/20 shadow-xl">
-                      <Sparkles className="w-7 h-7 text-cyan-400" />
-                    </div>
-                    <div>
-                      <h3 className="text-3xl font-black tracking-tighter">
-                        NEURAL ANALYSIS
-                      </h3>
-                      <p className="text-[10px] font-black text-cyan-400/60 uppercase tracking-widest mt-1">
-                        AI Transcription Active
-                      </p>
-                    </div>
-                  </div>
-                  <Badge className="bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 px-4 py-1.5 rounded-full text-[10px] font-black tracking-[0.2em] uppercase">
-                    Processed
+          {/* Live Transcript / Error State */}
+          <div className="w-full max-w-xl text-center min-h-[80px] flex flex-col items-center justify-center px-4">
+            <AnimatePresence mode="wait">
+              {error ? (
+                <motion.div
+                  key="error"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="flex flex-col items-center gap-3 text-rose-400"
+                >
+                  <AlertCircle className="w-6 h-6" />
+                  <p className="text-sm font-bold tracking-tight">{error}</p>
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    onClick={startRecording}
+                    className="text-[10px] uppercase font-black tracking-widest hover:bg-rose-500/10"
+                  >
+                    <RotateCcw className="w-3 h-3 mr-2" /> Retry
+                  </Button>
+                </motion.div>
+              ) : isRecording ? (
+                <motion.div
+                  key="listening"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="space-y-4"
+                >
+                  <Badge variant="outline" className="animate-pulse border-rose-500/50 text-rose-400">
+                    Listening Word-to-Word...
                   </Badge>
-                </div>
+                  <p className="text-xl font-medium italic text-white/80 leading-relaxed">
+                    {transcription || "..."}
+                  </p>
+                </motion.div>
+              ) : null}
+            </AnimatePresence>
+          </div>
 
-                <div className="grid md:grid-cols-2 gap-12">
-                  <div className="space-y-6">
-                        <p className="text-white/20 text-[10px] font-black uppercase tracking-widest">
-                          Original Transcription
-                        </p>
-                        <textarea
-                          ref={textareaRef}
-                          value={transcription}
-                          onChange={(e) => setTranscription(e.target.value)}
-                          onKeyDown={handleTextareaKeyDown}
-                          onBlur={() => generateSummary(transcription)}
-                          className="w-full p-8 rounded-[32px] bg-black/40 border border-white/5 font-medium text-white/60 leading-relaxed italic min-h-[150px] resize-none focus:outline-none focus:border-cyan-500/50 transition-all"
-                          placeholder="Type your report here or use voice input..."
-                        />
+          {/* Results Section */}
+          <AnimatePresence>
+            {showSummary && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="w-full space-y-8"
+              >
+                <div className="bg-white/[0.02] backdrop-blur-3xl border border-white/[0.08] rounded-[32px] p-8 md:p-10 relative overflow-hidden group">
+                  <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-cyan-500/40 to-transparent" />
+                  
+                  <div className="flex items-center gap-4 mb-8">
+                    <div className="w-10 h-10 rounded-xl bg-cyan-500/10 flex items-center justify-center border border-cyan-500/20">
+                      <Sparkles className="w-5 h-5 text-cyan-400" />
+                    </div>
+                    <h3 className="text-xl font-black tracking-tighter uppercase">Neural Analysis</h3>
+                  </div>
+
+                  <div className="grid md:grid-cols-2 gap-8">
+                    <div className="space-y-3">
+                      <label className="text-[10px] font-black uppercase tracking-[0.2em] text-white/20">Transcription</label>
+                      <div className="p-5 rounded-2xl bg-black/40 border border-white/5 text-sm font-medium text-white/60 italic leading-relaxed">
+                        {transcription}
                       </div>
-
-
-                  <div className="space-y-6">
-                    <p className="text-cyan-400/20 text-[10px] font-black uppercase tracking-widest">
-                      AI Executive Summary
-                    </p>
-                      <div className="p-8 rounded-[32px] bg-cyan-500/5 border border-cyan-500/20">
-                        <div className="flex items-start gap-4 mb-6">
-                          <div className="w-1 h-12 bg-cyan-500 rounded-full" />
-                          <p className="text-lg font-bold text-white leading-snug">
-                            {isProcessing ? (
-                              <span className="flex items-center gap-2">
-                                <Loader2 className="w-4 h-4 animate-spin" />
-                                {summary}
-                              </span>
-                            ) : (
-                              summary || "Neural summary will appear here..."
-                            )}
-                          </p>
-                        </div>
-                      <div className="flex flex-wrap gap-3">
-                        {["Safety", "Facilities", "High Priority"].map(
-                          (tag) => (
-                            <span
-                              key={tag}
-                              className="text-[9px] font-black uppercase tracking-widest px-3 py-1 rounded-lg bg-cyan-500/10 text-cyan-400 border border-cyan-500/20"
-                            >
-                              {tag}
-                            </span>
-                          )
+                    </div>
+                    <div className="space-y-3">
+                      <label className="text-[10px] font-black uppercase tracking-[0.2em] text-cyan-400/30">Empathic Summary</label>
+                      <div className="p-5 rounded-2xl bg-cyan-500/5 border border-cyan-500/20 min-h-[100px] flex items-center">
+                        {isProcessing ? (
+                          <div className="flex items-center gap-3 text-cyan-400/60">
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                            <span className="text-xs font-bold uppercase tracking-widest">Processing...</span>
+                          </div>
+                        ) : (
+                          <p className="text-base font-bold text-white leading-relaxed">{summary}</p>
                         )}
                       </div>
                     </div>
                   </div>
-                </div>
 
-                <div className="mt-12 pt-12 border-t border-white/5 flex items-center justify-between">
-                  <p className="text-white/30 text-xs font-medium max-w-md">
-                    Note: Your voice signature has been scrubbed and replaced
-                    with a neural-generated monotone to ensure absolute
-                    anonymity.
-                  </p>
+                  <div className="mt-10 pt-8 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-6">
+                    <p className="text-white/20 text-[10px] font-medium leading-relaxed max-w-sm">
+                      Note: Your voice has been masked. Encryption ID: {signalId?.slice(0, 8) || "PENDING"}
+                    </p>
                     <Button
                       onClick={handleSubmitToAuthorities}
                       disabled={isSubmitting || !signalId}
-                      className="h-16 px-12 rounded-[24px] bg-cyan-500 hover:bg-cyan-400 text-black font-black text-xs tracking-[0.2em] uppercase transition-all shadow-[0_20px_40px_rgba(6,182,212,0.3)] group disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="w-full md:w-auto h-12 px-8 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-black font-black text-[10px] tracking-widest uppercase transition-all shadow-xl disabled:opacity-20"
                     >
-                      {isSubmitting ? (
-                        <Loader2 className="w-5 h-5 animate-spin mr-2" />
-                      ) : (
-                        <ChevronRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
-                      )}
-                      {isSubmitting ? "Submitting..." : "Submit to Authorities"}
+                      {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : "Submit Securely"}
                     </Button>
-
+                  </div>
                 </div>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
 
-        {/* Info Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full mt-32">
+        {/* Security Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full mt-24">
           {[
-            {
-              icon: Shield,
-              title: "Zero Trace",
-              desc: "No IP logging, no metadata, no identity leaks.",
-              color: "rose",
-            },
-            {
-              icon: Zap,
-              title: "AI Scrubbing",
-              desc: "Voices are re-synthesized to prevent bio-recognition.",
-              color: "cyan",
-            },
-            {
-              icon: Volume2,
-              title: "Safe Storage",
-              desc: "Reports are encrypted with 256-bit military standards.",
-              color: "violet",
-            },
+            { icon: Shield, title: "Zero Trace", desc: "No IP logging or metadata." },
+            { icon: Zap, title: "AI Masking", desc: "Voices re-synthesized." },
+            { icon: Volume2, title: "Safe Storage", desc: "256-bit AES encryption." },
           ].map((item, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5 + i * 0.1 }}
-              className="p-8 rounded-[32px] bg-white/[0.02] border border-white/[0.05] hover:bg-white/[0.04] transition-all group"
-            >
-              <div
-                className={`w-14 h-14 rounded-2xl bg-${item.color}-500/10 flex items-center justify-center border border-${item.color}-500/20 mb-6 group-hover:rotate-12 transition-transform`}
-              >
-                <item.icon className={`w-7 h-7 text-${item.color}-400`} />
+            <div key={i} className="p-6 rounded-2xl bg-white/[0.02] border border-white/[0.05] flex items-start gap-4">
+              <div className="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center border border-white/10 shrink-0">
+                <item.icon className="w-5 h-5 text-white/40" />
               </div>
-              <h4 className="text-xl font-black tracking-tight mb-2 uppercase">
-                {item.title}
-              </h4>
-              <p className="text-white/40 text-sm font-medium leading-relaxed">
-                {item.desc}
-              </p>
-            </motion.div>
+              <div>
+                <h4 className="text-xs font-black uppercase tracking-widest mb-1">{item.title}</h4>
+                <p className="text-[10px] text-white/30 font-medium leading-normal">{item.desc}</p>
+              </div>
+            </div>
           ))}
         </div>
       </main>
 
-      <footer className="p-12 border-t border-white/[0.03] text-center">
-        <p className="text-[10px] font-black text-white/10 uppercase tracking-[0.5em]">
-          Neural Encryption Active • Sector 7 Reporting Protocol
+      <footer className="py-8 text-center opacity-20">
+        <p className="text-[9px] font-black uppercase tracking-[0.5em]">
+          End-to-End Encrypted Session
         </p>
       </footer>
     </div>
