@@ -817,7 +817,7 @@ export default function CrackHackPage() {
         </>
       )}
 
-      <style jsx global>{`
+      <style dangerouslySetInnerHTML={{ __html: `
         .perspective-1000 {
           perspective: 1000px;
         }
@@ -835,7 +835,7 @@ export default function CrackHackPage() {
         .animate-float {
           animation: float 3s ease-in-out infinite;
         }
-      `}</style>
+      ` }} />
     </div>
   );
 }
