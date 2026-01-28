@@ -29,16 +29,10 @@
     },
     "allowJs": true,
     "incremental": true,
-    "esModuleInterop": true,
-    "plugins": [
-      {
-        "name": "next"
-      }
-    ]
+    "esModuleInterop": true
   },
   "include": [
-    "src",
-    ".next/types/**/*.ts"
+    "src"
   ],
   "references": [
     {
