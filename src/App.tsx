@@ -7,6 +7,7 @@ import Hackathons from "./pages/Hackathons";
 import Internships from "./pages/Internships";
 import SilentScream from "./pages/SilentScream";
 import Settings from "./pages/Settings";
+import SystemSettings from "./pages/SystemSettings";
 import Analytics from "./pages/Analytics";
 import MatchAnalysis from "./pages/MatchAnalysis";
 import HackathonPortfolio from "./pages/HackathonPortfolio";
@@ -60,14 +61,23 @@ function App() {
               </RequireAuth>
             }
           />
-          <Route
-            path="/settings"
-            element={
-              <RequireAuth>
-                <Settings />
-              </RequireAuth>
-            }
-          />
+            <Route
+              path="/settings"
+              element={
+                <RequireAuth>
+                  <Settings />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/system-settings"
+              element={
+                <RequireAuth>
+                  <SystemSettings />
+                </RequireAuth>
+              }
+            />
+
           {/* New routes */}
           <Route
             path="/analytics"

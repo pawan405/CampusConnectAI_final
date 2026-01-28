@@ -62,7 +62,7 @@ export default function SettingsPage() {
               </Button>
             </Link>
             <Link
-              to="/settings"
+              to="/system-settings"
               className="flex items-center gap-3 group cursor-pointer"
             >
               <Settings className="w-5 h-5 text-blue-400 group-hover:text-blue-300" />

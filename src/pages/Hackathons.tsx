@@ -817,7 +817,7 @@ export default function CrackHackPage() {
         </>
       )}
 
-      <style jsx global>{`
+      <style>{`
         .perspective-1000 {
           perspective: 1000px;
         }
