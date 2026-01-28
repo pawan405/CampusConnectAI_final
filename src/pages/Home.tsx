@@ -222,25 +222,32 @@ export default function Home() {
                         CampusConnect<span className="text-blue-500">AI</span>
                       </SheetTitle>
                     </SheetHeader>
-                    <div className="flex-1 overflow-y-auto p-4 space-y-2">
-                      {[
-                        { label: "CORE SYSTEM", active: activeTab === "CORE SYSTEM" },
-                        { label: "CAPABILITIES", active: activeTab === "CAPABILITIES" },
-                        { label: "NETWORK", active: activeTab === "NETWORK" },
-                      ].map((item) => (
-                        <button
-                          key={item.label}
-                          onClick={() => {
-                            setActiveTab(item.label);
-                          }}
-                          className={`w-full flex items-center gap-4 p-4 rounded-xl transition-all ${
-                            item.active ? "bg-white/10 text-blue-400 border border-white/10" : "text-white/60 hover:bg-white/5 hover:text-white"
-                          }`}
-                        >
-                          <span className="font-bold text-[11px] tracking-widest uppercase">{item.label}</span>
-                        </button>
-                      ))}
-                    </div>
+                      <div className="flex-1 overflow-y-auto p-4 space-y-2">
+                        {[
+                          { label: "CORE SYSTEM", active: activeTab === "CORE SYSTEM" },
+                          { label: "CAPABILITIES", active: activeTab === "CAPABILITIES" },
+                          { label: "NETWORK", active: activeTab === "NETWORK" },
+                        ].map((item) => (
+                          <button
+                            key={item.label}
+                            onClick={() => {
+                              setActiveTab(item.label);
+                            }}
+                            className={`w-full flex items-center gap-4 p-4 rounded-xl transition-all ${
+                              item.active ? "bg-white/10 text-blue-400 border border-white/10" : "text-white/60 hover:bg-white/5 hover:text-white"
+                            }`}
+                          >
+                            <span className="font-bold text-[11px] tracking-widest uppercase">{item.label}</span>
+                          </button>
+                        ))}
+                        <div className="pt-4 mt-4 border-t border-white/5">
+                          <Link to="/dashboard">
+                            <button className="w-full flex items-center gap-4 p-4 rounded-xl transition-all text-cyan-400 hover:bg-cyan-500/10 border border-cyan-500/20">
+                              <span className="font-bold text-[11px] tracking-widest uppercase">Go to Dashboard</span>
+                            </button>
+                          </Link>
+                        </div>
+                      </div>
                   </div>
                 </SheetContent>
               </Sheet>

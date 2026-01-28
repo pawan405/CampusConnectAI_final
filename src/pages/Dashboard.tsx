@@ -53,6 +53,7 @@ const useSession = () => ({
 });
 
 const navItems = [
+  { icon: Globe, label: "Home Page", href: "/" },
   { icon: Activity, label: "System Core", href: "/dashboard", active: true },
   { icon: FileText, label: "Resume Maker", href: "/resume-maker" },
   { icon: Users, label: "Campus Community", href: "/campus-community" },
@@ -261,13 +262,14 @@ export default function DashboardPage() {
             <div className="flex items-center justify-end gap-4">
               <Sheet>
                 <SheetTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="w-11 h-11 rounded-2xl border border-white/5 hover:bg-white/5 md:hidden"
-                  >
-                    <Menu className="w-5 h-5 text-white/60" />
-                  </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="w-11 h-11 rounded-2xl border border-white/5 hover:bg-cyan-500/20 hover:border-cyan-500/30 transition-all shadow-[0_0_15px_rgba(6,182,212,0.1)] group relative overflow-hidden"
+                    >
+                      <div className="absolute inset-0 bg-gradient-to-tr from-cyan-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                      <Menu className="w-5 h-5 text-cyan-400 group-hover:text-cyan-300" />
+                    </Button>
                 </SheetTrigger>
                 <SheetContent side="left" className="w-72 bg-black/95 border-r border-white/10 backdrop-blur-2xl p-0">
                   <div className="h-full flex flex-col">
