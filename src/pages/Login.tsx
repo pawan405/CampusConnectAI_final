@@ -32,18 +32,34 @@ const FadeIn = ({
   </motion.div>
 );
 
-export default function LoginPage() {
-  const navigate = useNavigate();
-  const { signInWithGoogle, configured } = useAuth();
+  export default function LoginPage() {
+    const navigate = useNavigate();
+    const { user, signInWithGoogle, configured, loading } = useAuth();
 
-  const handleGoogleLogin = async () => {
-    try {
-      await signInWithGoogle();
-      navigate("/dashboard");
-    } catch (error) {
-      console.error("Sign in error:", error);
-    }
-  };
+    // Automatically redirect if already logged in
+    React.useEffect(() => {
+      if (!loading && user) {
+        navigate("/dashboard", { replace: true });
+      }
+    }, [user, loading, navigate]);
+
+    const handleGoogleLogin = async () => {
+      try {
+        await signInWithGoogle();
+        // The useEffect above will handle redirection once the user state updates
+      } catch (error: any) {
+        console.error("Sign in error:", error);
+        // Alert common Firebase popup issues
+        if (error.code === "auth/popup-blocked") {
+          alert("Sign-in popup was blocked by your browser. Please allow popups for this site.");
+        } else if (error.code === "auth/cancelled-popup-request") {
+          // This happens if the user closes the popup or another one is opened
+        } else {
+          alert(`Sign-in error: ${error.message || "Unknown error"}`);
+        }
+      }
+    };
+
 
   return (
     <div className="min-h-screen bg-transparent text-white flex items-center justify-center p-6 relative overflow-hidden selection:bg-blue-500/30">
