@@ -10,9 +10,9 @@ import {
   Sparkles,
 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { useAuth } from "@/components/AuthProvider";
-import { auth } from "@/lib/firebase";
+import { Button } from "../components/ui/button";
+import { useAuth } from "../components/AuthProvider";
+import { auth } from "../lib/firebase";
 
 const FadeIn = ({
   children,

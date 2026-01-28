@@ -13,12 +13,12 @@ import {
   Activity,
   Loader2,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import ThreeDBackground from "@/components/ThreeDBackground";
+import { Button } from "../components/ui/button";
+import { Badge } from "../components/ui/badge";
+import ThreeDBackground from "../components/ThreeDBackground";
 import { toast } from "sonner";
-import { useAuth } from "@/components/AuthProvider";
-import { createSilentReport, submitSilentReport } from "@/lib/data";
+import { useAuth } from "../components/AuthProvider";
+import { createSilentReport, submitSilentReport } from "../lib/data";
 
 export default function SilentScreamPage() {
   const { user } = useAuth();

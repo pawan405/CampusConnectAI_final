@@ -20,14 +20,14 @@ import {
   Globe,
   Cpu,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "../components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from "../components/ui/dropdown-menu";
 import {
   Sheet,
   SheetContent,
@@ -35,11 +35,11 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from "@/components/ui/sheet";
-import ThreeDBackground from "@/components/ThreeDBackground";
-import TiltCard from "@/components/TiltCard";
+} from "../components/ui/sheet";
+import ThreeDBackground from "../components/ThreeDBackground";
+import TiltCard from "../components/TiltCard";
 import { toast } from "sonner";
-import { useAuth } from "@/components/AuthProvider";
+import { useAuth } from "../components/AuthProvider";
 
 // Mock Auth
 const useSession = () => ({

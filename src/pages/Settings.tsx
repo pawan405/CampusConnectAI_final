@@ -1,30 +1,32 @@
 import { motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "@/components/AuthProvider";
+import { useAuth } from "../components/AuthProvider";
+import { useState } from "react";
 import {
-  Settings,
-  ArrowLeft,
   User,
   Bell,
   Lock,
   Eye,
+  LogOut,
+  Mail,
+  Shield,
+  Palette,
+  Globe,
   Database,
-  Cpu,
-  Save,
-  ShieldCheck,
-  Smartphone,
+  Terminal,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "../components/ui/button";
 import {
   Card,
   CardContent,
+  CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
-  CardDescription,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
-import { Switch } from "@/components/ui/switch";
+} from "../components/ui/card";
+import { Input } from "../components/ui/input";
+import { Badge } from "../components/ui/badge";
+import { Switch } from "../components/ui/switch";
 import { toast } from "sonner";
 
 export default function SettingsPage() {

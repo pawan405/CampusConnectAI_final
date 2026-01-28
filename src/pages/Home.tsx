@@ -30,10 +30,10 @@ import {
   BarChart3,
   Clock,
 } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "../components/ui/card";
+import { Button } from "../components/ui/button";
 import { FcGoogle } from "react-icons/fc";
-import ThreeDBackground from "@/components/ThreeDBackground";
+import ThreeDBackground from "../components/ThreeDBackground";
 
 const FadeIn = ({
   children,

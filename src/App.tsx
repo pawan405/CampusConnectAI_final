@@ -10,8 +10,8 @@ import Settings from "./pages/Settings";
 import Analytics from "./pages/Analytics";
 import MatchAnalysis from "./pages/MatchAnalysis";
 import HackathonPortfolio from "./pages/HackathonPortfolio";
-import { AuthProvider } from "@/components/AuthProvider";
-import RequireAuth from "@/components/RequireAuth";
+import { AuthProvider } from "./components/AuthProvider";
+import RequireAuth from "./components/RequireAuth";
 
 function App() {
   return (
