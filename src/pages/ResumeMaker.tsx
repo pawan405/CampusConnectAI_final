@@ -159,31 +159,31 @@ export default function ResumeMaker() {
                   </CardHeader>
                   <CardContent className="p-8 space-y-6">
                     <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <label className="text-[10px] font-black text-white/70 uppercase tracking-widest pl-1">Full Name</label>
-                        <Input 
-                          value={personalInfo.name} 
-                          onChange={(e) => setPersonalInfo({...personalInfo, name: e.target.value})}
-                          className="bg-white/[0.02] border-white/10 rounded-xl h-12 text-sm text-white placeholder:text-white/20"
-                        />
+                        <div className="space-y-2">
+                          <label className="text-[10px] font-black text-cyan-400 uppercase tracking-widest pl-1">Full Name</label>
+                          <Input 
+                            value={personalInfo.name} 
+                            onChange={(e) => setPersonalInfo({...personalInfo, name: e.target.value})}
+                            className="bg-white/[0.02] border-white/10 rounded-xl h-12 text-sm text-white placeholder:text-white/20"
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <label className="text-[10px] font-black text-cyan-400 uppercase tracking-widest pl-1">Email Signal</label>
+                          <Input 
+                            value={personalInfo.email} 
+                            onChange={(e) => setPersonalInfo({...personalInfo, email: e.target.value})}
+                            className="bg-white/[0.02] border-white/10 rounded-xl h-12 text-sm text-white placeholder:text-white/20"
+                          />
+                        </div>
                       </div>
                       <div className="space-y-2">
-                        <label className="text-[10px] font-black text-white/70 uppercase tracking-widest pl-1">Email Signal</label>
-                        <Input 
-                          value={personalInfo.email} 
-                          onChange={(e) => setPersonalInfo({...personalInfo, email: e.target.value})}
-                          className="bg-white/[0.02] border-white/10 rounded-xl h-12 text-sm text-white placeholder:text-white/20"
+                        <label className="text-[10px] font-black text-cyan-400 uppercase tracking-widest pl-1">Neural Summary</label>
+                        <Textarea 
+                          value={personalInfo.summary} 
+                          onChange={(e) => setPersonalInfo({...personalInfo, summary: e.target.value})}
+                          className="bg-white/[0.02] border-white/10 rounded-xl min-h-[100px] text-sm resize-none text-white placeholder:text-white/20"
                         />
-                      </div>
                     </div>
-                    <div className="space-y-2">
-                      <label className="text-[10px] font-black text-white/70 uppercase tracking-widest pl-1">Neural Summary</label>
-                      <Textarea 
-                        value={personalInfo.summary} 
-                        onChange={(e) => setPersonalInfo({...personalInfo, summary: e.target.value})}
-                        className="bg-white/[0.02] border-white/10 rounded-xl min-h-[100px] text-sm resize-none text-white placeholder:text-white/20"
-                      />
-                  </div>
                 </CardContent>
               </Card>
 

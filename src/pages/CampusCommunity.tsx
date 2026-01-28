@@ -232,22 +232,27 @@ export default function CampusCommunity() {
                     exit={{ opacity: 0, y: -20 }}
                     className="grid grid-cols-1 md:grid-cols-2 gap-6"
                   >
-                    {colleges.map((college, i) => (
-                      <Card key={i} className="bg-black/40 border-white/10 rounded-[40px] overflow-hidden hover:border-cyan-500/30 transition-all group">
-                        <CardHeader className="p-8 border-b border-white/10">
-                          <div className={`w-14 h-14 rounded-2xl bg-${college.color}-500/10 border border-${college.color}-500/20 flex items-center justify-center mb-6`}>
-                            <School className={`w-7 h-7 text-${college.color}-400`} />
-                          </div>
-                          <CardTitle className="text-2xl font-black tracking-tight uppercase leading-tight">{college.name}</CardTitle>
-                          <CardDescription className="text-white/60 font-bold uppercase tracking-widest text-[10px] pt-2">{college.members} Neurons Active</CardDescription>
-                        </CardHeader>
-                        <CardContent className="p-8">
-                          <Button className="w-full h-12 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 font-black uppercase tracking-widest text-[10px]">
-                            Sync with Group
-                          </Button>
-                        </CardContent>
-                      </Card>
-                    ))}
+                      {colleges.map((college, i) => (
+                        <Card key={i} className="bg-black/60 border-white/20 rounded-[40px] overflow-hidden hover:border-cyan-500/50 transition-all group backdrop-blur-3xl shadow-2xl">
+                          <CardHeader className="p-8 border-b border-white/10">
+                            <div className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-6 ${
+                              college.color === 'cyan' ? 'bg-cyan-500/20 border-cyan-500/30 text-cyan-400' :
+                              college.color === 'purple' ? 'bg-purple-500/20 border-purple-500/30 text-purple-400' :
+                              college.color === 'emerald' ? 'bg-emerald-500/20 border-emerald-500/30 text-emerald-400' :
+                              'bg-blue-500/20 border-blue-500/30 text-blue-400'
+                            }`}>
+                              <School className="w-7 h-7" />
+                            </div>
+                            <CardTitle className="text-2xl font-black tracking-tight uppercase leading-tight text-white group-hover:text-cyan-400 transition-colors">{college.name}</CardTitle>
+                            <CardDescription className="text-white font-black uppercase tracking-widest text-[10px] pt-2 drop-shadow-sm">{college.members} Neurons Active</CardDescription>
+                          </CardHeader>
+                          <CardContent className="p-8">
+                            <Button className="w-full h-12 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 font-black uppercase tracking-widest text-[10px] text-white">
+                              Sync with Group
+                            </Button>
+                          </CardContent>
+                        </Card>
+                      ))}
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -260,12 +265,12 @@ export default function CampusCommunity() {
                   <CardTitle className="text-xs font-black uppercase tracking-[0.2em] text-cyan-400">Trending Topics</CardTitle>
                 </CardHeader>
                 <CardContent className="p-8 space-y-4">
-                  {["#QuantumComputing", "#AIAesthetics", "#NeuralRoadmaps", "#CyberSecurity"].map((tag, i) => (
-                    <div key={i} className="flex items-center justify-between group cursor-pointer">
-                      <span className="text-sm font-bold text-white/70 group-hover:text-white transition-colors">{tag}</span>
-                      <Badge className="bg-white/5 border-none text-[9px] font-black text-white/90">{12 + i * 5}k</Badge>
-                    </div>
-                  ))}
+                    {["#QuantumComputing", "#AIAesthetics", "#NeuralRoadmaps", "#CyberSecurity"].map((tag, i) => (
+                      <div key={i} className="flex items-center justify-between group cursor-pointer">
+                        <span className="text-sm font-bold text-white group-hover:text-cyan-400 transition-colors drop-shadow-sm">{tag}</span>
+                        <Badge className="bg-white/10 border-white/20 text-[9px] font-black text-white drop-shadow-sm">{12 + i * 5}k</Badge>
+                      </div>
+                    ))}
                 </CardContent>
               </Card>
 

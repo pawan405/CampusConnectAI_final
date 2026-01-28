@@ -456,18 +456,20 @@ export default function DashboardPage() {
           </section>
 
           {/* Stats Grid */}
-          <section className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {stats.map((stat, i) => (
-              <div
-                key={i}
-                onClick={() => {
-                  if (stat.label === "Hackathons Joined") {
-                    setHackathonsModalOpen(true);
-                  }
-                }}
-                className={stat.label === "Hackathons Joined" ? "cursor-pointer" : ""}
-              >
-                {isLowPerformance ? (
+            <section className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {stats.map((stat, i) => (
+                <div
+                  key={i}
+                  onClick={() => {
+                    if (stat.label === "Hackathons Joined") {
+                      setHackathonsModalOpen(true);
+                    } else if (stat.label === "Career Progress") {
+                      router.push("/career-progress");
+                    }
+                  }}
+                  className="cursor-pointer"
+                >
+                  {isLowPerformance ? (
                   <div className="h-48 bg-black/60 backdrop-blur-3xl border border-white/20 rounded-[40px] p-8 flex flex-col justify-between relative overflow-hidden">
                     <div className="flex justify-between items-start">
                     <div className="w-14 h-14 rounded-2xl flex items-center justify-center border border-white/20 bg-white/10 shadow-[inset_0_0_15px_rgba(255,255,255,0.05)] group-hover:scale-110 group-hover:rotate-6 transition-all duration-500">
