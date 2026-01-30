@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { db } from '@/lib/firebase';
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 
 export async function POST(req: Request) {
   try {
@@ -9,22 +10,25 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Transcription is required' }, { status: 400 });
     }
 
-    const { data, error } = await supabase
-      .from('signals')
-      .insert([
-        {
-          transcription,
-          summary,
-          duration,
-          status: 'uploaded'
-        }
-      ])
-      .select()
-      .single();
+    const docRef = await addDoc(collection(db, 'signals'), {
+      transcription,
+      summary,
+      duration,
+      status: 'uploaded',
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp()
+    });
 
-    if (error) throw error;
-
-    return NextResponse.json({ success: true, signal: data });
+    return NextResponse.json({
+      success: true,
+      signal: {
+        id: docRef.id,
+        transcription,
+        summary,
+        duration,
+        status: 'uploaded'
+      }
+    });
   } catch (error: any) {
     console.error('Error uploading signal:', error);
     return NextResponse.json({ error: error.message }, { status: 500 });

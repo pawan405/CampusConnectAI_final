@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import {
@@ -29,6 +30,21 @@ import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 
 export default function SettingsPage() {
+  const [username, setUsername] = React.useState<string>("");
+
+  React.useEffect(() => {
+    // Get username from localStorage
+    const userData = localStorage.getItem('user');
+    if (userData) {
+      try {
+        const parsed = JSON.parse(userData);
+        setUsername(parsed.username || parsed.displayName || '');
+      } catch (error) {
+        console.error('Error parsing user data:', error);
+      }
+    }
+  }, []);
+
   const handleSave = () => {
     toast.success("Settings saved successfully!");
   };
@@ -115,6 +131,19 @@ export default function SettingsPage() {
                   className="bg-white/[0.03] border-white/[0.08]"
                 />
               </div>
+              <div className="space-y-2">
+                <label className="text-xs font-bold text-white/60 uppercase tracking-widest">
+                  Username
+                </label>
+                <Input
+                  value={username}
+                  readOnly
+                  className="bg-white/[0.03] border-white/[0.08] text-white/60 cursor-not-allowed"
+                />
+                <p className="text-xs text-white/40">
+                  Your username is set during onboarding and cannot be changed.
+                </p>
+              </div>
             </CardContent>
           </Card>
 
@@ -167,48 +196,57 @@ export default function SettingsPage() {
               </div>
             </CardHeader>
             <CardContent className="space-y-6">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-xl bg-white/[0.04] flex items-center justify-center">
-                      <Smartphone className="w-5 h-5 text-white/40" />
-                    </div>
-                    <div>
-                      <p className="text-sm font-bold">
-                        Two-Factor Authentication
-                      </p>
-                      <p className="text-xs text-white/40">
-                        Add an extra layer of security to your account.
-                      </p>
-                    </div>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <div className="w-10 h-10 rounded-xl bg-white/[0.04] flex items-center justify-center">
+                    <Smartphone className="w-5 h-5 text-white/40" />
                   </div>
-                  <Button
-                    variant="outline"
-                    onClick={() => toast.info("Two-Factor Authentication", { description: "Establishing secure link with your mobile device..." })}
-                    className="border-white/[0.08] hover:bg-white/[0.06]"
-                  >
-                    Enable
-                  </Button>
-                </div>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-xl bg-white/[0.04] flex items-center justify-center">
-                      <Database className="w-5 h-5 text-white/40" />
-                    </div>
-                    <div>
-                      <p className="text-sm font-bold">Data Management</p>
-                      <p className="text-xs text-white/40">
-                        Download or delete your account data.
-                      </p>
-                    </div>
+                  <div>
+                    <p className="text-sm font-bold">
+                      Two-Factor Authentication
+                    </p>
+                    <p className="text-xs text-white/40">
+                      Add an extra layer of security to your account.
+                    </p>
                   </div>
-                  <Button
-                    variant="ghost"
-                    onClick={() => toast.error("Critical Action", { description: "Are you sure you want to delete your neural profile? This action is irreversible." })}
-                    className="text-rose-400 hover:bg-rose-500/10"
-                  >
-                    Delete Account
-                  </Button>
                 </div>
+                <Button
+                  onClick={() => {
+                    // Enable 2FA functionality
+                    alert("2FA setup would be initiated here");
+                  }}
+                  variant="outline"
+                  className="border-white/[0.08] hover:bg-white/[0.06]"
+                >
+                  Enable
+                </Button>
+              </div>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <div className="w-10 h-10 rounded-xl bg-white/[0.04] flex items-center justify-center">
+                    <Database className="w-5 h-5 text-white/40" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-bold">Data Management</p>
+                    <p className="text-xs text-white/40">
+                      Download or delete your account data.
+                    </p>
+                  </div>
+                </div>
+                <Button
+                  onClick={() => {
+                    if (confirm("Are you sure you want to delete your account? This action cannot be undone.")) {
+                      // Delete account functionality
+                      console.log("Account deletion initiated");
+                      alert("Account deletion would be processed here");
+                    }
+                  }}
+                  variant="ghost"
+                  className="text-rose-400 hover:bg-rose-500/10"
+                >
+                  Delete Account
+                </Button>
+              </div>
             </CardContent>
           </Card>
 
@@ -225,3 +263,6 @@ export default function SettingsPage() {
     </div>
   );
 }
+
+
+

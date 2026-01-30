@@ -4,20 +4,26 @@ import { useRef, useMemo, useState, useEffect } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 
-function EnergyLines({ count = 20 }) {
+// The "Moving Grass" (Energy Lines)
+function EnergyLines({ count = 40 }) {
   const lines = useMemo(() => {
     const temp = [];
     for (let i = 0; i < count; i++) {
       const points = [];
       const z = (Math.random() - 0.5) * 10;
-      const xOffset = (Math.random() - 0.5) * 20;
+      const xOffset = (Math.random() - 0.5) * 30;
+
+      // Creating the "Grass blade" curve
       for (let j = 0; j < 50; j++) {
-        points.push(new THREE.Vector3(xOffset + Math.sin(j / 5) * 2, (j - 25) * 0.8, z));
+        points.push(
+          new THREE.Vector3(xOffset + Math.sin(j / 5) * 2, (j - 25) * 0.8, z),
+        );
       }
+
       const curve = new THREE.CatmullRomCurve3(points);
-      const speed = 0.02 + Math.random() * 0.05;
+      const speed = 0.02 + Math.random() * 0.04;
       const color = new THREE.Color(
-        i % 2 === 0 ? "#06b6d4" : i % 3 === 0 ? "#a855f7" : "#3b82f6"
+        i % 2 === 0 ? "#06b6d4" : i % 3 === 0 ? "#a855f7" : "#3b82f6",
       );
       temp.push({ curve, speed, color, offset: Math.random() * Math.PI * 2 });
     }
@@ -35,106 +41,66 @@ function EnergyLines({ count = 20 }) {
 
 function Line({ curve, speed, color, offset }: any) {
   const ref = useRef<THREE.Mesh>(null);
-  
   useFrame((state) => {
     if (ref.current) {
-      ref.current.position.y = ((state.clock.getElapsedTime() * speed + offset) % 40) - 20;
-      ref.current.rotation.z = Math.sin(state.clock.getElapsedTime() * 0.2 + offset) * 0.1;
+      // THE MOVEMENT: This makes the grass "flow" upward
+      const t = state.clock.getElapsedTime() * speed + offset;
+      ref.current.position.y = ((t * 10) % 40) - 20;
     }
   });
 
   return (
-      <mesh ref={ref}>
-        <tubeGeometry args={[curve, 64, 0.02, 8, false]} />
-        <meshBasicMaterial color={color} transparent opacity={0.6} />
-      </mesh>
-    );
-  }
-  
-  function DataParticles({ count = 100 }) {
-    const meshRef = useRef<THREE.InstancedMesh>(null);
-    const dummy = useMemo(() => new THREE.Object3D(), []);
-    const particles = useMemo(() => {
-      const temp = [];
-      for (let i = 0; i < count; i++) {
-        const x = (Math.random() - 0.5) * 30;
-        const y = (Math.random() - 0.5) * 30;
-        const z = (Math.random() - 0.5) * 20;
-        const speed = 0.01 + Math.random() * 0.02;
-        temp.push({ x, y, z, speed, offset: Math.random() * 100 });
-      }
-      return temp;
-    }, [count]);
-  
-    useFrame((state) => {
-      particles.forEach((p, i) => {
-        p.y += p.speed;
-        if (p.y > 15) p.y = -15;
-        dummy.position.set(p.x, p.y, p.z);
-        dummy.scale.setScalar(Math.sin(state.clock.getElapsedTime() + p.offset) * 0.1 + 0.1);
-        dummy.updateMatrix();
-        meshRef.current?.setMatrixAt(i, dummy.matrix);
-      });
-      if (meshRef.current) meshRef.current.instanceMatrix.needsUpdate = true;
-    });
-  
-    return (
-      <instancedMesh ref={meshRef} args={[new THREE.SphereGeometry(0.1, 8, 8), undefined, count]}>
-        <meshBasicMaterial color="#06b6d4" transparent opacity={0.8} />
-      </instancedMesh>
-
+    <mesh ref={ref}>
+      <tubeGeometry args={[curve, 64, 0.02, 8, false]} />
+      <meshBasicMaterial color={color} transparent opacity={0.5} />
+    </mesh>
   );
 }
 
 function Scene() {
   const { mouse, camera } = useThree();
-  const targetCameraPos = useRef(new THREE.Vector3(0, 0, 15));
-
   useFrame(() => {
-    targetCameraPos.current.x = THREE.MathUtils.lerp(
-      targetCameraPos.current.x,
-      mouse.x * 3,
-      0.02
+    camera.position.x = THREE.MathUtils.lerp(
+      camera.position.x,
+      mouse.x * 5,
+      0.05,
     );
-    targetCameraPos.current.y = THREE.MathUtils.lerp(
-      targetCameraPos.current.y,
-      mouse.y * 3,
-      0.02
+    camera.position.y = THREE.MathUtils.lerp(
+      camera.position.y,
+      mouse.y * 5,
+      0.05,
     );
-    camera.position.copy(targetCameraPos.current);
     camera.lookAt(0, 0, 0);
   });
-
   return (
     <>
       <color attach="background" args={["#020205"]} />
-      <EnergyLines count={30} />
-      <DataParticles count={150} />
-      <ambientLight intensity={0.5} />
+      <EnergyLines />
+      <ambientLight intensity={1} />
     </>
   );
 }
 
-export default function ThreeDBackground() {
+function ThreeDBackgroundComponent() {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  if (!mounted) return null;
+  if (!mounted) return <div className="fixed inset-0 z-0 bg-[#020205]" />;
 
   return (
-    <div className="fixed inset-0 -z-10 pointer-events-none overflow-hidden bg-gradient-to-br from-[#020205] via-[#05051a] to-[#0a0212]">
+    <div className="fixed inset-0 z-0 pointer-events-none">
       <Canvas
-        camera={{ position: [0, 0, 15], fov: 60 }}
-        dpr={[1, 2]}
+        camera={{ position: [0, 0, 18], fov: 55 }}
         gl={{ antialias: true, alpha: true }}
       >
         <Scene />
       </Canvas>
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(6,182,212,0.15),transparent_75%)]" />
-      <div className="absolute inset-0 backdrop-blur-[12px] opacity-40" />
     </div>
   );
 }
+
+export default ThreeDBackgroundComponent;
+export { ThreeDBackgroundComponent as ThreeDBackground };

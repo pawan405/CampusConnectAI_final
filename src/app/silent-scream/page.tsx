@@ -272,10 +272,7 @@ export default function SilentScreamPage() {
           </Link>
 
           <div className="flex items-center gap-4">
-            <Badge 
-              onClick={() => toast.success("Secure Connection Verified", { description: "256-bit end-to-end encryption is active." })}
-              className="bg-rose-500/10 text-rose-400 border border-rose-500/20 px-4 py-1.5 rounded-full text-[10px] font-black tracking-[0.2em] uppercase cursor-pointer hover:bg-rose-500/20 transition-all"
-            >
+            <Badge className="bg-rose-500/10 text-rose-400 border border-rose-500/20 px-4 py-1.5 rounded-full text-[10px] font-black tracking-[0.2em] uppercase">
               <Lock className="w-3 h-3 mr-2" /> Encrypted Link
             </Badge>
           </div>
@@ -295,13 +292,13 @@ export default function SilentScreamPage() {
               Security Protocol Alpha
             </span>
           </div>
-          <h1 className="text-7xl lg:text-9xl font-black tracking-tighter mb-6 bg-clip-text text-transparent bg-gradient-to-b from-white to-white/20">
-            SILENT SCREAM
-          </h1>
-          <p className="text-white/40 text-xl font-medium italic max-w-2xl mx-auto leading-relaxed">
-            "Your identity is shielded. Your voice is heard."
-          </p>
-        </motion.div>
+            <h1 className="text-7xl lg:text-9xl font-black tracking-tighter mb-6 bg-clip-text text-transparent bg-linear-to-b from-white to-white/20">
+              SILENT SCREAM
+            </h1>
+            <p className="text-white/60 text-xl font-medium italic max-w-2xl mx-auto leading-relaxed">
+              "Your identity is shielded. Your voice is heard."
+            </p>
+          </motion.div>
 
         {/* Central Interface */}
         <div className="relative w-full flex flex-col items-center justify-center min-h-[400px]">
@@ -392,7 +389,7 @@ export default function SilentScreamPage() {
             className="mt-12 w-full max-w-2xl relative z-10"
           >
             <div className="relative group">
-              <div className="absolute -inset-0.5 bg-gradient-to-r from-rose-500/20 to-cyan-500/20 rounded-3xl blur opacity-20 group-hover:opacity-100 transition duration-1000"></div>
+              <div className="absolute -inset-0.5 bg-linear-to-r from-rose-500/20 to-cyan-500/20 rounded-3xl blur opacity-20 group-hover:opacity-100 transition duration-1000"></div>
               <textarea
                 value={transcription}
                 onChange={(e) => {
@@ -428,7 +425,7 @@ export default function SilentScreamPage() {
               className="w-full mt-32"
             >
               <div className="bg-white/[0.02] backdrop-blur-[40px] border border-white/[0.08] rounded-[48px] p-12 relative overflow-hidden group shadow-[0_50px_100px_-20px_rgba(0,0,0,0.5)]">
-                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-cyan-500/40 to-transparent" />
+                <div className="absolute top-0 left-0 w-full h-1 bg-linear-to-r from-transparent via-cyan-500/40 to-transparent" />
 
                 <div className="flex items-center justify-between mb-12">
                   <div className="flex items-center gap-6">
@@ -460,7 +457,7 @@ export default function SilentScreamPage() {
                           onChange={(e) => setTranscription(e.target.value)}
                           onKeyDown={handleTextareaKeyDown}
                           onBlur={() => generateSummary(transcription)}
-                          className="w-full p-8 rounded-[32px] bg-black/40 border border-white/5 font-medium text-white/60 leading-relaxed italic min-h-[150px] resize-none focus:outline-none focus:border-cyan-500/50 transition-all"
+                          className="w-full p-8 rounded-4xl bg-black/40 border border-white/5 font-medium text-white/60 leading-relaxed italic min-h-[150px] resize-none focus:outline-none focus:border-cyan-500/50 transition-all"
                           placeholder="Type your report here or use voice input..."
                         />
                       </div>
@@ -470,7 +467,7 @@ export default function SilentScreamPage() {
                     <p className="text-cyan-400/20 text-[10px] font-black uppercase tracking-widest">
                       AI Executive Summary
                     </p>
-                      <div className="p-8 rounded-[32px] bg-cyan-500/5 border border-cyan-500/20">
+                      <div className="p-8 rounded-4xl bg-cyan-500/5 border border-cyan-500/20">
                         <div className="flex items-start gap-4 mb-6">
                           <div className="w-1 h-12 bg-cyan-500 rounded-full" />
                           <p className="text-lg font-bold text-white leading-snug">
@@ -509,7 +506,7 @@ export default function SilentScreamPage() {
                     <Button
                       onClick={handleSubmitToAuthorities}
                       disabled={isSubmitting || !signalId}
-                      className="h-16 px-12 rounded-[24px] bg-cyan-500 hover:bg-cyan-400 text-black font-black text-xs tracking-[0.2em] uppercase transition-all shadow-[0_20px_40px_rgba(6,182,212,0.3)] group disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="h-16 px-12 rounded-3xl bg-cyan-500 hover:bg-cyan-400 text-black font-black text-xs tracking-[0.2em] uppercase transition-all shadow-[0_20px_40px_rgba(6,182,212,0.3)] group disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       {isSubmitting ? (
                         <Loader2 className="w-5 h-5 animate-spin mr-2" />
@@ -525,53 +522,49 @@ export default function SilentScreamPage() {
           )}
         </AnimatePresence>
 
-          {/* Info Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full mt-32">
-            {[
-              {
-                icon: Shield,
-                title: "Zero Trace",
-                desc: "No IP logging, no metadata, no identity leaks.",
-                color: "rose",
-                action: () => toast.info("Security Audit", { description: "Identity scrubbing protocol is 100% operational." }),
-              },
-              {
-                icon: Zap,
-                title: "AI Scrubbing",
-                desc: "Voices are re-synthesized to prevent bio-recognition.",
-                color: "cyan",
-                action: () => toast.info("Neural Sync", { description: "Voice synthesis engine is ready for deployment." }),
-              },
-              {
-                icon: Volume2,
-                title: "Safe Storage",
-                desc: "Reports are encrypted with 256-bit military standards.",
-                color: "violet",
-                action: () => toast.info("Vault Status", { description: "Encrypted storage nodes are online and secure." }),
-              },
-            ].map((item, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.5 + i * 0.1 }}
-                onClick={item.action}
-                className="p-8 rounded-[32px] bg-white/[0.02] border border-white/[0.05] hover:bg-white/[0.04] transition-all group cursor-pointer"
+        {/* Info Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full mt-32">
+          {[
+            {
+              icon: Shield,
+              title: "Zero Trace",
+              desc: "No IP logging, no metadata, no identity leaks.",
+              color: "rose",
+            },
+            {
+              icon: Zap,
+              title: "AI Scrubbing",
+              desc: "Voices are re-synthesized to prevent bio-recognition.",
+              color: "cyan",
+            },
+            {
+              icon: Volume2,
+              title: "Safe Storage",
+              desc: "Reports are encrypted with 256-bit military standards.",
+              color: "violet",
+            },
+          ].map((item, i) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5 + i * 0.1 }}
+              className="p-8 rounded-4xl bg-white/[0.02] border border-white/[0.05] hover:bg-white/[0.04] transition-all group"
+            >
+              <div
+                className={`w-14 h-14 rounded-2xl bg-${item.color}-500/10 flex items-center justify-center border border-${item.color}-500/20 mb-6 group-hover:rotate-12 transition-transform`}
               >
-                <div
-                  className={`w-14 h-14 rounded-2xl bg-${item.color}-500/10 flex items-center justify-center border border-${item.color}-500/20 mb-6 group-hover:rotate-12 transition-transform`}
-                >
-                  <item.icon className={`w-7 h-7 text-${item.color}-400`} />
-                </div>
-                <h4 className="text-xl font-black tracking-tight mb-2 uppercase">
-                  {item.title}
-                </h4>
-                <p className="text-white/40 text-sm font-medium leading-relaxed">
-                  {item.desc}
-                </p>
-              </motion.div>
-            ))}
-          </div>
+                <item.icon className={`w-7 h-7 text-${item.color}-400`} />
+              </div>
+              <h4 className="text-xl font-black tracking-tight mb-2 uppercase">
+                {item.title}
+              </h4>
+              <p className="text-white/40 text-sm font-medium leading-relaxed">
+                {item.desc}
+              </p>
+            </motion.div>
+          ))}
+        </div>
       </main>
 
       <footer className="p-12 border-t border-white/[0.03] text-center">
@@ -582,3 +575,6 @@ export default function SilentScreamPage() {
     </div>
   );
 }
+
+
+

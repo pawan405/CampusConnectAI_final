@@ -343,17 +343,17 @@ export default function InternshipFeedPage() {
                 </Button>
               </Link>
               <Link href="/" className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center">
+                <div className="w-10 h-10 rounded-xl bg-linear-to-br from-violet-500 to-indigo-600 flex items-center justify-center">
                   <Brain className="w-6 h-6 text-white" />
                 </div>
-                <span className="text-xl font-bold bg-gradient-to-r from-violet-400 to-indigo-400 bg-clip-text text-transparent hidden sm:block">
+                <span className="text-xl font-bold bg-linear-to-r from-violet-400 to-indigo-400 bg-clip-text text-transparent hidden sm:block">
                   CampusConnect AI
                 </span>
               </Link>
             </div>
             <Button
               onClick={() => setShowNewPostModal(true)}
-              className="bg-gradient-to-r from-violet-500 to-indigo-500 hover:from-violet-600 hover:to-indigo-600 text-white gap-2 shadow-lg shadow-violet-500/20"
+              className="bg-linear-to-r from-violet-500 to-indigo-500 hover:from-violet-600 hover:to-indigo-600 text-white gap-2 shadow-lg shadow-violet-500/20"
             >
               <Plus className="w-4 h-4" /> Share Story
             </Button>
@@ -372,7 +372,7 @@ export default function InternshipFeedPage() {
             </Badge>
             <h1 className="text-4xl md:text-5xl font-black text-white mb-4">
               Internship{" "}
-              <span className="bg-gradient-to-r from-violet-400 to-indigo-400 bg-clip-text text-transparent">
+              <span className="bg-linear-to-r from-violet-400 to-indigo-400 bg-clip-text text-transparent">
                 Experiences
               </span>
             </h1>
@@ -451,7 +451,7 @@ export default function InternshipFeedPage() {
               </CardContent>
             </Card>
 
-            <Card className="bg-gradient-to-br from-violet-500/20 to-indigo-600/20 border border-violet-500/30 overflow-hidden shadow-xl">
+            <Card className="bg-linear-to-br from-violet-500/20 to-indigo-600/20 border border-violet-500/30 overflow-hidden shadow-xl">
               <CardContent className="p-6 relative">
                 <div className="absolute top-0 right-0 p-4 opacity-10">
                   <Trophy className="w-24 h-24 rotate-12" />
@@ -488,7 +488,7 @@ export default function InternshipFeedPage() {
                       <div className="p-6">
                         <div className="flex flex-col md:flex-row md:items-start justify-between gap-4 mb-6">
                           <div className="flex items-center gap-4">
-                            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-violet-500/20 to-indigo-500/20 border border-violet-500/30 flex items-center justify-center text-violet-400 font-black text-2xl group-hover:scale-110 transition-transform">
+                            <div className="w-16 h-16 rounded-2xl bg-linear-to-br from-violet-500/20 to-indigo-500/20 border border-violet-500/30 flex items-center justify-center text-violet-400 font-black text-2xl group-hover:scale-110 transition-transform">
                               {post.company.charAt(0)}
                             </div>
                             <div>
@@ -780,7 +780,7 @@ export default function InternshipFeedPage() {
 
                 <CardHeader className="border-b border-white/[0.06] p-8">
                   <div className="flex items-center gap-4 mb-2">
-                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center text-white shadow-lg shadow-violet-500/20">
+                    <div className="w-12 h-12 rounded-2xl bg-linear-to-br from-violet-500 to-indigo-600 flex items-center justify-center text-white shadow-lg shadow-violet-500/20">
                       <Plus className="w-6 h-6" />
                     </div>
                     <div>
@@ -1039,7 +1039,7 @@ export default function InternshipFeedPage() {
                             !newPost.prep ||
                             !newPost.author
                           }
-                          className="bg-gradient-to-r from-violet-500 to-indigo-500 hover:from-violet-600 hover:to-indigo-600 text-white px-8 h-12 rounded-xl font-bold shadow-lg shadow-violet-500/20"
+                          className="bg-linear-to-r from-violet-500 to-indigo-500 hover:from-violet-600 hover:to-indigo-600 text-white px-8 h-12 rounded-xl font-bold shadow-lg shadow-violet-500/20"
                         >
                           Submit Experience
                         </Button>
@@ -1142,3 +1142,6 @@ export default function InternshipFeedPage() {
     </div>
   );
 }
+
+
+

@@ -1,6 +1,8 @@
 "use client";
 
-import React, { useState, useEffect, useRef, useMemo } from "react";
+import React, { useState, useEffect, useRef, useMemo, useCallback } from "react";
+import { createPortal } from "react-dom";
+import { useRouter } from "next/navigation";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import {
   OrbitControls,
@@ -37,24 +39,15 @@ import {
   Star,
   Flame,
   Gamepad2,
+  X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 
 // --- 3D Components ---
-
 
 function FloatingRings() {
   const ringRef = useRef<THREE.Group>(null);
@@ -143,32 +136,51 @@ function HologramSphere() {
 
 // --- UI Components ---
 
-  const HackathonCard = ({ hack, index }: { hack: any; index: number }) => {
-    const cardRef = useRef<HTMLDivElement>(null);
-    const [rotateX, setRotateX] = useState(0);
-    const [rotateY, setRotateY] = useState(0);
+const HackathonCard = ({ hack, index }: { hack: any; index: number }) => {
+  const router = useRouter();
+  const cardRef = useRef<HTMLDivElement>(null);
+  const [rotateX, setRotateX] = useState(0);
+  const [rotateY, setRotateY] = useState(0);
+  const rafRef = useRef<number | null>(null);
+  const isMountedRef = useRef(true);
 
-    const handleViewDetails = () => {
-      toast.info(`Opening ${hack.name}`, {
-        description: "Decrypting challenge specifications and rewards...",
-      });
+  useEffect(() => {
+    isMountedRef.current = true;
+    return () => {
+      isMountedRef.current = false;
+      if (rafRef.current !== null) {
+        cancelAnimationFrame(rafRef.current);
+      }
     };
+  }, []);
 
-    const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!cardRef.current) return;
-    const rect = cardRef.current.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    const centerX = rect.width / 2;
-    const centerY = rect.height / 2;
-    setRotateX((y - centerY) / 10);
-    setRotateY((centerX - x) / 10);
-  };
+  const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    if (!cardRef.current || !isMountedRef.current) return;
+    
+    if (rafRef.current !== null) {
+      cancelAnimationFrame(rafRef.current);
+    }
+    
+    rafRef.current = requestAnimationFrame(() => {
+      if (!cardRef.current || !isMountedRef.current) return;
+      const rect = cardRef.current.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      const centerX = rect.width / 2;
+      const centerY = rect.height / 2;
+      setRotateX((y - centerY) / 10);
+      setRotateY((centerX - x) / 10);
+    });
+  }, []);
 
-  const handleMouseLeave = () => {
+  const handleMouseLeave = useCallback(() => {
+    if (rafRef.current !== null) {
+      cancelAnimationFrame(rafRef.current);
+      rafRef.current = null;
+    }
     setRotateX(0);
     setRotateY(0);
-  };
+  }, []);
 
   return (
     <motion.div
@@ -176,6 +188,7 @@ function HologramSphere() {
       whileInView={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.1, duration: 0.8, ease: "easeOut" }}
       viewport={{ once: true }}
+      style={{ willChange: "transform" }}
     >
       <div
         ref={cardRef}
@@ -185,9 +198,12 @@ function HologramSphere() {
         style={{
           transform: `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`,
           transition: "transform 0.1s ease-out",
+          willChange: "transform",
+          backfaceVisibility: "hidden",
+          transformStyle: "preserve-3d",
         }}
       >
-        <div className="absolute -inset-0.5 bg-gradient-to-r from-cyan-500 via-purple-500 to-emerald-500 rounded-2xl blur opacity-20 group-hover:opacity-60 transition duration-500" />
+        <div className="absolute -inset-0.5 bg-linear-to-r from-cyan-500 via-purple-500 to-emerald-500 rounded-2xl blur opacity-20 group-hover:opacity-60 transition duration-500" />
         <Card className="relative bg-black/40 backdrop-blur-xl border-white/10 border-t-white/20 h-full overflow-hidden">
           <CardContent className="p-6">
             <div className="flex justify-between items-start mb-6">
@@ -230,14 +246,17 @@ function HologramSphere() {
             </div>
 
             <Button 
-              onClick={handleViewDetails}
+              onClick={() => {
+                // Navigate to hackathon details
+                router.push(`/hackathons/${hack.id}`);
+              }}
               className="w-full bg-white/5 hover:bg-white/10 border-white/10 text-white font-bold group/btn relative overflow-hidden"
             >
               <span className="relative z-10 flex items-center gap-2">
                 VIEW DETAILS{" "}
                 <ChevronRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
               </span>
-              <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/20 to-purple-500/20 translate-x-[-100%] group-hover/btn:translate-x-0 transition-transform duration-500" />
+              <div className="absolute inset-0 bg-linear-to-r from-cyan-500/20 to-purple-500/20 translate-x-[-100%] group-hover/btn:translate-x-0 transition-transform duration-500" />
             </Button>
           </CardContent>
         </Card>
@@ -246,155 +265,277 @@ function HologramSphere() {
   );
 };
 
-    const TeamCard = ({ type }: { type: "create" | "join" }) => {
-      const isCreate = type === "create";
-      const [open, setOpen] = useState(false);
+const TeamCard = ({ type }: { type: "create" | "join" }) => {
+  const isCreate = type === "create";
+  const [showModal, setShowModal] = useState(false);
+  const [teamName, setTeamName] = useState("");
+  const [selectedSkills, setSelectedSkills] = useState<string[]>([]);
+  const [availableTeams, setAvailableTeams] = useState<any[]>([]);
+  const [mounted, setMounted] = useState(false);
 
-      const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        setOpen(false);
-        toast.success(isCreate ? "Team Created Successfully" : "Application Sent", {
-          description: isCreate 
-            ? "Your team workspace has been initialized. Start recruiting now!"
-            : "Your application has been encrypted and sent to the team lead.",
-        });
-      };
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
-      return (
-        <Dialog open={open} onOpenChange={setOpen}>
-          <DialogTrigger asChild>
-            <motion.div
-              whileHover={{ y: -10, scale: 1.02 }}
-              className="relative group cursor-pointer"
-            >
-              <div
-                className={`absolute -inset-1 bg-gradient-to-r ${isCreate ? "from-cyan-500 to-blue-600" : "from-purple-500 to-pink-600"} rounded-2xl blur-lg opacity-25 group-hover:opacity-75 transition duration-500`}
-              />
-              <Card className="relative bg-[#0c0c12]/80 backdrop-blur-2xl border-white/10 border-t-white/20 p-8 h-full flex flex-col items-center text-center overflow-hidden">
-                {/* Animated Background Element */}
-                <div className="absolute -top-10 -right-10 w-32 h-32 bg-white/5 rounded-full blur-3xl group-hover:bg-white/10 transition-colors" />
+  // Mock available teams for JOIN
+  useEffect(() => {
+    if (!isCreate) {
+      setAvailableTeams([
+        { id: 1, name: "AI Innovators", members: 3, maxMembers: 5, skills: ["React", "AI", "Design"], hackathon: "Cyberpunk Hack 2077" },
+        { id: 2, name: "Code Warriors", members: 2, maxMembers: 4, skills: ["Node.js", "ML", "UI/UX"], hackathon: "TechFest 2024" },
+        { id: 3, name: "Digital Dreamers", members: 4, maxMembers: 6, skills: ["React", "AI", "Backend"], hackathon: "Hack the Future" },
+      ]);
+    }
+  }, [isCreate]);
 
+  const handleClick = () => {
+    setShowModal(true);
+  };
+
+  const handleCreateTeam = () => {
+    if (!teamName.trim()) {
+      toast.error("Please enter a team name");
+      return;
+    }
+    if (selectedSkills.length === 0) {
+      toast.error("Please select at least one skill");
+      return;
+    }
+    
+    // Simulate team creation
+    console.log("Creating team:", { name: teamName, skills: selectedSkills });
+    toast.success(`Team "${teamName}" created successfully!`, {
+      description: `Skills: ${selectedSkills.join(", ")}`,
+    });
+    setShowModal(false);
+    setTeamName("");
+    setSelectedSkills([]);
+  };
+
+  const handleJoinTeam = (teamId: number) => {
+    const team = availableTeams.find(t => t.id === teamId);
+    if (team) {
+      if (team.members >= team.maxMembers) {
+        toast.error("Team is full!");
+        return;
+      }
+      console.log("Joining team:", team);
+      toast.success(`Successfully joined "${team.name}"!`, {
+        description: "You'll be notified about team updates.",
+      });
+      setShowModal(false);
+    }
+  };
+
+  const toggleSkill = (skill: string) => {
+    setSelectedSkills(prev => 
+      prev.includes(skill) 
+        ? prev.filter(s => s !== skill)
+        : [...prev, skill]
+    );
+  };
+
+  const allSkills = ["React", "AI", "Design", "Node.js", "Python", "ML", "UI/UX", "Backend", "Frontend", "Mobile"];
+
+  return (
+    <>
+    <motion.div
+      onClick={handleClick}
+      whileHover={showModal ? {} : { y: -10, scale: 1.02 }}
+      className="relative group cursor-pointer"
+      style={{ pointerEvents: showModal ? 'none' : 'auto' }}
+    >
+      <div
+        className={`absolute -inset-1 bg-linear-to-r ${isCreate ? "from-cyan-500 to-blue-600" : "from-purple-500 to-pink-600"} rounded-2xl blur-lg opacity-25 group-hover:opacity-75 transition duration-500`}
+      />
+      <Card className="relative bg-[#0c0c12]/80 backdrop-blur-2xl border-white/10 border-t-white/20 p-8 h-full flex flex-col items-center text-center overflow-hidden">
+        {/* Animated Background Element */}
+        <div className="absolute -top-10 -right-10 w-32 h-32 bg-white/5 rounded-full blur-3xl group-hover:bg-white/10 transition-colors" />
+
+        <div
+          className={`w-20 h-20 rounded-2xl flex items-center justify-center mb-6 relative`}
+        >
+          <div
+            className={`absolute inset-0 bg-linear-to-br ${isCreate ? "from-cyan-500 to-blue-500" : "from-purple-500 to-pink-500"} blur-xl opacity-40 group-hover:opacity-80 transition-opacity`}
+          />
+          <div className="relative bg-black/40 w-full h-full rounded-2xl flex items-center justify-center border border-white/10">
+            {isCreate ? (
+              <Plus className="w-10 h-10 text-cyan-400 group-hover:rotate-90 transition-transform duration-500" />
+            ) : (
+              <Magnet className="w-10 h-10 text-purple-400 group-hover:scale-125 transition-transform" />
+            )}
+          </div>
+        </div>
+
+        <h3 className="text-2xl font-black mb-3 text-white">
+          {isCreate ? "CREATE TEAM" : "JOIN TEAM"}
+        </h3>
+
+        <p className="text-white/40 text-sm leading-relaxed mb-6">
+          {isCreate
+            ? "Start your own squad, lead the project, and define the vision."
+            : "Find the perfect match for your skills and join a winning project."}
+        </p>
+
+        <div className="flex gap-2 mt-auto">
+          {isCreate ? (
+            ["React", "AI", "Design"].map((s) => (
+              <Badge
+                key={s}
+                variant="secondary"
+                className="bg-white/5 text-cyan-400 border-none"
+              >
+                {s}
+              </Badge>
+            ))
+          ) : (
+            <div className="flex -space-x-2">
+              {[1, 2, 3, 4].map((i) => (
                 <div
-                  className={`w-20 h-20 rounded-2xl flex items-center justify-center mb-6 relative`}
+                  key={i}
+                  className="w-8 h-8 rounded-full border-2 border-[#0c0c12] bg-linear-to-br from-purple-500 to-pink-500 flex items-center justify-center text-[10px] font-bold"
                 >
-                  <div
-                    className={`absolute inset-0 bg-gradient-to-br ${isCreate ? "from-cyan-500 to-blue-500" : "from-purple-500 to-pink-500"} blur-xl opacity-40 group-hover:opacity-80 transition-opacity`}
-                  />
-                  <div className="relative bg-black/40 w-full h-full rounded-2xl flex items-center justify-center border border-white/10">
-                    {isCreate ? (
-                      <Plus className="w-10 h-10 text-cyan-400 group-hover:rotate-90 transition-transform duration-500" />
-                    ) : (
-                      <Magnet className="w-10 h-10 text-purple-400 group-hover:scale-125 transition-transform" />
-                    )}
-                  </div>
+                  U{i}
                 </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </Card>
 
-                <h3 className="text-2xl font-black mb-3 text-white">
-                  {isCreate ? "CREATE TEAM" : "JOIN TEAM"}
-                </h3>
+      {/* Modal - Portal to body */}
+      {mounted && typeof window !== 'undefined' && createPortal(
+        <AnimatePresence>
+          {showModal && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-[99999] flex items-center justify-center p-4 bg-black/95 backdrop-blur-md"
+              style={{ 
+                pointerEvents: 'auto',
+                position: 'fixed',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                width: '100vw',
+                height: '100vh',
+              }}
+              onClick={(e) => {
+                if (e.target === e.currentTarget) setShowModal(false);
+              }}
+            >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+              onMouseDown={(e) => e.stopPropagation()}
+              onMouseMove={(e) => e.stopPropagation()}
+              className={`relative bg-[#0c0c12] border ${isCreate ? "border-cyan-500/20" : "border-purple-500/20"} rounded-2xl p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto`}
+              style={{ pointerEvents: 'auto' }}
+            >
+              <button
+                onClick={() => setShowModal(false)}
+                className="absolute top-4 right-4 w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center transition-colors"
+              >
+                <X className="w-4 h-4 text-white/60" />
+              </button>
 
-                <p className="text-white/40 text-sm leading-relaxed mb-6">
-                  {isCreate
-                    ? "Start your own squad, lead the project, and define the vision."
-                    : "Find the perfect match for your skills and join a winning project."}
-                </p>
-
-                <div className="flex gap-2 mt-auto">
-                  {isCreate ? (
-                    ["React", "AI", "Design"].map((s) => (
-                      <Badge
-                        key={s}
-                        variant="secondary"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          toast.info(`Requirement: ${s}`, {
-                            description: `Teams seeking ${s} experts will be highlighted.`,
-                          });
-                        }}
-                        className="bg-white/5 text-cyan-400 border-none cursor-pointer hover:bg-cyan-400 hover:text-black transition-colors"
-                      >
-                        {s}
-                      </Badge>
-                    ))
-                  ) : (
-                    <div className="flex -space-x-2">
-                      {[1, 2, 3, 4].map((i) => (
-                        <div
-                          key={i}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            toast.info(`Potential Teammate ${i}`, {
-                              description: `Scanning skills: React, TypeScript, Neural Networks.`,
-                            });
-                          }}
-                          className="w-8 h-8 rounded-full border-2 border-[#0c0c12] bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-[10px] font-bold cursor-pointer hover:scale-110 transition-transform"
-                        >
-                          U{i}
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </Card>
-            </motion.div>
-          </DialogTrigger>
-          <DialogContent className="bg-[#0c0c12]/95 border-white/10 backdrop-blur-2xl text-white sm:max-w-[500px] rounded-[32px]">
-            <DialogHeader>
-              <DialogTitle className="text-3xl font-black uppercase tracking-tighter">
-                {isCreate ? "Initialize Squad" : "Neural Recruitment"}
-              </DialogTitle>
-              <DialogDescription className="text-white/50 font-medium">
-                {isCreate 
-                  ? "Configure your team parameters and begin recruitment."
-                  : "Scanning for compatible team signatures... 12 matches found."}
-              </DialogDescription>
-            </DialogHeader>
-            <form onSubmit={handleSubmit} className="space-y-6 pt-4">
               {isCreate ? (
-                <>
-                  <div className="space-y-2">
-                    <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40">Team Name</Label>
-                    <Input placeholder="E.G. NEURAL NEXUS" className="bg-white/5 border-white/10 h-14 rounded-2xl focus:border-cyan-500/50 uppercase font-bold" required />
+                <div className="space-y-6">
+                  <div>
+                    <h3 className="text-2xl font-black text-white mb-2">Create Your Team</h3>
+                    <p className="text-white/60 text-sm">Start your own squad and lead the project</p>
                   </div>
+
                   <div className="space-y-2">
-                    <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40">Hackathon Selection</Label>
-                    <Input placeholder="CYBERPUNK HACK 2077" className="bg-white/5 border-white/10 h-14 rounded-2xl focus:border-cyan-500/50 uppercase font-bold" required />
+                    <label className="text-sm font-bold text-white/80">Team Name</label>
+                    <Input
+                      value={teamName}
+                      onChange={(e) => setTeamName(e.target.value)}
+                      placeholder="Enter team name..."
+                      className="bg-white/5 border-white/10 text-white placeholder:text-white/30"
+                    />
                   </div>
+
                   <div className="space-y-2">
-                    <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40">Required Skills</Label>
-                    <div className="flex gap-2">
-                      {["React", "AI", "Solidity"].map(skill => (
-                        <Badge key={skill} variant="outline" className="bg-cyan-500/10 text-cyan-400 border-cyan-500/20">{skill}</Badge>
+                    <label className="text-sm font-bold text-white/80">Select Skills (Required)</label>
+                    <div className="flex flex-wrap gap-2">
+                      {allSkills.map((skill) => (
+                        <button
+                          key={skill}
+                          onClick={() => toggleSkill(skill)}
+                          className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${
+                            selectedSkills.includes(skill)
+                              ? "bg-cyan-500 text-black"
+                              : "bg-white/5 text-white/60 hover:bg-white/10"
+                          }`}
+                        >
+                          {skill}
+                        </button>
                       ))}
                     </div>
                   </div>
-                </>
+
+                  <Button
+                    onClick={handleCreateTeam}
+                    className="w-full h-12 bg-linear-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-black font-black"
+                  >
+                    Create Team
+                  </Button>
+                </div>
               ) : (
-                <div className="space-y-4">
-                  {[
-                    { name: "Team Cyber", match: "98%", lead: "Alpha" },
-                    { name: "Quantum Squad", match: "85%", lead: "Beta" },
-                  ].map((team, i) => (
-                    <div key={i} className="p-4 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-between group hover:border-purple-500/50 transition-all">
-                      <div>
-                        <h4 className="font-black text-white">{team.name}</h4>
-                        <p className="text-[10px] text-white/40 font-bold uppercase tracking-widest">Lead: {team.lead} // {team.match} Match</p>
+                <div className="space-y-6">
+                  <div>
+                    <h3 className="text-2xl font-black text-white mb-2">Join a Team</h3>
+                    <p className="text-white/60 text-sm">Find the perfect match for your skills</p>
+                  </div>
+
+                  <div className="space-y-4">
+                    {availableTeams.map((team) => (
+                      <div
+                        key={team.id}
+                        className="p-4 rounded-xl bg-white/5 border border-white/10 hover:border-purple-500/50 transition-all"
+                      >
+                        <div className="flex items-start justify-between mb-3">
+                          <div>
+                            <h4 className="text-lg font-black text-white mb-1">{team.name}</h4>
+                            <p className="text-sm text-white/60">{team.hackathon}</p>
+                          </div>
+                          <Badge className="bg-purple-500/20 text-purple-400 border-purple-500/30">
+                            {team.members}/{team.maxMembers} members
+                          </Badge>
+                        </div>
+                        <div className="flex flex-wrap gap-2 mb-4">
+                          {team.skills.map((skill: string) => (
+                            <Badge key={skill} variant="secondary" className="bg-white/5 text-white/60 border-none">
+                              {skill}
+                            </Badge>
+                          ))}
+                        </div>
+                        <Button
+                          onClick={() => handleJoinTeam(team.id)}
+                          className="w-full bg-linear-to-r from-purple-500 to-pink-600 hover:from-purple-400 hover:to-pink-500 text-white font-bold"
+                        >
+                          Join Team
+                        </Button>
                       </div>
-                      <Button type="button" size="sm" className="bg-purple-500 hover:bg-purple-400 text-black font-black uppercase text-[10px]">Apply</Button>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
               )}
-              <div className="pt-4">
-                <Button className={`w-full h-14 rounded-2xl font-black uppercase tracking-[0.2em] text-xs ${isCreate ? "bg-cyan-500 hover:bg-cyan-400" : "bg-purple-500 hover:bg-purple-400"} text-black transition-all shadow-xl`}>
-                  {isCreate ? "Deploy Workspace" : "Sync Application"}
-                </Button>
-              </div>
-            </form>
-          </DialogContent>
-        </Dialog>
-      );
-    };
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>,
+      document.body
+      )}
+    </motion.div>
+    </>
+  );
+};
 
 // --- Main Page ---
 
@@ -442,18 +583,10 @@ const mockHackathons = [
 ];
 
 export default function CrackHackPage() {
-    const [mounted, setMounted] = useState(false);
-    const [filter, setFilter] = useState("");
-    const containerRef = useRef<HTMLDivElement>(null);
-
-    const filteredHackathons = useMemo(() => {
-      if (!filter) return mockHackathons;
-      return mockHackathons.filter(h => 
-        h.name.toLowerCase().includes(filter.toLowerCase()) ||
-        h.description.toLowerCase().includes(filter.toLowerCase())
-      );
-    }, [filter]);
-
+  const router = useRouter();
+  const [mounted, setMounted] = useState(false);
+  const [filterSkill, setFilterSkill] = useState("");
+  const containerRef = useRef<HTMLDivElement>(null);
 
   // Initialize useScroll with the ref
   const { scrollYProgress } = useScroll({
@@ -533,7 +666,7 @@ export default function CrackHackPage() {
                   initial={{ y: 50, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ duration: 0.8, delay: 0.2 }}
-                  className="text-7xl md:text-9xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-white via-white to-white/20"
+                  className="text-7xl md:text-9xl font-black tracking-tighter text-transparent bg-clip-text bg-linear-to-b from-white via-white to-white/20"
                 >
                   CrackHack <span className="text-cyan-400">🚀</span>
                 </motion.h1>
@@ -555,18 +688,19 @@ export default function CrackHackPage() {
                 transition={{ duration: 0.8, delay: 0.6 }}
                 className="flex gap-4 justify-center pt-8"
               >
-                  <Button
-                    size="lg"
-                    onClick={() => {
-                      document.getElementById("ongoing-hacks")?.scrollIntoView({ behavior: "smooth" });
-                      toast.info("Navigating to Ongoing Challenges", {
-                        description: "Decrypting live event streams...",
-                      });
-                    }}
-                    className="h-16 px-8 rounded-full bg-cyan-500 hover:bg-cyan-400 text-black font-black text-lg shadow-[0_0_30px_rgba(6,182,212,0.5)]"
-                  >
-                    EXPLORE NOW <ArrowRight className="ml-2 w-5 h-5" />
-                  </Button>
+                <Button
+                  onClick={() => {
+                    // Scroll to hackathons section or navigate
+                    const element = document.getElementById("hackathons-section");
+                    if (element) {
+                      element.scrollIntoView({ behavior: "smooth" });
+                    }
+                  }}
+                  size="lg"
+                  className="h-16 px-8 rounded-full bg-cyan-500 hover:bg-cyan-400 text-black font-black text-lg shadow-[0_0_30px_rgba(6,182,212,0.5)]"
+                >
+                  EXPLORE NOW <ArrowRight className="ml-2 w-5 h-5" />
+                </Button>
               </motion.div>
             </motion.div>
 
@@ -576,17 +710,14 @@ export default function CrackHackPage() {
               transition={{ duration: 2, repeat: Infinity }}
               className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
             >
-              <span className="text-[10px] font-bold text-white/20 tracking-widest uppercase">
-                SCROLL TO DISCOVER
-              </span>
-              <div className="w-[1px] h-12 bg-gradient-to-b from-cyan-500 to-transparent" />
+              <div className="w-[1px] h-12 bg-linear-to-b from-cyan-500 to-transparent" />
             </motion.div>
           </section>
 
           {/* Content Wrapper */}
           <div className="relative z-10 max-w-7xl mx-auto px-6 space-y-32 pb-32">
             {/* Hackathon Discovery */}
-            <section id="ongoing-hacks" className="space-y-16">
+            <section id="hackathons-section" className="space-y-16">
               <div className="flex flex-col md:flex-row justify-between items-end gap-6">
                 <div className="space-y-4">
                   <Badge className="bg-orange-500/10 text-orange-400 border-orange-500/20 px-4 py-1.5 text-xs font-bold tracking-widest uppercase">
@@ -596,25 +727,30 @@ export default function CrackHackPage() {
                     ONGOING <span className="text-orange-500">HACKS</span>
                   </h2>
                 </div>
-                  <div className="flex gap-4">
-                    <div className="relative">
-                      <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
-                      <input
-                        placeholder="FILTER BY SKILL..."
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter') {
-                            toast.loading("Filtering challenges...", { duration: 1000 });
-                          }
-                        }}
-                        className="bg-white/5 border border-white/10 rounded-full py-3 pl-12 pr-6 text-sm focus:outline-none focus:border-cyan-500/50 transition-colors w-64 uppercase font-bold tracking-wider"
-                      />
-                    </div>
+                <div className="flex gap-4">
+                  <div className="relative">
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
+                    <input
+                      placeholder="FILTER BY SKILL..."
+                      value={filterSkill}
+                      onChange={(e) => setFilterSkill(e.target.value)}
+                      className="bg-white/5 border border-white/10 rounded-full py-3 pl-12 pr-6 text-sm focus:outline-none focus:border-cyan-500/50 transition-colors w-64 uppercase font-bold tracking-wider text-white placeholder:text-white/50 caret-white"
+                    />
                   </div>
+                </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 {mockHackathons
-                  .filter((h) => h.status === "Ongoing")
+                  .filter((h) => {
+                    if (h.status !== "Ongoing") return false;
+                    if (!filterSkill.trim()) return true;
+                    const skillLower = filterSkill.toLowerCase();
+                    return (
+                      h.name.toLowerCase().includes(skillLower) ||
+                      h.description.toLowerCase().includes(skillLower)
+                    );
+                  })
                   .map((hack, i) => (
                     <HackathonCard key={hack.id} hack={hack} index={i} />
                   ))}
@@ -626,7 +762,15 @@ export default function CrackHackPage() {
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                   {mockHackathons
-                    .filter((h) => h.status === "Upcoming")
+                    .filter((h) => {
+                      if (h.status !== "Upcoming") return false;
+                      if (!filterSkill.trim()) return true;
+                      const skillLower = filterSkill.toLowerCase();
+                      return (
+                        h.name.toLowerCase().includes(skillLower) ||
+                        h.description.toLowerCase().includes(skillLower)
+                      );
+                    })
                     .map((hack, i) => (
                       <HackathonCard key={hack.id} hack={hack} index={i} />
                     ))}
@@ -647,7 +791,7 @@ export default function CrackHackPage() {
                 >
                   <h2 className="text-5xl md:text-7xl font-black tracking-tighter text-white">
                     FORM YOUR{" "}
-                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-purple-500 to-emerald-400">
+                    <span className="text-transparent bg-clip-text bg-linear-to-r from-cyan-400 via-purple-500 to-emerald-400">
                       DREAM TEAM
                     </span>{" "}
                     ⚡
@@ -675,42 +819,34 @@ export default function CrackHackPage() {
                     value: "128+",
                     icon: Trophy,
                     color: "text-amber-400",
-                    action: () => toast.info("System Analytics", { description: "128 total hackathons indexed across all neural nodes." }),
                   },
                   {
                     label: "ACTIVE TEAMS",
                     value: "450+",
                     icon: Users,
                     color: "text-cyan-400",
-                    action: () => toast.info("Active Formations", { description: "450+ squads currently in active development phase." }),
                   },
                   {
                     label: "TOTAL PRIZES",
                     value: "$500K",
                     icon: Star,
                     color: "text-purple-400",
-                    action: () => toast.info("Reward Pool", { description: "Cumulative bounty across all listed challenges." }),
                   },
                   {
                     label: "PARTNERS",
                     value: "50+",
                     icon: Globe,
                     color: "text-emerald-400",
-                    action: () => toast.info("Collaborator Network", { description: "50+ industry partners and academic institutions." }),
                   },
                 ].map((stat, i) => (
-                  <div 
-                    key={i} 
-                    onClick={stat.action}
-                    className="text-center space-y-2 cursor-pointer group/stat transition-all hover:scale-105"
-                  >
+                  <div key={i} className="text-center space-y-2">
                     <stat.icon
-                      className={`w-6 h-6 mx-auto ${stat.color} mb-3 group-hover/stat:scale-110 transition-transform`}
+                      className={`w-6 h-6 mx-auto ${stat.color} mb-3`}
                     />
-                    <div className="text-3xl font-black text-white group-hover/stat:text-cyan-400 transition-colors">
+                    <div className="text-3xl font-black text-white">
                       {stat.value}
                     </div>
-                    <div className="text-[10px] font-bold text-white/30 tracking-widest uppercase group-hover/stat:text-white/60 transition-colors">
+                    <div className="text-[10px] font-bold text-white/30 tracking-widest uppercase">
                       {stat.label}
                     </div>
                   </div>
@@ -774,3 +910,6 @@ export default function CrackHackPage() {
     </div>
   );
 }
+
+
+

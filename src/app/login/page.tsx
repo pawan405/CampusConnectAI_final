@@ -14,7 +14,9 @@ import {
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { signIn } from "next-auth/react";
+import { signInWithPopup, signInWithRedirect, getRedirectResult } from "firebase/auth";
+import { auth, googleProvider, db } from "@/lib/firebase";
+import { doc, getDoc } from "firebase/firestore";
 
 const FadeIn = ({
   children,
@@ -28,7 +30,7 @@ const FadeIn = ({
   <motion.div
     initial={{ opacity: 0, y }}
     animate={{ opacity: 1, y: 0 }}
-    transition={{ duration: 0.8, delay, ease: [0.16, 1, 0.3, 1] }}
+    transition={{ duration: 0.4, delay, ease: "easeOut" }}
   >
     {children}
   </motion.div>
@@ -36,36 +38,128 @@ const FadeIn = ({
 
 export default function LoginPage() {
   const router = useRouter();
+  const [isLoading, setIsLoading] = React.useState(false);
+
+  // Handle redirect result on page load
+  React.useEffect(() => {
+    const handleRedirectResult = async () => {
+      try {
+        const result = await getRedirectResult(auth);
+        if (result) {
+          const user = result.user;
+
+          // Check if user has a username set
+          try {
+            const userDocRef = doc(db, "users", user.uid);
+            const userDoc = await getDoc(userDocRef);
+            const hasUsername = userDoc.exists() && userDoc.data()?.username;
+
+            // Store user data in localStorage
+            localStorage.setItem('user', JSON.stringify({
+              uid: user.uid,
+              email: user.email,
+              displayName: user.displayName,
+              photoURL: user.photoURL,
+              username: hasUsername ? userDoc.data()?.username : null,
+            }));
+
+            // Redirect based on whether username is set
+            if (hasUsername) {
+              router.push("/dashboard");
+            } else {
+              router.push("/username-setup");
+            }
+          } catch (error) {
+            console.error("Error checking username:", error);
+            // Fallback: assume no username and redirect to setup
+            localStorage.setItem('user', JSON.stringify({
+              uid: user.uid,
+              email: user.email,
+              displayName: user.displayName,
+              photoURL: user.photoURL,
+              username: null,
+            }));
+            router.push("/username-setup");
+          }
+        }
+      } catch (error) {
+        console.error("Redirect result error:", error);
+      }
+    };
+
+    handleRedirectResult();
+  }, [router]);
 
   const handleGoogleLogin = async () => {
+    setIsLoading(true);
     try {
-      const hasRealCredentials = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID &&
-        process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID !== "YOUR_ACTUAL_GOOGLE_CLIENT_ID" &&
-        process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID !== "your-google-client-id";
-
-      if (hasRealCredentials) {
-        await signIn("google", { callbackUrl: "/dashboard" });
-      } else {
-        // Demo mode
-        await signIn("credentials", {
-          username: "demo",
-          password: "demo",
-          callbackUrl: "/dashboard",
-        });
+      // Try popup first, fallback to redirect if popup fails
+      let result;
+      try {
+        result = await signInWithPopup(auth, googleProvider);
+      } catch (popupError: any) {
+        console.log("Popup blocked, trying redirect...", popupError);
+        // If popup is blocked, use redirect method
+        await signInWithRedirect(auth, googleProvider);
+        return; // Exit early as redirect will reload the page
       }
-    } catch (error) {
-      console.error("Sign in error:", error);
-      // Fallback
-      router.push("/dashboard");
+
+      const user = result.user;
+
+      // Check if user has a username set
+      try {
+        const userDocRef = doc(db, "users", user.uid);
+        const userDoc = await getDoc(userDocRef);
+        const hasUsername = userDoc.exists() && userDoc.data()?.username;
+
+        // Store user data in localStorage
+        localStorage.setItem('user', JSON.stringify({
+          uid: user.uid,
+          email: user.email,
+          displayName: user.displayName,
+          photoURL: user.photoURL,
+          username: hasUsername ? userDoc.data()?.username : null,
+        }));
+
+        // Redirect based on whether username is set
+        if (hasUsername) {
+          router.push("/dashboard");
+        } else {
+          router.push("/username-setup");
+        }
+      } catch (error) {
+        console.error("Error checking username:", error);
+        // Fallback: assume no username and redirect to setup
+        localStorage.setItem('user', JSON.stringify({
+          uid: user.uid,
+          email: user.email,
+          displayName: user.displayName,
+          photoURL: user.photoURL,
+          username: null,
+        }));
+        router.push("/username-setup");
+      }
+    } catch (error: any) {
+      console.error("Google login failed:", error);
+      setIsLoading(false);
+
+      // Show user-friendly error messages
+      if (error.code === 'auth/popup-blocked') {
+        alert("Popup was blocked. Please allow popups for this site and try again.");
+      } else if (error.code === 'auth/popup-closed-by-user') {
+        alert("Sign-in was cancelled. Please try again.");
+      } else {
+        alert("Sign-in failed. Please check your connection and try again.");
+      }
     }
   };
 
   return (
     <div className="min-h-screen bg-black text-white flex items-center justify-center p-6 relative overflow-hidden selection:bg-blue-500/30">
-      {/* Premium Background Atmosphere */}
+      {/* Premium Background Atmosphere - Optimized */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-blue-600/10 rounded-full blur-[120px]" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-indigo-600/10 rounded-full blur-[120px]" />
+        <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-blue-600/5 rounded-full blur-[80px]" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-indigo-600/5 rounded-full blur-[80px]" />
       </div>
 
       <Link href="/" className="absolute top-8 left-8 z-20">
@@ -83,7 +177,7 @@ export default function LoginPage() {
           <div className="flex flex-col items-center text-center mb-10">
             <motion.div
               whileHover={{ rotate: 12, scale: 1.1 }}
-              className="w-20 h-20 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center shadow-2xl shadow-blue-500/40 mb-8"
+              className="w-20 h-20 rounded-2xl bg-linear-to-tr from-blue-600 to-indigo-500 flex items-center justify-center shadow-2xl shadow-blue-500/40 mb-8"
             >
               <Brain className="w-10 h-10 text-white" />
             </motion.div>
@@ -113,12 +207,17 @@ export default function LoginPage() {
 
               <motion.button
                 onClick={handleGoogleLogin}
+                disabled={isLoading}
                 whileHover={{ y: -5, scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className="flex items-center gap-4 bg-white text-black w-full py-5 px-6 rounded-2xl font-black shadow-2xl hover:bg-zinc-100 transition-all justify-center mb-10"
+                className="flex items-center gap-4 bg-white text-black w-full py-5 px-6 rounded-2xl font-black shadow-2xl hover:bg-zinc-100 transition-all justify-center mb-10 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <FcGoogle className="w-7 h-7" />
-                Continue with Google
+                {isLoading ? (
+                  <div className="w-7 h-7 border-2 border-black border-t-transparent rounded-full animate-spin" />
+                ) : (
+                  <FcGoogle className="w-7 h-7" />
+                )}
+                {isLoading ? "Connecting..." : "Continue with Google"}
               </motion.button>
 
               <div className="flex flex-col gap-5 w-full">
@@ -157,19 +256,21 @@ export default function LoginPage() {
         </FadeIn>
       </div>
 
-      {/* Aesthetic Floating Elements */}
+      {/* Aesthetic Floating Elements - Simplified */}
       <motion.div
         animate={{
-          rotate: 360,
-          scale: [1, 1.2, 1],
+          scale: [1, 1.1, 1],
         }}
         transition={{
-          duration: 25,
+          duration: 8,
           repeat: Infinity,
-          ease: "linear",
+          ease: "easeInOut",
         }}
-        className="fixed -bottom-[10%] -left-[5%] w-[40%] aspect-square bg-blue-600/5 rounded-full blur-[120px] pointer-events-none"
+        className="fixed -bottom-[10%] -left-[5%] w-[30%] aspect-square bg-blue-600/3 rounded-full blur-[60px] pointer-events-none"
       />
     </div>
   );
 }
+
+
+
